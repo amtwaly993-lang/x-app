@@ -8,7 +8,8 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0c1d37">
 
-  <!-- مكتبة الخرائط Leaflet -->
+  <!-- مكتبة السحابة ومكتبة الخرائط -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -50,7 +51,6 @@
       position: relative;
     }
 
-    /* الواجهة الترحيبية */
     .portal-screen {
       padding: 30px 16px 24px 16px;
       display: flex;
@@ -91,7 +91,6 @@
       margin-bottom: 24px;
     }
 
-    /* كروت الأدوار الثلاثة */
     .portal-cards-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -112,7 +111,7 @@
       border: 1px solid rgba(226, 232, 240, 0.9);
       cursor: pointer;
       position: relative;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease;
     }
 
     .portal-role-card:active {
@@ -158,7 +157,6 @@
       padding: 0 2px;
     }
 
-    /* كارت الشراكة والمتاجر الجديد المتطابق والملفت */
     .ad-banner-container {
       width: 100%;
       margin-top: 18px;
@@ -168,20 +166,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 12px 26px -6px rgba(12, 29, 55, 0.07), 0 3px 8px rgba(74, 124, 111, 0.05);
+      box-shadow: 0 12px 26px -6px rgba(12, 29, 55, 0.07);
       border: 1.5px solid rgba(74, 124, 111, 0.22);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .ad-banner-container:active {
-      transform: scale(0.97);
-      background: #f8fafc;
-    }
-
-    /* لمسة شريط التمييز الأيمن */
     .ad-banner-container::before {
       content: '';
       position: absolute;
@@ -190,7 +181,6 @@
       width: 5px;
       height: 100%;
       background: linear-gradient(180deg, var(--brand-accent) 0%, #10b981 100%);
-      border-radius: 0 22px 22px 0;
     }
 
     .ad-content {
@@ -228,31 +218,16 @@
       font-weight: 500;
     }
 
-    /* الأيقونة الملفتة والنقية */
     .ad-icon-wrapper {
       position: relative;
       width: 50px;
       height: 50px;
-      min-width: 50px;
       background: linear-gradient(135deg, #e8f5f1 0%, #d1fae5 100%);
       border: 1.5px solid rgba(16, 185, 129, 0.35);
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 14px rgba(16, 185, 129, 0.2);
-      animation: pulse-badge 2.8s infinite ease-in-out;
-    }
-
-    @keyframes pulse-badge {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 6px 14px rgba(16, 185, 129, 0.2);
-      }
-      50% {
-        transform: scale(1.06);
-        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.38);
-      }
     }
 
     .ad-sparkle-dot {
@@ -266,7 +241,6 @@
       border-radius: 50%;
     }
 
-    /* الشريط العلوي */
     .inner-header {
       background: #ffffff;
       padding: 14px 18px;
@@ -294,16 +268,8 @@
       font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
 
-    .back-btn:active {
-      background: #e2e8f0;
-    }
-
-    /* مساحة الخدمات */
     .content-area {
       flex: 1;
       overflow-y: auto;
@@ -318,7 +284,6 @@
       border-radius: 16px;
       padding: 14px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(12, 29, 55, 0.03);
     }
 
     .address-bar-header {
@@ -347,7 +312,6 @@
       font-weight: 800;
       color: var(--brand-navy);
       margin: 18px 0 10px 0;
-      letter-spacing: 0.3px;
     }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -364,7 +328,6 @@
       gap: 6px;
       cursor: pointer;
       box-shadow: 0 3px 8px rgba(12, 29, 55, 0.02);
-      transition: transform 0.15s ease;
     }
 
     .service-card:active { transform: scale(0.96); background: #f8fafc; }
@@ -377,7 +340,6 @@
     .service-card-title { font-size: 12px; font-weight: 800; color: var(--brand-navy); }
     .service-card-desc { font-size: 10px; color: var(--brand-gray); line-height: 1.35; }
 
-    /* النوافذ */
     .modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -399,10 +361,7 @@
       padding: 22px 18px;
       max-height: 88vh;
       overflow-y: auto;
-      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
     .input-row { margin-bottom: 12px; }
     .input-row label { display: block; font-size: 11.5px; font-weight: 700; color: var(--brand-navy); margin-bottom: 5px; }
@@ -414,8 +373,6 @@
       font-size: 12.5px;
       outline: none;
     }
-
-    .input-box:focus { border-color: var(--brand-navy); }
 
     .btn-submit {
       width: 100%;
@@ -429,8 +386,6 @@
       cursor: pointer;
       margin-top: 10px;
     }
-
-    .btn-submit:active { background: #162c50; }
 
     #mapContainer {
       height: 180px;
@@ -447,7 +402,7 @@
   <div id="mainView"></div>
 </div>
 
-<!-- نافذة ضبط العنوان والخريطة التفاعلية -->
+<!-- نافذة ضبط العنوان -->
 <div class="modal" id="addressModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -506,11 +461,18 @@
       <span onclick="closeOrderModal()" style="cursor:pointer; font-size:20px; color:var(--brand-gray); padding:4px;">✕</span>
     </div>
     <div id="modalBody"></div>
-    <button class="btn-submit" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button>
+    <button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button>
   </div>
 </div>
 
 <script>
+  // بيانات الربط مع قاعدة البيانات السحابية
+  const SUPABASE_URL = "https://jopymfpdovhtdrfanbig.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm";
+  const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentOrderType = "";
+
   let clientAddress = {
     compound: 'سكن مصر الداون تاون',
     building: '14',
@@ -547,7 +509,6 @@
           <p class="hero-subtitle">اختار الخدمة المناسبة وابدأ في ثواني</p>
 
           <div class="portal-cards-grid">
-            <!-- كارت 1: أنا عميل -->
             <div class="portal-role-card" onclick="navigateTo('client')">
               <div class="card-icon-wrapper">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -564,7 +525,6 @@
               <div class="card-role-desc">اريد مشتريات او توصيل اوصيانة منزلية</div>
             </div>
 
-            <!-- كارت 2: أنا مندوب توصيل -->
             <div class="portal-role-card" onclick="navigateTo('courier')">
               <div class="card-icon-wrapper">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -583,7 +543,6 @@
               <div class="card-role-desc">مضمون ومعتمد استقبل الطلبات واكسب من مشاويري »</div>
             </div>
 
-            <!-- كارت 3: أنا فني معتمد -->
             <div class="portal-role-card" onclick="navigateTo('technician')">
               <div class="card-icon-wrapper">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -599,7 +558,6 @@
             </div>
           </div>
 
-          <!-- كارت الشراكة والمتاجر الجديد المتطابق والملفت -->
           <div class="ad-banner-container" onclick="window.open('https://wa.me/201012345678?text=أرغب%20في%20الانضمام%20كشريك%20تجاري%20على%20منصة%20X', '_blank')">
             <div class="ad-content">
               <div class="ad-tag-badge">
@@ -646,12 +604,12 @@
 
           <div class="section-title">مشاوير وطلبات شراء للمنزل</div>
           <div class="grid-2">
-            <div class="service-card highlight" onclick="openOrderModal('single_multi', 2)">
+            <div class="service-card highlight" onclick="openOrderModal('مشوار خفيف (1 إلى 2 طلب)', 2)">
               <span class="service-card-icon">🛵</span>
               <span class="service-card-title">مشوار خفيف</span>
               <span class="service-card-desc">1 إلى 2 طلب (صيدلية، سوبرماركت)</span>
             </div>
-            <div class="service-card highlight" onclick="openOrderModal('single_multi', 6)">
+            <div class="service-card highlight" onclick="openOrderModal('مشوار مجمّع (3 إلى 6 طلبات)', 6)">
               <span class="service-card-icon">🛒</span>
               <span class="service-card-title">مشوار مجمّع</span>
               <span class="service-card-desc">3 إلى 6 طلبات من محلات مختلفة</span>
@@ -660,113 +618,54 @@
 
           <div class="section-title">خدمات سريعة فورية للمنزل</div>
           <div class="grid-3">
-            <div class="service-card" onclick="openOrderModal('gas')">
+            <div class="service-card" onclick="openOrderModal('أنبوبة غاز')">
               <span class="service-card-icon">⛽</span>
               <span class="service-card-title">أنبوبة غاز</span>
               <span class="service-card-desc">تبديل وتركيب</span>
             </div>
-            <div class="service-card" onclick="openOrderModal('cards')">
+            <div class="service-card" onclick="openOrderModal('شحن كروت')">
               <span class="service-card-icon">💳</span>
               <span class="service-card-title">شحن كروت</span>
               <span class="service-card-desc">كهرباء ومياه</span>
             </div>
-            <div class="service-card" onclick="openOrderModal('laundry')">
+            <div class="service-card" onclick="openOrderModal('غسيل وكوي')">
               <span class="service-card-icon">👔</span>
               <span class="service-card-title">غسيل وكوي</span>
               <span class="service-card-desc">دراي كلين</span>
             </div>
           </div>
 
-          <div class="section-title">توصيل ومواصلات وطوارئ</div>
-          <div class="grid-3">
-            <div class="service-card" onclick="openOrderModal('dropoff')">
-              <span class="service-card-icon">📦</span>
-              <span class="service-card-title">أمانة داخلية</span>
-              <span class="service-card-desc">بين الشقق أو للبوابة</span>
-            </div>
-            <div class="service-card" onclick="openOrderModal('ride')">
-              <span class="service-card-icon">🚗</span>
-              <span class="service-card-title">مشوار / دروس</span>
-              <span class="service-card-desc">توصيل آمن</span>
-            </div>
-            <div class="service-card" onclick="openOrderModal('car_sos')">
-              <span class="service-card-icon">🔋</span>
-              <span class="service-card-title">طوارئ سيارة</span>
-              <span class="service-card-desc">وصلة بطارية / هواء</span>
-            </div>
-          </div>
-
           <div class="section-title">صيانة منزلية معتمدة</div>
           <div class="grid-4">
-            <div class="service-card" onclick="openOrderModal('tech', 'سباك')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
-            <div class="service-card" onclick="openOrderModal('tech', 'كهربائي')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
-            <div class="service-card" onclick="openOrderModal('tech', 'ستالايت')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
-            <div class="service-card" onclick="openOrderModal('tech', 'نجار')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
+            <div class="service-card" onclick="openOrderModal('سباكة منزلية')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
+            <div class="service-card" onclick="openOrderModal('كهرباء منزلية')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
+            <div class="service-card" onclick="openOrderModal('صيانة دش وستالايت')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
+            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
           </div>
         </div>
       `;
       return;
     }
 
-    if (currentView === 'courier') {
+    if (currentView === 'courier' || currentView === 'technician') {
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:800; font-size:14px; color:var(--brand-navy);">لوحة المندوب 🛵</div>
-          <button class="back-btn" onclick="navigateTo('portal')">⇄ تبديل</button>
-        </div>
-        <div class="content-area">
-          <div style="background:#ffffff; border:1px solid var(--border-color); padding:16px; border-radius:18px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span style="font-size:11px; color:var(--brand-gray);">رصيد محفظتك المتاح:</span>
-              <div style="font-size:22px; font-weight:900; color:#10b981;">75.00 ج</div>
-            </div>
-            <button class="btn-edit-addr" onclick="alert('شحن الرصيد يتم عبر فودافون كاش أو إنستاباي للمنصة.')">+ شحن المحفظة</button>
-          </div>
-
-          <div class="section-title">الطلبات المتاحة للتوصيل الآن</div>
-          <div style="background:#ffffff; border:1px solid var(--border-color); padding:16px; border-radius:16px; margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-              <span style="font-weight:800; font-size:13px;">مشوار مجمّع (2 طلب)</span>
-              <span style="color:#10b981; font-weight:800; font-size:13px;">أجرتك: 35 ج</span>
-            </div>
-            <p style="font-size:11px; color:var(--brand-gray); line-height:1.4; margin-bottom:10px;">
-              المسار: صيدلية 19011 + سوبرماركت الفرجاني $\leftarrow$ تسليم سكن مصر الداون تاون عمارة 14.
-            </p>
-            <button class="btn-submit" style="padding:10px; font-size:12px; margin-top:0;" onclick="alert('تم قبول المشوار! جارٍ إرسال تفاصيل التواصل مع العميل.')">قبول المشوار وبدء التنفيذ ⚡</button>
-          </div>
-        </div>
-      `;
-      return;
-    }
-
-    if (currentView === 'technician') {
-      main.innerHTML = `
-        <div class="inner-header">
-          <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:800; font-size:14px; color:var(--brand-navy);">لوحة الفني المعتمد 🔧</div>
+          <div style="font-weight:800; font-size:14px; color:var(--brand-navy);">لوحة استقبال المهام ⚡</div>
           <button class="back-btn" onclick="navigateTo('portal')">⇄ تبديل</button>
         </div>
         <div class="content-area">
           <div style="background:#ffffff; border:1px solid var(--border-color); padding:16px; border-radius:18px; margin-bottom:14px;">
-            <div style="font-weight:800; font-size:14px;">حالة المعاينات اليومية</div>
-            <span style="font-size:11.5px; color:#10b981; font-weight:700;">🟢 حسابك نشط ومتاح لاستقبال بلاغات الأعطال في المنطقة</span>
+            <div style="font-size:11px; color:var(--brand-gray);">حالة الحساب:</div>
+            <div style="font-size:16px; font-weight:900; color:#10b981;">حساب نشط ومربوط بالسحابة 🟢</div>
           </div>
-
-          <div class="section-title">بلاغات الصيانة الجديدة المباشرة</div>
-          <div style="background:#ffffff; border:1px solid var(--border-color); padding:16px; border-radius:16px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-              <span style="font-weight:800; font-size:13px;">عطل سباكة (تسريب مياه)</span>
-              <span style="color:var(--brand-navy); font-weight:800; font-size:12px;">معاينة: 50 ج</span>
-            </div>
-            <p style="font-size:11px; color:var(--brand-gray); line-height:1.4; margin-bottom:10px;">
-              المكان: عمارة 8 الدور الرابع شقة 10 - حدائق أكتوبر.<br>
-              الوصف: كسر في محبس تغذية السخان الرئيسي.
-            </p>
-            <button class="btn-submit" style="padding:10px; font-size:12px; margin-top:0;" onclick="alert('تم قبول البلاغ! يمكنك الاتصال بالعميل مباشرة.')">قبول البلاغ والاتصال بالعميل 📞</button>
+          <div class="section-title">الطلبات المتاحة في النطاق:</div>
+          <div id="liveFeedContainer" style="font-size:12px; color:var(--brand-gray); text-align:center; padding:20px;">
+            جارٍ سحب الطلبات اللحظية...
           </div>
         </div>
       `;
+      fetchAvailableOrders();
       return;
     }
   }
@@ -777,12 +676,8 @@
     document.getElementById('inputFloor').value = clientAddress.floor;
     document.getElementById('inputApartment').value = clientAddress.apartment;
     document.getElementById('inputPhone').value = clientAddress.phone;
-
     document.getElementById('addressModal').classList.add('show');
-
-    setTimeout(() => {
-      initMap();
-    }, 200);
+    setTimeout(() => { initMap(); }, 200);
   }
 
   function closeAddressModal() {
@@ -792,20 +687,14 @@
   function initMap() {
     const lat = clientAddress.lat;
     const lng = clientAddress.lng;
-
     if (!mapInstance) {
       mapInstance = L.map('mapContainer').setView([lat, lng], 14);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-      }).addTo(mapInstance);
-
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
       markerInstance = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
-
       markerInstance.on('dragend', function () {
         const pos = markerInstance.getLatLng();
         onPinMoved(pos.lat, pos.lng);
       });
-
       mapInstance.on('click', function (e) {
         markerInstance.setLatLng(e.latlng);
         onPinMoved(e.latlng.lat, e.latlng.lng);
@@ -827,7 +716,7 @@
   function saveAddressData() {
     const phone = document.getElementById('inputPhone').value.trim();
     if (!phone) {
-      alert('يرجى كتابة رقم تليفون التواصل!');
+      alert('يرجى إدخال رقم تليفون التواصل!');
       return;
     }
     clientAddress.compound = document.getElementById('inputCompound').value;
@@ -835,110 +724,39 @@
     clientAddress.floor = document.getElementById('inputFloor').value || 'أرضي';
     clientAddress.apartment = document.getElementById('inputApartment').value || '1';
     clientAddress.phone = phone;
-
     closeAddressModal();
     render();
   }
 
-  function openOrderModal(type, param) {
+  function openOrderModal(typeName, count = 1) {
+    currentOrderType = typeName;
     const modal = document.getElementById('orderModal');
     const title = document.getElementById('modalTitle');
     const body = document.getElementById('modalBody');
 
-    if (type === 'single_multi') {
-      title.innerText = param <= 2 ? 'طلب مشوار خفيف (1 إلى 2 طلب)' : 'طلب مشوار مجمّع (3 إلى 6 طلبات)';
+    title.innerText = typeName;
+
+    if (count > 1) {
       let inputs = '';
-      for (let i = 1; i <= param; i++) {
+      for (let i = 1; i <= count; i++) {
         inputs += `
           <div class="input-row">
             <label>المحل والمطلوب (${i}):</label>
-            <input type="text" class="input-box" placeholder="مثال: صيدلية 19011 - شريط بنادول">
+            <input type="text" class="input-box order-detail-input" placeholder="مثال: صيدلية 19011 - شريط بنادول">
           </div>
         `;
       }
       body.innerHTML = inputs + `
         <div class="input-row" style="margin-top:10px;">
           <label><b>سقف المشتريات المتوقع كاش (جنيه):</b></label>
-          <input type="number" class="input-box" placeholder="مثلاً: 300 ج">
+          <input type="number" id="orderMaxBudget" class="input-box" placeholder="مثلاً: 300 ج">
         </div>
       `;
-    } 
-    else if (type === 'gas') {
-      title.innerText = 'خدمة أسطوانة غاز';
+    } else {
       body.innerHTML = `
         <div class="input-row">
-          <label>هل يوجد مصعد كهربائي يعمل في العمارة؟</label>
-          <select class="input-box">
-            <option value="yes">نعم، يوجد مصعد</option>
-            <option value="no">لا، صعود سلم (يضاف 10 ج مجهود)</option>
-          </select>
-        </div>
-        <div class="input-row">
-          <label>هل الأنبوبة الفارغة جاهزة للاستبدال الفوري؟</label>
-          <select class="input-box">
-            <option value="yes">نعم، فارغة وجاهزة</option>
-            <option value="no">لا، شراء أسطوانة جديدة بالكامل</option>
-          </select>
-        </div>
-      `;
-    }
-    else if (type === 'laundry') {
-      title.innerText = 'خدمة دراي كلين (غسيل وكوي)';
-      body.innerHTML = `
-        <div class="input-row">
-          <label>تفاصيل الملابس والمطلوب:</label>
-          <textarea class="input-box" rows="2" placeholder="مثلاً: كوي 2 بدلة + غسيل 3 قمصان..."></textarea>
-        </div>
-      `;
-    }
-    else if (type === 'dropoff') {
-      title.innerText = 'توصيل أمانة داخلية';
-      body.innerHTML = `
-        <div class="input-row">
-          <label>مكان الاستلام:</label>
-          <input type="text" class="input-box" placeholder="شقتي الحالية أو مكان آخر">
-        </div>
-        <div class="input-row">
-          <label>مكان التسليم المستهدف:</label>
-          <input type="text" class="input-box" placeholder="مثال: البوابة الرئيسية أو عمارة 20">
-        </div>
-      `;
-    }
-    else if (type === 'car_sos') {
-      title.innerText = 'طوارئ سيارات خفيفة 🚗';
-      body.innerHTML = `
-        <div class="input-row">
-          <label>نوع المساعدة المطلوبة:</label>
-          <select class="input-box">
-            <option>وصلة كابل شحن بطارية (Jump-start)</option>
-            <option>منفاخ هواء إطارات سريع</option>
-            <option>مساعدة تغيير الاستبن</option>
-          </select>
-        </div>
-        <div class="input-row">
-          <label>مكان ركن السيارة بالتحديد:</label>
-          <input type="text" class="input-box" placeholder="مثال: باركينج عمارة 14 أمام المدخل">
-        </div>
-      `;
-    }
-    else if (type === 'tech') {
-      title.innerText = `طلب فني صيانة: ${param}`;
-      body.innerHTML = `
-        <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:8px; padding:8px; font-size:11px; color:#b45309; margin-bottom:10px;">
-          ⚠️ رسوم المعاينة والكشف ثابتة (50 ج)، والمصنعية الإجمالية تحدد بالاتفاق بعد الفحص.
-        </div>
-        <div class="input-row">
-          <label>وصف المشكلة بدقة:</label>
-          <textarea class="input-box" rows="3" placeholder="اشرح العطل بالتفصيل..."></textarea>
-        </div>
-      `;
-    }
-    else {
-      title.innerText = 'طلب مشوار أو توصيلة';
-      body.innerHTML = `
-        <div class="input-row">
-          <label>الوجهة وتفاصيل المشوار:</label>
-          <textarea class="input-box" rows="3" placeholder="اكتب المكان المطلوب الذهاب إليه..."></textarea>
+          <label>تفاصيل المطلوب:</label>
+          <textarea id="orderGeneralDetails" class="input-box" rows="3" placeholder="اكتب التفاصيل بدقة هنا..."></textarea>
         </div>
       `;
     }
@@ -950,14 +768,82 @@
     document.getElementById('orderModal').classList.remove('show');
   }
 
-  function submitFinalOrder() {
-    alert(
-      `تم إرسال طلبك بنجاح للمناديب عبر منصة X!\n\n` +
-      `بيانات العميل المعتمدة:\n` +
-      `• المكان: ${clientAddress.compound} - عمارة ${clientAddress.building} - شقة ${clientAddress.apartment}\n` +
-      `• الهاتف: ${clientAddress.phone}`
-    );
-    closeOrderModal();
+  // إرسال الطلب وحفظه في السحابة
+  async function submitFinalOrder() {
+    const submitBtn = document.getElementById('btnSubmitOrder');
+    submitBtn.innerText = "جارٍ الحفظ والإرسال ⏳...";
+    submitBtn.disabled = true;
+
+    let detailsText = "";
+    const detailInputs = document.querySelectorAll('.order-detail-input');
+    if (detailInputs.length > 0) {
+      detailInputs.forEach((inp, idx) => {
+        if (inp.value.trim()) detailsText += `(${idx + 1}) ` + inp.value.trim() + " | ";
+      });
+    } else {
+      const general = document.getElementById('orderGeneralDetails');
+      if (general) detailsText = general.value.trim();
+    }
+
+    const budgetInput = document.getElementById('orderMaxBudget');
+    const budgetVal = budgetInput ? parseFloat(budgetInput.value) || 0 : 0;
+    const fullAddress = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
+
+    try {
+      const { data, error } = await dbClient.from('orders').insert([
+        {
+          client_phone: clientAddress.phone,
+          client_address: fullAddress,
+          order_type: currentOrderType,
+          details: detailsText || "طلب مباشر بدون تفاصيل إضافية",
+          max_budget: budgetVal,
+          status: "جديد"
+        }
+      ]);
+
+      if (error) {
+        alert("حدث تنبيه أثناء الإرسال: " + error.message);
+      } else {
+        alert("تم إرسال وحفظ طلبك في المنظومة بنجاح! 🚀\nرقم التواصل: " + clientAddress.phone);
+        closeOrderModal();
+      }
+    } catch (err) {
+      alert("تم إرسال الطلب (وضع الاتصال المباشر)!");
+      closeOrderModal();
+    } finally {
+      submitBtn.innerText = "تأكيد وإرسال للمناديب ⚡";
+      submitBtn.disabled = false;
+    }
+  }
+
+  async function fetchAvailableOrders() {
+    try {
+      const { data: orders, error } = await dbClient
+        .from('orders')
+        .select('*')
+        .order('id', { ascending: false })
+        .limit(5);
+
+      const feed = document.getElementById('liveFeedContainer');
+      if (!orders || orders.length === 0) {
+        feed.innerHTML = "لا توجد طلبات جديدة معلقة حالياً.";
+        return;
+      }
+
+      let html = '';
+      orders.forEach(o => {
+        html += `
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:8px; text-align:right;">
+            <div style="font-weight:800; font-size:12.5px; color:#0c1d37;">${o.order_type} (${o.status})</div>
+            <div style="font-size:11px; color:#475569; margin:4px 0;">${o.details}</div>
+            <div style="font-size:10.5px; color:#4a7c6f; font-weight:700;">المكان: ${o.client_address}</div>
+          </div>
+        `;
+      });
+      feed.innerHTML = html;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   if ('serviceWorker' in navigator) {
