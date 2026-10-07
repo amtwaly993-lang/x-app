@@ -8,392 +8,106 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0c1d37">
 
-  <!-- مكتبة السحابة ومكتبة الخرائط -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     :root {
-      --brand-navy: #0c1d37;
-      --brand-navy-light: #162c50;
-      --brand-gray: #475569;
-      --brand-accent: #4a7c6f;
-      --brand-accent-light: #e8f2ef;
-      --bg-main: #f8fafc;
-      --card-bg: #ffffff;
-      --border-color: #e2e8f0;
+      --navy: #0c1d37;
+      --navy-light: #162c50;
+      --gray: #475569;
+      --accent: #4a7c6f;
+      --accent-light: #e8f2ef;
+      --bg: #f8fafc;
+      --green: #10b981;
       --danger: #ef4444;
+      --border: #e2e8f0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; -webkit-tap-highlight-color: transparent; }
-    
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      background-color: var(--bg-main);
-    }
+    body { background-color: var(--bg); display: flex; justify-content: center; color: var(--navy); min-height: 100vh; }
+    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; }
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      color: var(--brand-navy);
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
-      background: var(--bg-main);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .portal-screen {
-      padding: 30px 16px 24px 16px;
+    /* شاشات الحظر */
+    .banned-screen {
+      padding: 40px 20px;
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      overflow-y: auto;
-    }
-
-    .logo-hero-container {
-      width: 100%;
-      display: flex;
       justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 22px;
+      min-height: 70vh;
     }
 
-    .logo-hero-img {
-      max-width: 180px;
-      height: auto;
-      object-fit: contain;
-    }
+    /* البوابة الرئيسية */
+    .portal-screen { padding: 30px 16px 24px 16px; display: flex; flex-direction: column; align-items: center; }
+    .logo-hero-container { margin: 10px 0 20px 0; }
+    .logo-hero-img { max-width: 170px; height: auto; object-fit: contain; }
+    .hero-title { font-size: 24px; font-weight: 900; color: var(--navy); text-align: center; margin-bottom: 6px; }
+    .hero-subtitle { font-size: 13px; color: var(--gray); text-align: center; margin-bottom: 22px; }
 
-    .hero-title {
-      font-size: 26px;
-      font-weight: 900;
-      color: var(--brand-navy);
-      text-align: center;
-      margin-bottom: 6px;
-      letter-spacing: -0.5px;
-    }
-
-    .hero-subtitle {
-      font-size: 13.5px;
-      color: var(--brand-gray);
-      text-align: center;
-      font-weight: 500;
-      margin-bottom: 24px;
-    }
-
-    .portal-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      width: 100%;
-    }
-
+    .portal-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
     .portal-role-card {
-      background: var(--card-bg);
-      border-radius: 22px;
-      padding: 22px 8px 18px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 265px;
-      box-shadow: 0 10px 25px -4px rgba(12, 29, 55, 0.06), 0 2px 6px rgba(12, 29, 55, 0.04);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      cursor: pointer;
-      position: relative;
-      transition: transform 0.15s ease;
+      background: white; border-radius: 20px; padding: 20px 8px; display: flex; flex-direction: column; align-items: center;
+      min-height: 250px; box-shadow: 0 8px 20px rgba(12, 29, 55, 0.05); border: 1px solid var(--border); cursor: pointer; transition: transform 0.15s;
     }
+    .portal-role-card:active { transform: scale(0.96); }
+    .card-icon-wrapper { height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .card-arrow-indicator { width: 22px; height: 22px; background: var(--accent-light); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .card-role-title { font-size: 13.5px; font-weight: 800; color: var(--navy); text-align: center; margin-bottom: 6px; }
+    .card-role-desc { font-size: 10px; color: var(--gray); text-align: center; line-height: 1.4; }
 
-    .portal-role-card:active {
-      transform: scale(0.96);
-      background: #f1f5f9;
-    }
-
-    .card-icon-wrapper {
-      height: 75px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-    }
-
-    .card-arrow-indicator {
-      width: 22px;
-      height: 22px;
-      background: var(--brand-accent-light);
-      color: var(--brand-accent);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .card-role-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--brand-navy);
-      text-align: center;
-      margin-bottom: 8px;
-      line-height: 1.3;
-    }
-
-    .card-role-desc {
-      font-size: 10.5px;
-      color: var(--brand-gray);
-      text-align: center;
-      line-height: 1.45;
-      font-weight: 500;
-      padding: 0 2px;
-    }
-
+    /* الإعلان السفلي */
     .ad-banner-container {
-      width: 100%;
-      margin-top: 18px;
-      background: #ffffff;
-      border-radius: 22px;
-      padding: 16px 16px 16px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 12px 26px -6px rgba(12, 29, 55, 0.07);
-      border: 1.5px solid rgba(74, 124, 111, 0.22);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
+      width: 100%; margin-top: 18px; background: white; border-radius: 20px; padding: 14px; display: flex; align-items: center; justify-content: space-between;
+      border: 1.5px solid rgba(74, 124, 111, 0.25); cursor: pointer; box-shadow: 0 8px 20px rgba(12, 29, 55, 0.05);
     }
 
-    .ad-banner-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 5px;
-      height: 100%;
-      background: linear-gradient(180deg, var(--brand-accent) 0%, #10b981 100%);
-    }
-
-    .ad-content {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-width: 76%;
-      padding-right: 4px;
-    }
-
-    .ad-tag-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      width: fit-content;
-      background: var(--brand-accent-light);
-      color: var(--brand-accent);
-      padding: 3px 8px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .ad-title {
-      font-size: 13.5px;
-      font-weight: 900;
-      color: var(--brand-navy);
-      line-height: 1.35;
-    }
-
-    .ad-desc {
-      font-size: 10.5px;
-      color: var(--brand-gray);
-      line-height: 1.4;
-      font-weight: 500;
-    }
-
-    .ad-icon-wrapper {
-      position: relative;
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(135deg, #e8f5f1 0%, #d1fae5 100%);
-      border: 1.5px solid rgba(16, 185, 129, 0.35);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .ad-sparkle-dot {
-      position: absolute;
-      top: -3px;
-      right: -3px;
-      width: 10px;
-      height: 10px;
-      background: #10b981;
-      border: 2px solid #ffffff;
-      border-radius: 50%;
-    }
-
+    /* الشريط الداخلي */
     .inner-header {
-      background: #ffffff;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      background: white; padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50;
     }
+    .header-logo { height: 30px; }
+    .back-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--navy); padding: 6px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
 
-    .header-logo {
-      height: 32px;
-      width: auto;
-      object-fit: contain;
-    }
+    .content-area { flex: 1; padding: 16px; overflow-y: auto; }
 
-    .back-btn {
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      color: var(--brand-navy);
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    /* كروت العميل */
+    .address-bar-card { background: white; border: 1px solid var(--border); border-right: 4px solid var(--accent); border-radius: 16px; padding: 14px; margin-bottom: 16px; }
+    .address-bar-header { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 800; margin-bottom: 6px; }
+    .btn-edit-addr { background: var(--navy); color: white; border: none; padding: 5px 12px; border-radius: 8px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
 
-    .content-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      background: var(--bg-main);
-    }
-
-    .address-bar-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-right: 4px solid var(--brand-accent);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 16px;
-    }
-
-    .address-bar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11.5px;
-      font-weight: 800;
-      color: var(--brand-navy);
-      margin-bottom: 6px;
-    }
-
-    .btn-edit-addr {
-      background: var(--brand-navy);
-      color: white;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 10.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .section-title {
-      font-size: 11.5px;
-      font-weight: 800;
-      color: var(--brand-navy);
-      margin: 18px 0 10px 0;
-    }
-
+    .section-title { font-size: 12px; font-weight: 800; color: var(--navy); margin: 16px 0 10px 0; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
     .service-card {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 14px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(12, 29, 55, 0.02);
+      background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px 10px; display: flex; flex-direction: column; gap: 5px; cursor: pointer;
     }
+    .service-card:active { transform: scale(0.96); }
+    .service-card.highlight { border: 1.5px solid var(--accent); background: #fafdfc; }
+    .service-card-title { font-size: 12px; font-weight: 800; color: var(--navy); }
+    .service-card-desc { font-size: 10px; color: var(--gray); }
 
-    .service-card:active { transform: scale(0.96); background: #f8fafc; }
-    .service-card.highlight {
-      border: 1.5px solid var(--brand-accent);
-      background: #fafdfc;
-    }
+    /* كروت المندوب */
+    .order-feed-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(12, 29, 55, 0.04); }
+    .order-feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .badge-new { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; }
+    .order-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .btn-action-green { background: var(--green); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 800; text-decoration: none; text-align: center; }
+    .btn-action-blue { background: #0284c7; color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 800; text-decoration: none; text-align: center; }
 
-    .service-card-icon { font-size: 22px; }
-    .service-card-title { font-size: 12px; font-weight: 800; color: var(--brand-navy); }
-    .service-card-desc { font-size: 10px; color: var(--brand-gray); line-height: 1.35; }
-
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(12, 29, 55, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 1000;
-    }
-
+    /* النوافذ المنبثقة */
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(12, 29, 55, 0.6); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
     .modal.show { display: flex; }
-
-    .modal-sheet {
-      background: white;
-      width: 100%;
-      max-width: 480px;
-      border-radius: 28px 28px 0 0;
-      padding: 22px 18px;
-      max-height: 88vh;
-      overflow-y: auto;
-    }
-
+    .modal-sheet { background: white; width: 100%; max-width: 480px; border-radius: 26px 26px 0 0; padding: 22px 18px; max-height: 88vh; overflow-y: auto; }
     .input-row { margin-bottom: 12px; }
-    .input-row label { display: block; font-size: 11.5px; font-weight: 700; color: var(--brand-navy); margin-bottom: 5px; }
-    .input-box {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 10px;
-      font-size: 12.5px;
-      outline: none;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: var(--brand-navy);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    #mapContainer {
-      height: 180px;
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid #cbd5e1;
-      margin-top: 6px;
-    }
+    .input-row label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 5px; }
+    .input-box { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 12.5px; outline: none; }
+    .btn-submit { width: 100%; background: var(--navy); color: white; border: none; padding: 13px; border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 8px; }
+    #mapContainer { height: 180px; width: 100%; border-radius: 12px; border: 1px solid #cbd5e1; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -406,8 +120,8 @@
 <div class="modal" id="addressModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14.5px; font-weight:800; color:var(--brand-navy);">📍 عنوان التوصيل ورقم الهاتف</h3>
-      <span onclick="closeAddressModal()" style="cursor:pointer; font-size:20px; color:var(--brand-gray); padding:4px;">✕</span>
+      <h3 style="font-size:14px; font-weight:800;">📍 عنوان التوصيل ورقم الهاتف</h3>
+      <span onclick="closeAddressModal()" style="cursor:pointer; font-size:20px; padding:4px;">✕</span>
     </div>
 
     <div class="input-row">
@@ -434,66 +148,80 @@
 
     <div class="input-row">
       <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-        <div>
-          <label>العمارة</label>
-          <input type="text" id="inputBuilding" class="input-box" placeholder="14">
-        </div>
-        <div>
-          <label>الدور</label>
-          <input type="text" id="inputFloor" class="input-box" placeholder="3">
-        </div>
-        <div>
-          <label>الشقة</label>
-          <input type="text" id="inputApartment" class="input-box" placeholder="8">
-        </div>
+        <div><label>العمارة</label><input type="text" id="inputBuilding" class="input-box" placeholder="14"></div>
+        <div><label>الدور</label><input type="text" id="inputFloor" class="input-box" placeholder="3"></div>
+        <div><label>الشقة</label><input type="text" id="inputApartment" class="input-box" placeholder="8"></div>
       </div>
     </div>
 
     <div class="input-row">
       <label>حدد موقعك بالدبوس على الخريطة:</label>
       <div id="mapContainer"></div>
-      <div id="coordsText" style="font-size:11px; color:var(--brand-accent); font-weight:bold; margin-top:5px;">الإحداثيات: جارٍ التحميل...</div>
+      <div id="coordsText" style="font-size:11px; color:var(--accent); font-weight:bold; margin-top:5px;">الإحداثيات: جارٍ التحميل...</div>
     </div>
 
     <button class="btn-submit" onclick="saveAddressData()">حفظ دائم للعنوان ✓</button>
   </div>
 </div>
 
-<!-- نافذة تسجيل الطلبات -->
+<!-- نافذة الطلب -->
 <div class="modal" id="orderModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 id="modalTitle" style="font-size:14.5px; font-weight:800; color:var(--brand-navy);">تفاصيل الطلب</h3>
-      <span onclick="closeOrderModal()" style="cursor:pointer; font-size:20px; color:var(--brand-gray); padding:4px;">✕</span>
+      <h3 id="modalTitle" style="font-size:14px; font-weight:800;">تفاصيل الطلب</h3>
+      <span onclick="closeOrderModal()" style="cursor:pointer; font-size:20px; padding:4px;">✕</span>
     </div>
     <div id="modalBody"></div>
     <button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button>
   </div>
 </div>
 
+<!-- نافذة تسجيل المندوب ورفع الأوراق -->
+<div class="modal" id="courierRegisterModal">
+  <div class="modal-sheet">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;">تسجيل كابتن جديد 🛵</h3>
+      <span onclick="closeCourierRegisterModal()" style="cursor:pointer; font-size:20px; padding:4px;">✕</span>
+    </div>
+    <div class="input-row">
+      <label>الاسم بالكامل:</label>
+      <input type="text" id="regName" class="input-box" placeholder="اسمك الثلاثي">
+    </div>
+    <div class="input-row">
+      <label>رقم الهاتف (الواتساب):</label>
+      <input type="tel" id="regPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
+    </div>
+    <div class="input-row">
+      <label>الرقم القومي (14 رقم):</label>
+      <input type="text" id="regNationalId" class="input-box" placeholder="الرقم القومي من البطاقة">
+    </div>
+    <div class="input-row">
+      <label>بيانات المركبة / الأوراق (ملاحظات أو رابط صورة البطاقة):</label>
+      <textarea id="regDocs" class="input-box" rows="2" placeholder="نوع وسيلة التوصيل، رخصة أو إثبات الهوية..."></textarea>
+    </div>
+    <button class="btn-submit" onclick="submitCourierRegistration()">اعتماد الحساب وبدء العمل فوراً 🚀</button>
+  </div>
+</div>
+
 <script>
-  // بيانات الربط مع قاعدة البيانات السحابية
-  const SUPABASE_URL = "https://jopymfpdovhtdrfanbig.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm";
-  const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  let currentOrderType = "";
-
-  // 1. استرجاع العنوان ورقم الهاتف المحفوظين مسبقاً في ذاكرة جهاز العميل
-  const savedAddressData = localStorage.getItem('x_client_address');
-  let clientAddress = savedAddressData ? JSON.parse(savedAddressData) : {
-    compound: 'كمبوند سكن مصر الداون تاون',
-    building: '',
-    floor: '',
-    apartment: '',
-    phone: '',
-    lat: 29.950660,
-    lng: 30.972718
-  };
+  const dbClient = supabase.createClient(
+    "https://jopymfpdovhtdrfanbig.supabase.co",
+    "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm"
+  );
 
   let currentView = 'portal';
+  let currentOrderType = "";
   let mapInstance = null;
   let markerInstance = null;
+
+  // استرجاع العميل المحفوظ
+  const savedAddressData = localStorage.getItem('x_client_address');
+  let clientAddress = savedAddressData ? JSON.parse(savedAddressData) : {
+    compound: 'كمبوند سكن مصر الداون تاون', building: '', floor: '', apartment: '', phone: '', lat: 29.950660, lng: 30.972718
+  };
+
+  // استرجاع المندوب المحفوظ
+  let courierPhone = localStorage.getItem('x_courier_phone') || '';
 
   render();
 
@@ -503,185 +231,181 @@
     window.scrollTo(0, 0);
   }
 
-  function render() {
+  async function checkClientBan() {
+    if (!clientAddress.phone) return false;
+    const { data } = await dbClient.from('banned_clients').select('*').eq('phone', clientAddress.phone).single();
+    if (data) {
+      if (!data.banned_until) return "دائم"; // حظر دائم
+      const banTime = new Date(data.banned_until).getTime();
+      if (banTime > Date.now()) return new Date(data.banned_until).toLocaleString('ar-EG');
+    }
+    return false;
+  }
+
+  async function render() {
     const main = document.getElementById('mainView');
 
+    // 1. بوابة الاختيار
     if (currentView === 'portal') {
       main.innerHTML = `
         <div class="portal-screen">
           <div class="logo-hero-container">
-            <img src="logo.png" class="logo-hero-img" alt="X Delivery & Services" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png';">
+            <img src="logo.png" class="logo-hero-img" alt="X" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png';">
           </div>
-
           <h1 class="hero-title">«إزاي نقدر نساعدك؟»</h1>
           <p class="hero-subtitle">اختار الخدمة المناسبة وابدأ في ثواني</p>
-
           <div class="portal-cards-grid">
             <div class="portal-role-card" onclick="navigateTo('client')">
-              <div class="card-icon-wrapper">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"></circle>
-                  <circle cx="20" cy="21" r="1"></circle>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                  <path d="M10 9h6v4h-6z"></path>
-                </svg>
-              </div>
-              <div class="card-arrow-indicator">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </div>
+              <div class="card-icon-wrapper">🛒</div>
+              <div class="card-arrow-indicator">➔</div>
               <div class="card-role-title">أنا عميل</div>
               <div class="card-role-desc">اريد مشتريات او توصيل اوصيانة منزلية</div>
             </div>
-
             <div class="portal-role-card" onclick="navigateTo('courier')">
-              <div class="card-icon-wrapper">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="6" cy="18" r="3"></circle>
-                  <circle cx="18" cy="18" r="3"></circle>
-                  <path d="M9 18h6"></path>
-                  <path d="M18 15V9h-4l-3 6"></path>
-                  <path d="M15 9l-2-4H8"></path>
-                  <circle cx="6" cy="7" r="2"></circle>
-                </svg>
-              </div>
-              <div class="card-arrow-indicator">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </div>
-              <div class="card-role-title">أنا مندوب توصيل»</div>
-              <div class="card-role-desc">مضمون ومعتمد استقبل الطلبات واكسب من مشاويري »</div>
+              <div class="card-icon-wrapper">🛵</div>
+              <div class="card-arrow-indicator">➔</div>
+              <div class="card-role-title">أنا مندوب توصيل</div>
+              <div class="card-role-desc">مضمون ومعتمد استقبل الطلبات واكسب من مشاويري</div>
             </div>
-
             <div class="portal-role-card" onclick="navigateTo('technician')">
-              <div class="card-icon-wrapper">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4a7c6f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                  <path d="M4 4l4 4"></path>
-                </svg>
-              </div>
-              <div class="card-arrow-indicator">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </div>
+              <div class="card-icon-wrapper">🔧</div>
+              <div class="card-arrow-indicator">➔</div>
               <div class="card-role-title">أنا فني معتمد</div>
               <div class="card-role-desc">استقبل طلبات الصيانة والمعاينات</div>
             </div>
           </div>
-
-          <div class="ad-banner-container" onclick="window.open('https://wa.me/201012345678?text=أرغب%20في%20الانضمام%20كشريك%20تجاري%20على%20منصة%20X', '_blank')">
-            <div class="ad-content">
-              <div class="ad-tag-badge">
-                <span>🚀</span>
-                <span>فرصة لشركاء النجاح</span>
-              </div>
-              <div class="ad-title">أصحاب المحلات والأنشطة التجارية</div>
-              <div class="ad-desc">ضاعف مبيعاتك اليومية ووصّل عروضك لكل سكان المنطقة مباشرة!</div>
+          <div class="ad-banner-container" onclick="window.open('https://wa.me/201021572161?text=أرغب%20في%20الانضمام%20كشريك%20تجاري%20على%20منصة%20X', '_blank')">
+            <div style="max-width:80%;">
+              <div style="font-size:10px; color:var(--accent); font-weight:800;">🚀 فرصة لشركاء النجاح</div>
+              <div style="font-size:13px; font-weight:900;">أصحاب المحلات والأنشطة التجارية</div>
+              <div style="font-size:10.5px; color:var(--gray);">ضاعف مبيعاتك اليومية ووصّل عروضك لكل سكان المنطقة مباشرة!</div>
             </div>
-            <div class="ad-icon-wrapper">
-              <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#0c1d37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l1-5h16l1 5"></path>
-                <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
-                <path d="M4 14v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6"></path>
-                <path d="M9 21v-4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4"></path>
-              </svg>
-              <div class="ad-sparkle-dot"></div>
-            </div>
+            <div style="font-size:24px;">🏪</div>
           </div>
         </div>
       `;
       return;
     }
 
+    // 2. واجهة العميل
     if (currentView === 'client') {
-      const hasSavedData = clientAddress.phone && clientAddress.building;
-      const addrSummary = hasSavedData 
-        ? `<b>${clientAddress.compound}</b> - عمارة ${clientAddress.building}، دور ${clientAddress.floor}، شقة ${clientAddress.apartment}<br><span style="color:var(--brand-accent); font-weight:700;">📞 رقم التواصل: ${clientAddress.phone}</span>`
-        : `<span style="color:#e11d48; font-weight:700;">⚠️ يرجى الضغط على زر "تحديد العنوان" لتسجيل رقم هاتفك وموقعك مرة واحدة.</span>`;
+      const isBanned = await checkClientBan();
+      if (isBanned) {
+        main.innerHTML = `
+          <div class="banned-screen">
+            <div style="font-size:48px; margin-bottom:12px;">🚫</div>
+            <h2 style="color:var(--danger); margin-bottom:8px;">الحساب موقوف</h2>
+            <p style="font-size:12.5px; color:var(--gray); line-height:1.5;">تم إيقاف حسابك من استخدام خدمات المنصة (${isBanned === 'دائم' ? 'حظر دائم' : 'حتى: ' + isBanned}) نظراً لمخالفة شروط الاستخدام.</p>
+            <button class="back-btn" style="margin-top:20px;" onclick="navigateTo('portal')">الرجوع للرئيسية</button>
+          </div>
+        `;
+        return;
+      }
 
+      const hasSavedData = clientAddress.phone && clientAddress.building;
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:800; font-size:14px; color:var(--brand-navy);">خدمات المنزل والمشاوير</div>
+          <div style="font-weight:800; font-size:14px;">خدمات المنزل والمشاوير</div>
           <button class="back-btn" onclick="navigateTo('portal')">⇄ تبديل</button>
         </div>
-
         <div class="content-area">
           <div class="address-bar-card">
             <div class="address-bar-header">
               <span>📍 موقع التسليم ورقم الهاتف:</span>
               <button class="btn-edit-addr" onclick="openAddressModal()">${hasSavedData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
             </div>
-            <div style="font-size:12px; color:var(--brand-navy); line-height:1.45;">
-              ${addrSummary}
+            <div style="font-size:12px; line-height:1.45;">
+              ${hasSavedData ? `<b>${clientAddress.compound}</b> - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}<br><span style="color:var(--accent); font-weight:700;">📞 رقمك: ${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:700;">يرجى تحديد العنوان ورقم التواصل للمتابعة.</span>'}
             </div>
           </div>
-
           <div class="section-title">مشاوير وطلبات شراء للمنزل</div>
           <div class="grid-2">
-            <div class="service-card highlight" onclick="openOrderModal('مشوار خفيف (1 إلى 2 طلب)', 2)">
-              <span class="service-card-icon">🛵</span>
-              <span class="service-card-title">مشوار خفيف</span>
-              <span class="service-card-desc">1 إلى 2 طلب (صيدلية، سوبرماركت)</span>
-            </div>
-            <div class="service-card highlight" onclick="openOrderModal('مشوار مجمّع (3 إلى 6 طلبات)', 6)">
-              <span class="service-card-icon">🛒</span>
-              <span class="service-card-title">مشوار مجمّع</span>
-              <span class="service-card-desc">3 إلى 6 طلبات من محلات مختلفة</span>
-            </div>
+            <div class="service-card highlight" onclick="openOrderModal('مشوار خفيف (1 إلى 2 طلب)', 2)"><span style="font-size:22px;">🛵</span><span class="service-card-title">مشوار خفيف</span><span class="service-card-desc">1 إلى 2 طلب</span></div>
+            <div class="service-card highlight" onclick="openOrderModal('مشوار مجمّع (3 إلى 6 طلبات)', 6)"><span style="font-size:22px;">🛒</span><span class="service-card-title">مشوار مجمّع</span><span class="service-card-desc">3 إلى 6 طلبات</span></div>
           </div>
-
-          <div class="section-title">خدمات سريعة فورية للمنزل</div>
+          <div class="section-title">خدمات سريعة فورية</div>
           <div class="grid-3">
-            <div class="service-card" onclick="openOrderModal('أنبوبة غاز')">
-              <span class="service-card-icon">⛽</span>
-              <span class="service-card-title">أنبوبة غاز</span>
-              <span class="service-card-desc">تبديل وتركيب</span>
-            </div>
-            <div class="service-card" onclick="openOrderModal('شحن كروت')">
-              <span class="service-card-icon">💳</span>
-              <span class="service-card-title">شحن كروت</span>
-              <span class="service-card-desc">كهرباء ومياه</span>
-            </div>
-            <div class="service-card" onclick="openOrderModal('غسيل وكوي')">
-              <span class="service-card-icon">👔</span>
-              <span class="service-card-title">غسيل وكوي</span>
-              <span class="service-card-desc">دراي كلين</span>
-            </div>
+            <div class="service-card" onclick="openOrderModal('أنبوبة غاز')"><center>⛽<br><b style="font-size:11px;">غاز</b></center></div>
+            <div class="service-card" onclick="openOrderModal('شحن كروت')"><center>💳<br><b style="font-size:11px;">كروت</b></center></div>
+            <div class="service-card" onclick="openOrderModal('غسيل وكوي')"><center>👔<br><b style="font-size:11px;">دراي كلين</b></center></div>
           </div>
-
           <div class="section-title">صيانة منزلية معتمدة</div>
           <div class="grid-4">
-            <div class="service-card" onclick="openOrderModal('سباكة منزلية')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
-            <div class="service-card" onclick="openOrderModal('كهرباء منزلية')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
-            <div class="service-card" onclick="openOrderModal('صيانة دش وستالايت')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
-            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
+            <div class="service-card" onclick="openOrderModal('سباكة')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
+            <div class="service-card" onclick="openOrderModal('كهرباء')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
+            <div class="service-card" onclick="openOrderModal('دش')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
+            <div class="service-card" onclick="openOrderModal('نجارة')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
           </div>
         </div>
       `;
       return;
     }
 
+    // 3. واجهة المندوب والفني
     if (currentView === 'courier' || currentView === 'technician') {
+      let courierData = null;
+      if (courierPhone) {
+        const { data } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
+        courierData = data;
+      }
+
+      // إذا كان المندوب محظوراً
+      if (courierData && (courierData.status === 'محظور' || (courierData.banned_until && new Date(courierData.banned_until) > Date.now()))) {
+        const until = courierData.banned_until ? new Date(courierData.banned_until).toLocaleString('ar-EG') : 'حظر دائم';
+        main.innerHTML = `
+          <div class="banned-screen">
+            <div style="font-size:48px; margin-bottom:12px;">🚫</div>
+            <h2 style="color:var(--danger); margin-bottom:8px;">تم حظر حسابك</h2>
+            <p style="font-size:12.5px; color:var(--gray); line-height:1.5;">حسابك متوقف عن العمل واستقبال المشاوير (${until}) لمخالفة معايير الجودة والتوصيل.</p>
+            <button class="back-btn" style="margin-top:20px;" onclick="navigateTo('portal')">الرجوع للرئيسية</button>
+          </div>
+        `;
+        return;
+      }
+
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:800; font-size:14px; color:var(--brand-navy);">لوحة استقبال المهام ⚡</div>
+          <div style="font-weight:800; font-size:14px;">لوحة استقبال المشاوير 🛵</div>
           <button class="back-btn" onclick="navigateTo('portal')">⇄ تبديل</button>
         </div>
         <div class="content-area">
-          <div style="background:#ffffff; border:1px solid var(--border-color); padding:16px; border-radius:18px; margin-bottom:14px;">
-            <div style="font-size:11px; color:var(--brand-gray);">حالة الحساب:</div>
-            <div style="font-size:16px; font-weight:900; color:#10b981;">حساب نشط ومربوط بالسحابة 🟢</div>
+          <div style="background:white; border:1px solid var(--border); padding:14px; border-radius:18px; margin-bottom:14px;">
+            ${courierData ? `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:900; font-size:14px;">${courierData.name} (${courierData.role})</div>
+                  <div style="font-size:11px; color:var(--gray);">رصيد المحفظة: <b style="color:var(--green); font-size:13px;">${courierData.wallet_balance} ج</b></div>
+                </div>
+                <button class="btn-edit-addr" onclick="logoutCourier()">تبديل 🔄</button>
+              </div>
+            ` : `
+              <div style="text-align:center;">
+                <p style="font-size:12px; margin-bottom:8px; font-weight:700;">أنت غير مسجل ككابتن حتى الآن</p>
+                <button class="btn-submit" onclick="openCourierRegisterModal()">تسجيل حساب جديد ورفع الأوراق 🚀</button>
+              </div>
+            `}
           </div>
-          <div class="section-title">الطلبات المتاحة في النطاق:</div>
-          <div id="liveFeedContainer" style="font-size:12px; color:var(--brand-gray); text-align:center; padding:20px;">
-            جارٍ سحب الطلبات اللحظية...
-          </div>
+
+          ${courierData ? `
+            <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>الطلبات المتاحة للتنفيذ ⚡</span>
+              <button onclick="loadCourierOrders()" style="background:none; border:none; color:var(--accent); font-weight:800; cursor:pointer;">تحديث 🔄</button>
+            </div>
+            <div id="courierOrdersFeed">
+              <div style="text-align:center; padding:20px; color:var(--gray); font-size:12px;">جارٍ تحميل المشاوير...</div>
+            </div>
+          ` : ''}
         </div>
       `;
-      fetchAvailableOrders();
+
+      if (courierData) loadCourierOrders();
       return;
     }
   }
 
+  // دوال العميل
   function openAddressModal() {
     document.getElementById('inputCompound').value = clientAddress.compound || 'كمبوند سكن مصر الداون تاون';
     document.getElementById('inputBuilding').value = clientAddress.building || '';
@@ -691,10 +415,7 @@
     document.getElementById('addressModal').classList.add('show');
     setTimeout(() => { initMap(); }, 200);
   }
-
-  function closeAddressModal() {
-    document.getElementById('addressModal').classList.remove('show');
-  }
+  function closeAddressModal() { document.getElementById('addressModal').classList.remove('show'); }
 
   function initMap() {
     const lat = clientAddress.lat || 29.950660;
@@ -705,177 +426,186 @@
       markerInstance = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
       markerInstance.on('dragend', function () {
         const pos = markerInstance.getLatLng();
-        onPinMoved(pos.lat, pos.lng);
-      });
-      mapInstance.on('click', function (e) {
-        markerInstance.setLatLng(e.latlng);
-        onPinMoved(e.latlng.lat, e.latlng.lng);
+        clientAddress.lat = pos.lat; clientAddress.lng = pos.lng;
+        document.getElementById('coordsText').innerText = `تم تحديد الإحداثيات بنجاح 🟢`;
       });
     } else {
       mapInstance.invalidateSize();
       mapInstance.setView([lat, lng], 14);
-      markerInstance.setLatLng([lat, lng]);
     }
-    onPinMoved(lat, lng);
-  }
-
-  function onPinMoved(lat, lng) {
-    clientAddress.lat = lat;
-    clientAddress.lng = lng;
-    document.getElementById('coordsText').innerText = `تم تحديد الإحداثيات: (${lat.toFixed(4)}, ${lng.toFixed(4)}) 🟢`;
   }
 
   function saveAddressData() {
     const phone = document.getElementById('inputPhone').value.trim();
-    const building = document.getElementById('inputBuilding').value.trim();
-
-    if (!phone || phone.length < 10) {
-      alert('يرجى إدخال رقم تليفون صحيح للتواصل!');
-      return;
-    }
-    if (!building) {
-      alert('يرجى كتابة رقم أو اسم العمارة!');
-      return;
-    }
-
+    const bld = document.getElementById('inputBuilding').value.trim();
+    if (!phone || phone.length < 10) return alert('يرجى إدخال رقم هاتف صحيح!');
+    if (!bld) return alert('يرجى تحديد العمارة!');
     clientAddress.compound = document.getElementById('inputCompound').value;
-    clientAddress.building = building;
+    clientAddress.building = bld;
     clientAddress.floor = document.getElementById('inputFloor').value.trim() || 'أرضي';
     clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
     clientAddress.phone = phone;
-
     localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
-
     closeAddressModal();
     render();
-    alert('تم حفظ عنوانك ورقم هاتفك بنجاح! لن تحتاج لكتابتهما مرة أخرى.');
+    alert('تم حفظ عنوانك ورقمك بنجاح!');
   }
 
-  function openOrderModal(typeName, count = 1) {
+  function openOrderModal(type, count = 1) {
     if (!clientAddress.phone || !clientAddress.building) {
-      alert('يرجى تحديد عنوانك ورقم هاتفك أولاً للمتابعة!');
+      alert('حدد عنوانك ورقمك أولاً للمتابعة!');
       openAddressModal();
       return;
     }
-
-    currentOrderType = typeName;
+    currentOrderType = type;
     const modal = document.getElementById('orderModal');
     const title = document.getElementById('modalTitle');
     const body = document.getElementById('modalBody');
-
-    title.innerText = typeName;
+    title.innerText = type;
 
     if (count > 1) {
       let inputs = '';
       for (let i = 1; i <= count; i++) {
-        inputs += `
-          <div class="input-row">
-            <label>المحل والمطلوب (${i}):</label>
-            <input type="text" class="input-box order-detail-input" placeholder="مثال: صيدلية 19011 - شريط بنادول">
-          </div>
-        `;
+        inputs += `<div class="input-row"><label>المحل والمطلوب (${i}):</label><input type="text" class="input-box order-detail-input" placeholder="اسم المحل والمطلوب"></div>`;
       }
-      body.innerHTML = inputs + `
-        <div class="input-row" style="margin-top:10px;">
-          <label><b>سقف المشتريات المتوقع كاش (جنيه):</b></label>
-          <input type="number" id="orderMaxBudget" class="input-box" placeholder="مثلاً: 300 ج">
-        </div>
-      `;
+      body.innerHTML = inputs + `<div class="input-row"><label>سقف المشتريات المتوقع كاش (جنيه):</label><input type="number" id="orderMaxBudget" class="input-box" placeholder="300 ج"></div>`;
     } else {
-      body.innerHTML = `
-        <div class="input-row">
-          <label>تفاصيل المطلوب:</label>
-          <textarea id="orderGeneralDetails" class="input-box" rows="3" placeholder="اكتب التفاصيل بدقة هنا..."></textarea>
-        </div>
-      `;
+      body.innerHTML = `<div class="input-row"><label>تفاصيل المطلوب:</label><textarea id="orderGeneralDetails" class="input-box" rows="3" placeholder="اكتب تفاصيل طلبك بدقة..."></textarea></div>`;
     }
-
     modal.classList.add('show');
   }
-
-  function closeOrderModal() {
-    document.getElementById('orderModal').classList.remove('show');
-  }
+  function closeOrderModal() { document.getElementById('orderModal').classList.remove('show'); }
 
   async function submitFinalOrder() {
-    const submitBtn = document.getElementById('btnSubmitOrder');
-    submitBtn.innerText = "جارٍ الحفظ والإرسال ⏳...";
-    submitBtn.disabled = true;
+    const btn = document.getElementById('btnSubmitOrder');
+    btn.innerText = "جارٍ الإرسال..."; btn.disabled = true;
 
-    let detailsText = "";
+    let details = "";
     const detailInputs = document.querySelectorAll('.order-detail-input');
     if (detailInputs.length > 0) {
-      detailInputs.forEach((inp, idx) => {
-        if (inp.value.trim()) detailsText += `(${idx + 1}) ` + inp.value.trim() + " | ";
-      });
+      detailInputs.forEach((inp, idx) => { if (inp.value.trim()) details += `(${idx + 1}) ` + inp.value.trim() + " | "; });
     } else {
-      const general = document.getElementById('orderGeneralDetails');
-      if (general) detailsText = general.value.trim();
+      details = document.getElementById('orderGeneralDetails')?.value.trim() || '';
     }
 
-    const budgetInput = document.getElementById('orderMaxBudget');
-    const budgetVal = budgetInput ? parseFloat(budgetInput.value) || 0 : 0;
+    const budget = parseFloat(document.getElementById('orderMaxBudget')?.value) || 0;
     const fullAddress = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
 
-    try {
-      const { data, error } = await dbClient.from('orders').insert([
-        {
-          client_phone: clientAddress.phone,
-          client_address: fullAddress,
-          order_type: currentOrderType,
-          details: detailsText || "طلب مباشر بدون تفاصيل إضافية",
-          max_budget: budgetVal,
-          status: "جديد"
-        }
-      ]);
+    const { error } = await dbClient.from('orders').insert([{
+      client_phone: clientAddress.phone,
+      client_address: fullAddress,
+      order_type: currentOrderType,
+      details: details || "طلب مباشر بدون تفاصيل",
+      max_budget: budget,
+      status: "جديد"
+    }]);
 
-      if (error) {
-        alert("حدث تنبيه أثناء الإرسال: " + error.message);
-      } else {
-        alert("تم إرسال طلبك بنجاح! 🚀\nسنوصلك بأقرب مندوب في المنطقة.");
-        closeOrderModal();
-      }
-    } catch (err) {
-      alert("تم إرسال الطلب بنجاح!");
-      closeOrderModal();
-    } finally {
-      submitBtn.innerText = "تأكيد وإرسال للمناديب ⚡";
-      submitBtn.disabled = false;
+    btn.innerText = "تأكيد وإرسال للمناديب ⚡"; btn.disabled = false;
+    if (error) alert("خطأ: " + error.message);
+    else { alert("تم إرسال طلبك بنجاح! 🚀"); closeOrderModal(); }
+  }
+
+  // دوال تسجيل المندوب واستقبال المشاوير
+  function openCourierRegisterModal() { document.getElementById('courierRegisterModal').classList.add('show'); }
+  function closeCourierRegisterModal() { document.getElementById('courierRegisterModal').classList.remove('show'); }
+  function logoutCourier() { localStorage.removeItem('x_courier_phone'); courierPhone = ''; render(); }
+
+  async function submitCourierRegistration() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const natId = document.getElementById('regNationalId').value.trim();
+    const docs = document.getElementById('regDocs').value.trim();
+
+    if (!name || !phone || !natId) return alert('يرجى ملء جميع البيانات الأساسية والرقم القومي!');
+
+    const { error } = await dbClient.from('service_providers').insert([{
+      name, phone, role: (currentView === 'technician' ? 'فني صيانة' : 'مندوب توصيل'),
+      national_id: natId, docs_note: docs, wallet_balance: 50.00, status: 'معتمد'
+    }]);
+
+    if (error) {
+      alert("خطأ أثناء التسجيل: " + error.message);
+    } else {
+      localStorage.setItem('x_courier_phone', phone);
+      courierPhone = phone;
+      closeCourierRegisterModal();
+      alert('مبروك! تم اعتماد حسابك بنجاح وإضافة رصيد ترويجي افتتاحي 50 جنيه في محفظتك 🎁');
+      render();
     }
   }
 
-  async function fetchAvailableOrders() {
-    try {
-      const { data: orders } = await dbClient
-        .from('orders')
-        .select('*')
-        .order('id', { ascending: false })
-        .limit(5);
+  async function loadCourierOrders() {
+    const feed = document.getElementById('courierOrdersFeed');
+    if (!feed) return;
 
-      const feed = document.getElementById('liveFeedContainer');
-      if (!orders || orders.length === 0) {
-        feed.innerHTML = "لا توجد طلبات جديدة معلقة حالياً.";
-        return;
-      }
+    const { data: orders } = await dbClient.from('orders').select('*').in('status', ['جديد', 'قيد التنفيذ']).order('id', { ascending: false });
+    if (!orders || orders.length === 0) {
+      feed.innerHTML = '<div style="text-align:center; padding:24px; color:var(--gray);">لا توجد مشاوير جديدة حالياً 🛵</div>';
+      return;
+    }
 
-      let html = '';
-      orders.forEach(o => {
-        html += `
-          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:12px; margin-bottom:8px; text-align:right;">
-            <div style="font-weight:800; font-size:12.5px; color:#0c1d37;">${o.order_type} (${o.status})</div>
-            <div style="font-size:11px; color:#475569; margin:4px 0;">${o.details}</div>
-            <div style="font-size:10.5px; color:#4a7c6f; font-weight:700;">المكان: ${o.client_address}</div>
+    let html = '';
+    orders.forEach(o => {
+      const isMyActive = (o.status === 'قيد التنفيذ' && o.courier_phone === courierPhone);
+      if (o.status === 'قيد التنفيذ' && !isMyActive) return;
+
+      const cleanPhone = o.client_phone.startsWith('0') ? '2' + o.client_phone : o.client_phone;
+      const waMsg = encodeURIComponent(`السلام عليكم، أنا كابتن منصة X بخصوص طلبك (${o.order_type}).`);
+
+      html += `
+        <div class="order-feed-card" style="${isMyActive ? 'border: 2px solid var(--green); background: #f0fdf4;' : ''}">
+          <div class="order-feed-header">
+            <span class="badge-new" style="${isMyActive ? 'background:#dcfce7; color:#15803d;' : ''}">${isMyActive ? 'مشوارك الحالي قيد التنفيذ ⚡' : 'طلب جديد متاح'}</span>
+            <span style="font-size:11px; font-weight:800; color:#b45309;">سقف: ${o.max_budget ? o.max_budget + ' ج' : '-'}</span>
           </div>
-        `;
-      });
-      feed.innerHTML = html;
-    } catch (e) {
-      console.log(e);
-    }
+          <h4 style="font-size:13.5px; margin-bottom:4px;">${o.order_type}</h4>
+          <div style="font-size:11.5px; margin-bottom:6px;">📍 ${o.client_address}</div>
+          <div style="font-size:11px; color:var(--gray); background:white; padding:8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:10px;">${o.details}</div>
+
+          ${!isMyActive ? `
+            <button class="btn-submit" onclick="acceptCourierOrder(${o.id})">قبول المشوار وبدء التنفيذ ⚡</button>
+          ` : `
+            <div class="order-actions-grid">
+              <a href="https://wa.me/${cleanPhone}?text=${waMsg}" target="_blank" class="btn-action-green">💬 واتساب العميل</a>
+              <a href="tel:${o.client_phone}" class="btn-action-blue">📞 اتصال فوري</a>
+            </div>
+            <button class="btn-submit" style="background:var(--green); margin-top:8px;" onclick="completeAndDeductOrder(${o.id})">تم تسليم الطلب بنجاح ✓</button>
+          `}
+        </div>
+      `;
+    });
+    feed.innerHTML = html;
   }
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
+  async function acceptCourierOrder(id) {
+    const { error } = await dbClient.from('orders').update({ status: 'قيد التنفيذ', courier_phone: courierPhone }).eq('id', id).eq('status', 'جديد');
+    if (!error) { alert('تم قبول المشوار بنجاح!'); loadCourierOrders(); }
+  }
+
+  async function completeAndDeductOrder(id) {
+    if (!confirm('هل تم تسليم الطلب واستلام الحساب؟')) return;
+
+    // 1. جلب عمولة المنصة الحالية
+    const { data: set } = await dbClient.from('platform_settings').select('commission_fee').eq('id', 1).single();
+    const fee = set ? Number(set.commission_fee) : 0;
+
+    // 2. تحديث الطلب
+    await dbClient.from('orders').update({ status: 'مكتمل', commission_deducted: fee }).eq('id', id);
+
+    // 3. خصم العمولة من رصيد محفظة المندوب
+    if (fee > 0) {
+      const { data: prov } = await dbClient.from('service_providers').select('wallet_balance').eq('phone', courierPhone).single();
+      if (prov) {
+        const newBal = (Number(prov.wallet_balance) || 0) - fee;
+        await dbClient.from('service_providers').update({ wallet_balance: newBal }).eq('phone', courierPhone);
+        await dbClient.from('wallet_transactions').insert([{
+          provider_phone: courierPhone, amount: -fee, type: 'خصم عمولة طلب', notes: `طلب #${id}`
+        }]);
+      }
+    }
+
+    alert(`عاش يا بطل! تم إنهاء المشوار بنجاح (عمولة المنصة المخصومة: ${fee} ج) ✓`);
+    render();
   }
 </script>
 </body>
