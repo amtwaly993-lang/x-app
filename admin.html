@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة إدارة منصة X | التحكم الشامل</title>
+  <title>لوحة إدارة منصة X | التحكم والعمليات الشاملة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root { --navy: #0c1d37; --accent: #4a7c6f; --green: #10b981; --danger: #ef4444; --bg: #f8fafc; --border: #e2e8f0; }
@@ -11,50 +11,50 @@
     body { background-color: var(--bg); color: #0f172a; min-height: 100vh; }
     
     .lock-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-    .lock-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; text-align: center; }
+    .lock-box { background: white; padding: 26px; border-radius: 18px; width: 90%; max-width: 320px; text-align: center; }
 
-    .admin-header { background: white; border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 20px 14px; }
+    .admin-header { background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 18px 12px; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .stat-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
-    .stat-val { font-size: 24px; font-weight: 900; color: var(--navy); }
-    .stat-lbl { font-size: 11.5px; color: #64748b; font-weight: 600; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .stat-val { font-size: 22px; font-weight: 900; color: var(--navy); }
+    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 600; }
 
-    .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
-    .tab-btn { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
+    .tab-btn { background: white; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
     .tab-btn.active { background: var(--navy); color: white; }
 
-    .section-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 16px; overflow-x: auto; margin-bottom: 16px; }
-    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12.5px; }
-    th { background: #f8fafc; padding: 10px; border-bottom: 1px solid var(--border); }
-    td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+    .section-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; overflow-x: auto; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12px; }
+    th { background: #f8fafc; padding: 9px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
 
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; }
     .badge-new { background: #e0f2fe; color: #0369a1; }
     .badge-done { background: #dcfce7; color: #15803d; }
     .badge-banned { background: #fee2e2; color: #b91c1c; }
 
-    .action-btn { background: var(--navy); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .action-btn { background: var(--navy); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
     .btn-green { background: var(--green); }
     .btn-danger { background: var(--danger); }
 
-    .input-box { width: 100%; padding: 9px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; margin-bottom: 8px; outline: none; }
+    .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
   </style>
 </head>
 <body>
 
 <div class="lock-screen" id="lockScreen">
   <div class="lock-box">
-    <div style="font-size:32px; margin-bottom:8px;">🔐</div>
-    <h3 style="margin-bottom:12px;">لوحة تحكم منصة X</h3>
+    <div style="font-size:30px; margin-bottom:6px;">🔐</div>
+    <h3 style="margin-bottom:10px;">لوحة تحكم منصة X</h3>
     <input type="password" id="adminPass" class="input-box" placeholder="كلمة السر" style="text-align:center;">
-    <button class="action-btn" style="width:100%; padding:10px;" onclick="unlockAdmin()">دخول ⚡</button>
+    <button class="action-btn" style="width:100%; padding:9px;" onclick="unlockAdmin()">دخول ⚡</button>
   </div>
 </div>
 
 <div class="admin-header">
-  <div style="font-weight:900; font-size:16px;">⚡ مركز القيادة والعمليات</div>
+  <div style="font-weight:900; font-size:15px;">⚡ مركز قيادة منصة X</div>
   <button class="action-btn" onclick="loadAllData()">تحديث مباشر 🔄</button>
 </div>
 
@@ -62,13 +62,13 @@
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-lbl">إجمالي الطلبات</div><div class="stat-val" id="totalOrders">0</div></div>
     <div class="stat-card"><div class="stat-lbl">الطلبات النشطة الآن</div><div class="stat-val" id="activeOrders" style="color:#0284c7;">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">المناديب المعتمدين</div><div class="stat-val" id="totalProviders" style="color:var(--green);">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">العمولة الحالية للمشوار</div><div class="stat-val" id="currentFeeDisplay" style="color:var(--accent);">0 ج</div></div>
+    <div class="stat-card"><div class="stat-lbl">المناديب المسجلين</div><div class="stat-val" id="totalProviders" style="color:var(--green);">0</div></div>
+    <div class="stat-card"><div class="stat-lbl">عمولة المنصة الحالية للمشوار</div><div class="stat-val" id="currentFeeDisplay" style="color:var(--accent);">0 ج</div></div>
   </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('tabOrders', this)">الطلبات اللحظية</button>
-    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب والمحافظ</button>
+    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب واعتماد 50 مشوار</button>
     <button class="tab-btn" onclick="showTab('tabClients', this)">حظر وإدارة العملاء</button>
     <button class="tab-btn" onclick="showTab('tabSettings', this)">العمولة وسجل المعاملات</button>
   </div>
@@ -78,19 +78,19 @@
     <table>
       <thead>
         <tr>
-          <th>#</th><th>الخدمة</th><th>العميل</th><th>العنوان والمطلوب</th><th>المندوب</th><th>الحالة</th><th>إجراء</th>
+          <th>#</th><th>القسم والخدمة</th><th>العميل</th><th>العنوان والتفاصيل</th><th>المندوب</th><th>الحساب والفاتورة</th><th>الحالة</th><th>إجراء</th>
         </tr>
       </thead>
       <tbody id="ordersBody"></tbody>
     </table>
   </div>
 
-  <!-- 2. المناديب والمحافظ -->
+  <!-- 2. المناديب واعتماد الـ 50 مشوار -->
   <div id="tabProviders" class="section-card" style="display:none;">
     <table>
       <thead>
         <tr>
-          <th>الاسم</th><th>الهاتف</th><th>الرقم القومي / الأوراق</th><th>الرصيد</th><th>الحالة</th><th>شحن رصيد</th><th>الحظر والعقوبات</th>
+          <th>الاسم والوسيلة</th><th>الهاتف</th><th>الرقم القومي والأوراق</th><th>المشاوير والتقييم</th><th>الرصيد</th><th>الحالة</th><th>شحن رصيد</th><th>اعتماد تاون كلينك</th><th>الحظر</th>
         </tr>
       </thead>
       <tbody id="providersBody"></tbody>
@@ -99,34 +99,32 @@
 
   <!-- 3. العملاء المحظورين -->
   <div id="tabClients" class="section-card" style="display:none;">
-    <div style="max-width:400px; margin-bottom:16px; background:#f1f5f9; padding:12px; border-radius:10px;">
-      <h4 style="font-size:12px; margin-bottom:6px;">حظر عميل جديد:</h4>
-      <input type="tel" id="banClientPhone" class="input-box" placeholder="رقم هاتف العميل">
-      <input type="text" id="banClientReason" class="input-box" placeholder="سبب الحظر (اختياري)">
+    <div style="max-width:380px; margin-bottom:14px; background:#f1f5f9; padding:10px; border-radius:8px;">
+      <h4 style="font-size:11.5px; margin-bottom:6px;">حظر عميل مخالف:</h4>
+      <input type="tel" id="banClientPhone" class="input-box" placeholder="رقم الهاتف">
+      <input type="text" id="banClientReason" class="input-box" placeholder="سبب الحظر">
       <div style="display:flex; gap:6px;">
-        <button class="action-btn btn-danger" onclick="banClient(24)">حظر 24 س</button>
-        <button class="action-btn btn-danger" onclick="banClient(48)">حظر 48 س</button>
-        <button class="action-btn btn-danger" onclick="banClient(0)">حظر دائم</button>
+        <button class="action-btn btn-danger" onclick="banClient(24)">24 ساعة</button>
+        <button class="action-btn btn-danger" onclick="banClient(48)">48 ساعة</button>
+        <button class="action-btn btn-danger" onclick="banClient(0)">دائم</button>
       </div>
     </div>
     <table>
-      <thead>
-        <tr><th>رقم الهاتف</th><th>السبب</th><th>نوع الحظر</th><th>إجراء</th></tr>
-      </thead>
+      <thead><tr><th>رقم الهاتف</th><th>السبب</th><th>نوع الحظر</th><th>إجراء</th></tr></thead>
       <tbody id="clientsBody"></tbody>
     </table>
   </div>
 
   <!-- 4. العمولة والسجل -->
   <div id="tabSettings" class="section-card" style="display:none;">
-    <div style="max-width:400px; background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px; margin-bottom:20px;">
-      <h4 style="font-size:13px; margin-bottom:8px;">تعديل عمولة المنصة لكل مشوار:</h4>
-      <div style="display:flex; gap:8px;">
-        <input type="number" id="newFeeInput" class="input-box" placeholder="القيمة بالجنيه (مثلاً 0 أو 3 أو 5)" style="margin-bottom:0;">
-        <button class="action-btn btn-green" onclick="updateFee()">حفظ العمولة ✓</button>
+    <div style="max-width:380px; background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px; margin-bottom:16px;">
+      <h4 style="font-size:12px; margin-bottom:6px;">تعديل عمولة المنصة المقتطعة من المندوب:</h4>
+      <div style="display:flex; gap:6px;">
+        <input type="number" id="newFeeInput" class="input-box" placeholder="القيمة (مثلاً 0 أو 3 أو 5)" style="margin-bottom:0;">
+        <button class="action-btn btn-green" onclick="updateFee()">حفظ ✓</button>
       </div>
     </div>
-    <h4 style="font-size:13px; margin-bottom:10px;">سجل الحركات المالية والمحافظ:</h4>
+    <h4 style="font-size:12px; margin-bottom:8px;">سجل الحركات المالية والمحافظ:</h4>
     <table>
       <thead><tr><th>المندوب</th><th>المبلغ</th><th>النوع</th><th>الملاحظات</th><th>التوقيت</th></tr></thead>
       <tbody id="txBody"></tbody>
@@ -142,7 +140,7 @@
     if (p === '123456' || p === 'admin') {
       document.getElementById('lockScreen').style.display = 'none';
       loadAllData();
-    } else alert('كلمة المرور غير صحيحة!');
+    } else alert('كلمة السر غير صحيحة!');
   }
 
   function showTab(id, btn) {
@@ -171,21 +169,26 @@
         html += `
           <tr>
             <td>#${o.id}</td>
-            <td><b>${o.order_type}</b></td>
+            <td><b>${o.order_type}</b><br><small style="color:#64748b;">${o.category}</small></td>
             <td>
+              ${o.client_name}<br>
               <a href="tel:${o.client_phone}" style="color:var(--navy); font-weight:bold;">${o.client_phone}</a>
-              <br><a href="https://wa.me/${cleanPhone}" target="_blank" style="color:var(--green); font-size:11px;">واتساب 💬</a>
+              • <a href="https://wa.me/${cleanPhone}" target="_blank" style="color:var(--green); font-size:10px;">واتساب 💬</a>
             </td>
             <td>${o.client_address}<br><small style="color:#64748b;">${o.details}</small></td>
             <td>${o.courier_phone || '<span style="color:#94a3b8;">معلق</span>'}</td>
+            <td>
+              توصيل: ${o.delivery_fee} ج<br>
+              إجمالي: <b>${o.total_price || 0} ج</b> (${o.payment_method})
+            </td>
             <td><span class="badge ${o.status === 'مكتمل' ? 'badge-done' : 'badge-new'}">${o.status}</span></td>
             <td>
-              ${o.status !== 'مكتمل' ? `<button class="action-btn btn-green" onclick="markDone(${o.id})">تم التسليم ✓</button>` : 'منتهي'}
+              ${o.status !== 'مكتمل' ? `<button class="action-btn btn-green" onclick="markDone(${o.id})">إنهاء ✓</button>` : 'مكتمل'}
             </td>
           </tr>
         `;
       });
-      document.getElementById('ordersBody').innerHTML = html || '<tr><td colspan="7">لا توجد طلبات.</td></tr>';
+      document.getElementById('ordersBody').innerHTML = html || '<tr><td colspan="8">لا توجد طلبات.</td></tr>';
     }
 
     // 3. المناديب
@@ -195,20 +198,27 @@
       let html = '';
       provs.forEach(p => {
         const isBanned = (p.status === 'محظور' || (p.banned_until && new Date(p.banned_until) > Date.now()));
+        const isReadyForVerification = (p.completed_orders >= 50 && !p.is_verified);
         html += `
           <tr>
-            <td><b>${p.name}</b><br><small style="color:#64748b;">${p.role}</small></td>
+            <td><b>${p.name}</b> ${p.is_verified ? '🛡️' : ''}<br><small style="color:#64748b;">${p.vehicle_type || p.role}</small></td>
             <td>${p.phone}</td>
-            <td>${p.national_id || '-'}<br><small style="color:#64748b;">${p.docs_note || ''}</small></td>
+            <td>${p.national_id || '-'}<br><small style="color:#64748b;">${p.driving_license || ''}</small></td>
+            <td>⭐ ${p.rating_avg.toFixed(1)}<br><b>${p.completed_orders} مشوار</b></td>
             <td><b style="color:var(--green);">${p.wallet_balance} ج</b></td>
             <td><span class="badge ${isBanned ? 'badge-banned' : 'badge-done'}">${isBanned ? 'محظور' : 'نشط'}</span></td>
             <td>
-              <button class="action-btn btn-green" onclick="rechargeProv(${p.id}, '${p.phone}', 50)">+50 ج</button>
-              <button class="action-btn" onclick="rechargeProv(${p.id}, '${p.phone}', 100)">+100 ج</button>
+              <button class="action-btn btn-green" onclick="rechargeProv(${p.id}, '${p.phone}', 50)">+50</button>
+              <button class="action-btn" onclick="rechargeProv(${p.id}, '${p.phone}', 100)">+100</button>
+            </td>
+            <td>
+              ${isReadyForVerification ? `
+                <button class="action-btn btn-green" onclick="verifyAndCashback(${p.id}, '${p.phone}', 250)">صرف كاش باك 250ج وتوثيق 🛡️</button>
+              ` : (p.is_verified ? '<span style="color:green; font-weight:bold;">موثق 🛡️</span>' : 'قيد التقدم')}
             </td>
             <td>
               ${isBanned ? `
-                <button class="action-btn btn-green" onclick="unbanProv(${p.id})">فك الحظر 🟢</button>
+                <button class="action-btn btn-green" onclick="unbanProv(${p.id})">فك الحظر</button>
               ` : `
                 <button class="action-btn btn-danger" onclick="banProv(${p.id}, 24)">24س</button>
                 <button class="action-btn btn-danger" onclick="banProv(${p.id}, 48)">48س</button>
@@ -218,7 +228,7 @@
           </tr>
         `;
       });
-      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7">لا يوجد مناديب.</td></tr>';
+      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="9">لا يوجد مناديب.</td></tr>';
     }
 
     // 4. العملاء المحظورين
@@ -238,7 +248,7 @@
       document.getElementById('clientsBody').innerHTML = html || '<tr><td colspan="4">لا يوجد عملاء محظورين.</td></tr>';
     }
 
-    // 5. سجل الحركات
+    // 5. سجل المعاملات
     const { data: txs } = await db.from('wallet_transactions').select('*').order('id', { ascending: false }).limit(20);
     if (txs) {
       let html = '';
@@ -260,7 +270,7 @@
   async function updateFee() {
     const val = Number(document.getElementById('newFeeInput').value) || 0;
     await db.from('platform_settings').update({ commission_fee: val }).eq('id', 1);
-    alert('تم حفظ قيمة العمولة بنجاح!');
+    alert('تم تعديل عمولة المنصة بنجاح!');
     loadAllData();
   }
 
@@ -274,24 +284,34 @@
     if (data) {
       const newB = (Number(data.wallet_balance) || 0) + amt;
       await db.from('service_providers').update({ wallet_balance: newB }).eq('id', id);
-      await db.from('wallet_transactions').insert([{ provider_phone: phone, amount: amt, type: 'شحن رصيد إداري', notes: 'شحن من الداشبورد' }]);
+      await db.from('wallet_transactions').insert([{ provider_phone: phone, amount: amt, type: 'شحن رصيد إداري', notes: 'شحن مباشر من الداشبورد' }]);
+      loadAllData();
+    }
+  }
+
+  async function verifyAndCashback(id, phone, amt) {
+    if (!confirm(`هل راجعت الفيش الجنائي وتحليل تاون كلينك وتؤكد صرف كاش باك ${amt} ج وتوثيق الحساب؟`)) return;
+    const { data } = await db.from('service_providers').select('wallet_balance').eq('id', id).single();
+    if (data) {
+      const newB = (Number(data.wallet_balance) || 0) + amt;
+      await db.from('service_providers').update({ wallet_balance: newB, is_verified: true }).eq('id', id);
+      await db.from('wallet_transactions').insert([{ provider_phone: phone, amount: amt, type: 'كاش باك 100% تاون كلينك', notes: 'اعتماد الفيش وتحليل تاون كلينك' }]);
+      alert('تم توثيق الحساب وصرف الكاش باك بنجاح! 🛡️');
       loadAllData();
     }
   }
 
   async function banProv(id, hours) {
     let until = null;
-    if (hours > 0) {
-      const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString();
-    }
+    if (hours > 0) { const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString(); }
     await db.from('service_providers').update({ status: 'محظور', banned_until: until }).eq('id', id);
-    alert('تم تطبيق الحظر على المندوب بنجاح!');
+    alert('تم تطبيق الحظر!');
     loadAllData();
   }
 
   async function unbanProv(id) {
     await db.from('service_providers').update({ status: 'معتمد', banned_until: null }).eq('id', id);
-    alert('تم فك الحظر عن المندوب بنجاح!');
+    alert('تم فك الحظر!');
     loadAllData();
   }
 
@@ -300,9 +320,7 @@
     const reason = document.getElementById('banClientReason').value.trim();
     if (!phone) return alert('أدخل رقم هاتف العميل!');
     let until = null;
-    if (hours > 0) {
-      const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString();
-    }
+    if (hours > 0) { const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString(); }
     await db.from('banned_clients').upsert({ phone, ban_reason: reason, banned_until: until });
     alert('تم حظر العميل بنجاح!');
     document.getElementById('banClientPhone').value = '';
@@ -311,7 +329,7 @@
 
   async function unbanClient(phone) {
     await db.from('banned_clients').delete().eq('phone', phone);
-    alert('تم فك الحظر عن العميل بنجاح!');
+    alert('تم فك الحظر!');
     loadAllData();
   }
 </script>
