@@ -31,6 +31,35 @@
     body { background-color: var(--bg); display: flex; justify-content: center; color: var(--navy); min-height: 100vh; }
     .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; }
 
+    /* الإشعار العائم الراقي (بديل رسائل المتصفح المزعجة) */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--navy);
+      color: #ffffff;
+      padding: 11px 20px;
+      border-radius: 30px;
+      font-size: 11.5px;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(12, 29, 55, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 99999;
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+      opacity: 0;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
     /* شاشات الإيقاف والانتظار */
     .status-screen { padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; }
 
@@ -78,7 +107,7 @@
     .service-card-title { font-size: 11.5px; font-weight: 800; color: var(--navy); }
     .service-card-desc { font-size: 9.5px; color: var(--gray); }
 
-    /* كروت المتابعة اللحظية والعروض */
+    /* كروت المتابعة والعروض */
     .active-order-box { background: #ffffff; border: 2px solid var(--accent); border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(74,124,111,0.08); }
     .order-bill-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 11.5px; }
 
@@ -119,6 +148,9 @@
 <div class="app-container">
   <div id="mainView"></div>
 </div>
+
+<!-- عنصر الإشعار العائم الموحد -->
+<div id="toastNotification" class="toast-msg"></div>
 
 <!-- 1. نافذة ضبط عنوان العميل -->
 <div class="modal" id="addressModal">
@@ -197,7 +229,6 @@
       </label>
     </div>
 
-    <!-- كارت تسعير المشوار والتحويل المعتمد -->
     <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px; margin-bottom:10px;">
       <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:800; color:#166534;">
         <span>قيمة مشوار التوصيل:</span>
@@ -217,7 +248,7 @@
   </div>
 </div>
 
-<!-- 3. نافذة شحن كروت المرافق (كهرباء / غاز / مياه) -->
+<!-- 3. نافذة شحن كروت المرافق -->
 <div class="modal" id="utilityModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -274,7 +305,7 @@
   </div>
 </div>
 
-<!-- 4. نافذة اسطوانة الغاز (تغيير 320 / شراء 1950 / بيع 1750) -->
+<!-- 4. نافذة اسطوانة الغاز -->
 <div class="modal" id="gasCylinderModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -321,7 +352,7 @@
   </div>
 </div>
 
-<!-- 5. نافذة طلب فني معتمد (معاينة 50 ج + صورة العطل) -->
+<!-- 5. نافذة طلب فني معتمد -->
 <div class="modal" id="techModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -335,7 +366,7 @@
     </div>
 
     <div class="input-row">
-      <label>إرفاق صورة المشكلة أو العطل (تظهر للفني لتجهيز العدة) 📷:</label>
+      <label>إرفاق صورة المشكلة أو العطل 📷:</label>
       <input type="file" id="techIssueImg" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
@@ -348,7 +379,7 @@
   </div>
 </div>
 
-<!-- 6. نافذة الـ 15 ثانية لاختيار عروض المناديب (ETA Bidding) -->
+<!-- 6. نافذة منافسة سرعة التوصيل (15 ثانية) -->
 <div class="modal" id="biddingModal">
   <div class="modal-sheet" style="text-align:center;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -362,7 +393,7 @@
   </div>
 </div>
 
-<!-- 7. نافذة استفسار العميل بعد انتهاء/رفض العروض الخمسة -->
+<!-- 7. نافذة استفسار العميل -->
 <div class="modal" id="retryModal">
   <div class="modal-sheet" style="text-align:center;">
     <div style="font-size:36px; margin-bottom:6px;">🤔</div>
@@ -375,7 +406,7 @@
   </div>
 </div>
 
-<!-- 8. نافذة تسجيل المندوب ورفع الوثائق -->
+<!-- 8. نافذة تسجيل المندوب -->
 <div class="modal" id="providerRegisterModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -433,11 +464,11 @@
           <input type="file" id="fileLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة المركبة (وجه)</span>
+          <span style="font-size:10px; color:var(--gray);">رخصة الموتوسيكل (وجه)</span>
           <input type="file" id="fileVehLicFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة المركبة (ظهر)</span>
+          <span style="font-size:10px; color:var(--gray);">رخصة الموتوسيكل (ظهر)</span>
           <input type="file" id="fileVehLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
       </div>
@@ -458,19 +489,19 @@
   <div class="modal-sheet">
     <h3 style="font-size:13.5px; font-weight:900; margin-bottom:10px; color:var(--navy);">📜 وثيقة شروط وسياسة كباتن منصة X</h3>
     <div style="font-size:11px; color:#334155; line-height:1.6; max-height:55vh; overflow-y:auto; padding-left:4px; margin-bottom:12px;">
-      <p>1. <b>الالتزام بأسعار المتاجر:</b> الالتزام التام بأسعار الفواتير الرسمية الصادرة من المحلات دون أدنى زيادة شخصية، وتسليم أصل الفاتورة للعميل.</p>
-      <p>2. <b>استرجاع المشتريات:</b> التأكد من إمكانية استرجاع أي مشتريات من المحل قبل شرائها في حال تعذر استلام العميل، وتوثيق ذلك لإدارة المنصة لرد العمولة لمحفظتك.</p>
-      <p>3. <b>الطلبات الناقصة:</b> في حال سقوط أو نسيان أي غرض من الطلب يتحمل المندوب استكماله على نفقته الخاصة فوراً دون تحميل العميل أي رسوم توصيل إضافية.</p>
-      <p>4. <b>حظر الممنوعات:</b> يحظر تماماً نقل أي مواد غير قانونية أو أدوية جدول بدون وصفة طبية، ويتحمل المندوب المسؤولية القانونية المباشرة في حال المخالفة.</p>
-      <p>5. <b>حفظ الخصوصية:</b> يحظر تماماً حفظ أرقام العملاء أو التواصل معهم في أمور شخصية أو خارج نطاق المشوار الجاري.</p>
-      <p>6. <b>الأمانة والتحصيل:</b> لا يحق للمندوب طلب أي نقدية مسبقة من العميل قبل تسليم الطلب، وتخصم عمولة المنصة ورسم التأمين نظامياً من المحفظة.</p>
-      <p>7. <b>المسؤولية القضائية:</b> يعلم الكابتن بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة، وفي حال أي تعدي أو سرقة يتم تزويد الجهات الأمنية بنسخة منها لتحرير محضر فوري.</p>
+      <p>1. <b>الالتزام بأسعار المتاجر:</b> الالتزام التام بأسعار الفواتير الرسمية الصادرة من المحلات دون زيادة شخصية، وتسليم أصل الفاتورة للعميل.</p>
+      <p>2. <b>استرجاع المشتريات:</b> التأكد من إمكانية استرجاع أي مشتريات من المحل قبل شرائها في حال تعذر استلام العميل.</p>
+      <p>3. <b>الطلبات الناقصة:</b> في حال سقوط أو نسيان أي غرض يتحمل المندوب استكماله على نفقته الخاصة فوراً.</p>
+      <p>4. <b>حظر الممنوعات:</b> يحظر تماماً نقل أي مواد غير قانونية أو أدوية جدول بدون وصفة طبية.</p>
+      <p>5. <b>حفظ الخصوصية:</b> يحظر تماماً حفظ أرقام العملاء أو التواصل معهم في أمور شخصية.</p>
+      <p>6. <b>الأمانة والتحصيل:</b> لا يحق للمندوب طلب أي نقدية مسبقة من العميل قبل تسليم الطلب.</p>
+      <p>7. <b>المسؤولية القضائية:</b> يعلم الكابتن بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة للرجوع القانوني عند أي تجاوز.</p>
     </div>
     <button class="btn-submit" onclick="confirmPolicyRead()" style="background:var(--green);">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً ✓</button>
   </div>
 </div>
 
-<!-- 10. نافذة الفاتورة السريعة للمندوب -->
+<!-- 10. نافذة الفاتورة السريعة -->
 <div class="modal" id="billModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -505,7 +536,7 @@
   </div>
 </div>
 
-<!-- 12. نافذة سجل الفواتير والمشاوير المؤرخة -->
+<!-- 12. نافذة سجل الفواتير -->
 <div class="modal" id="historyModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -523,6 +554,17 @@
     "https://jopymfpdovhtdrfanbig.supabase.co",
     "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm"
   );
+
+  // دالة الإشعار العائم الحديثة التي تقضي تماماً على رسائل المتصفح ورابط جيت هاب
+  function showToast(message) {
+    const toast = document.getElementById('toastNotification');
+    if (!toast) return;
+    toast.innerText = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2400);
+  }
 
   // نغمة رقيقة واهتزاز
   function triggerChime(type = 'soft') {
@@ -588,7 +630,6 @@
 
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-  // اشتراك Realtime اللحظي التلقائي
   function initRealtimeWatcher() {
     dbClient.channel('realtime_all')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
@@ -608,7 +649,6 @@
   async function render() {
     const main = document.getElementById('mainView');
 
-    // 1. بوابة اختيار الصفة
     if (activeRole === 'portal') {
       main.innerHTML = `
         <div class="portal-screen">
@@ -656,7 +696,6 @@
       return;
     }
 
-    // 2. واجهة العميل الشاملة
     if (activeRole === 'client') {
       const hasData = clientAddress.phone && clientAddress.building;
       const { count } = await dbClient.from('service_providers').select('*', { count: 'exact', head: true }).eq('status', 'معتمد');
@@ -669,7 +708,6 @@
         </div>
 
         <div class="content-area">
-          <!-- شريط الكباتن النشطين المتاحين -->
           <div class="online-indicator-bar">
             <span>🟢 متاح الآن <b>${count || 6} كباتن</b> في نطاقك لتنفيذ طلبك</span>
             <small style="color:var(--accent); font-weight:bold;">جاهزون للتوصيل ⚡</small>
@@ -687,7 +725,6 @@
 
           <div id="clientActiveOrderContainer"></div>
 
-          <!-- 1. مشاوير المشتريات -->
           <div class="section-title">
             <span>🛵 مشاوير ودليفري المشتريات</span>
             <button onclick="openHistory('client')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button>
@@ -705,7 +742,6 @@
             </div>
           </div>
 
-          <!-- 2. خدمات سريعة (شحن كروت المرافق + اسطوانة الغاز) -->
           <div class="section-title"><span>⚡ خدمات سريعة للمنزل</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openUtilityModal()">
@@ -720,14 +756,12 @@
             </div>
           </div>
 
-          <!-- 3. سيارة داخلية -->
           <div class="section-title"><span>🚗 سيارة داخلية (توصيل وسكان)</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة بين الكمبوندات')"><div style="font-size:20px;">🚗</div><div class="service-card-title">بين الكمبوندات</div><div class="service-card-desc">سكن مصر، حورس، فاليرا</div></div>
             <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة (الواحات / MSA)')"><div style="font-size:20px;">🚘</div><div class="service-card-title">طريق الواحات / MSA</div><div class="service-card-desc">مشوار خارجي للنطاق</div></div>
           </div>
 
-          <!-- 4. صيانة منزلية وفنيين -->
           <div class="section-title"><span>🔧 صيانة منزلية وفنيين معتمدين (معاينة 50ج)</span></div>
           <div class="grid-4">
             <div class="service-card" onclick="openTechModal('سباكة منزلية')">🚿<div style="font-weight:700; font-size:10px;">سباك</div></div>
@@ -741,7 +775,6 @@
       return;
     }
 
-    // 3. واجهة المندوب ومقدمي الخدمة
     if (['courier', 'services', 'ride', 'technician'].includes(activeRole)) {
       let provData = null;
       if (courierPhone) {
@@ -777,7 +810,6 @@
         <div class="content-area">
           <div style="background:white; border:1px solid var(--border); padding:14px; border-radius:16px; margin-bottom:14px;">
             ${provData ? `
-              <!-- كارت بيانات السائق النظيف بدون زر التبديل المكرر -->
               <div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                   <div style="font-weight:900; font-size:14px; color:var(--navy);">
@@ -792,7 +824,6 @@
                 </div>
               </div>
 
-              <!-- شريط محطة الـ 50 مشوار -->
               <div style="margin-top:10px; background:#f8fafc; padding:8px; border-radius:8px; font-size:10.5px; border:1px solid var(--border);">
                 <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:4px;">
                   <span>محطة الاعتماد الرسمي (تاون كلينك):</span>
@@ -827,10 +858,6 @@
     }
   }
 
-  // ================================================================
-  // حساب الرسوم المعتمدة بدقة (التحويل والتوصيل)
-  // ================================================================
-
   function calculateTransferFee(amount, method) {
     if (method === 'كاش') return 0.00;
     if (amount < 500) return 5.00;
@@ -847,10 +874,6 @@
     if (compound === 'ابني بيتك السابعة قطاع ص') return 50.00;
     return 70.00;
   }
-
-  // ================================================================
-  // وظائف العميل والطلبات
-  // ================================================================
 
   function openAddressModal() {
     document.getElementById('inputClientName').value = clientAddress.name || '';
@@ -883,8 +906,8 @@
     const name = document.getElementById('inputClientName').value.trim() || 'عميل';
     const phone = document.getElementById('inputPhone').value.trim();
     const bld = document.getElementById('inputBuilding').value.trim();
-    if (!phone || phone.length < 10) return alert('أدخل رقم هاتف صحيح!');
-    if (!bld) return alert('أدخل رقم العمارة!');
+    if (!phone || phone.length < 10) return showToast('⚠️ يرجى إدخال رقم هاتف صحيح!');
+    if (!bld) return showToast('⚠️ يرجى إدخال رقم العمارة!');
 
     clientAddress.name = name;
     clientAddress.phone = phone;
@@ -896,12 +919,13 @@
     localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
     closeModal('addressModal');
     triggerChime('soft');
+    showToast('✓ تم حفظ العنوان ورقم الهاتف بنجاح');
     render();
   }
 
   function openOrderModal(category, typeName, inputsCount = 1) {
     if (!clientAddress.phone || !clientAddress.building) {
-      alert('يرجى تحديد عنوانك ورقمك أولاً للمتابعة!');
+      showToast('📍 يرجى تحديد عنوانك ورقم هاتفك أولاً');
       openAddressModal();
       return;
     }
@@ -983,18 +1007,15 @@
     }]).select().single();
 
     btn.innerText = "تأكيد وإرسال للمناديب ⚡"; btn.disabled = false;
-    if (error) alert("خطأ: " + error.message);
+    if (error) showToast("خطأ: " + error.message);
     else {
       triggerChime('stage');
       closeModal('orderModal');
+      showToast('🚀 تم نشر طلبك للكباتن بنجاح!');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
     }
   }
-
-  // ================================================================
-  // شحن كروت المرافق
-  // ================================================================
 
   function openUtilityModal() {
     if (!clientAddress.phone) return openAddressModal();
@@ -1032,7 +1053,7 @@
     const e = parseFloat(document.getElementById('amtElec').value) || 0;
     const g = parseFloat(document.getElementById('amtGas').value) || 0;
     const w = parseFloat(document.getElementById('amtWater').value) || 0;
-    if (e === 0 && g === 0 && w === 0) return alert('يرجى تحديد كارت واحد على الأقل مع كتابة مبلغ الشحن!');
+    if (e === 0 && g === 0 && w === 0) return showToast('⚠️ يرجى تحديد كارت واحد على الأقل مع المبلغ');
 
     let details = 'شحن كروت مرافق: ';
     if (e > 0) details += `كهرباء (${e}ج) `;
@@ -1065,14 +1086,11 @@
     if (!error) {
       closeModal('utilityModal');
       triggerChime('stage');
+      showToast('⚡ تم إرسال طلب الشحن للكباتن');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
     }
   }
-
-  // ================================================================
-  // اسطوانة الغاز (320 / 1950 / 1750)
-  // ================================================================
 
   function openGasModal() {
     if (!clientAddress.phone) return openAddressModal();
@@ -1088,7 +1106,7 @@
   }
 
   async function submitGasOrder() {
-    if (!selectedGasItem) return alert('يرجى اختيار نوع خدمة اسطوانة الغاز أولاً!');
+    if (!selectedGasItem) return showToast('⚠️ يرجى اختيار نوع خدمة اسطوانة الغاز');
 
     const payMethod = document.getElementById('gasPayMethod').value;
     const tFee = calculateTransferFee(selectedGasItem.price, payMethod);
@@ -1115,14 +1133,11 @@
     if (!error) {
       closeModal('gasCylinderModal');
       triggerChime('stage');
+      showToast('⛽ تم إرسال طلب اسطوانة الغاز');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
     }
   }
-
-  // ================================================================
-  // طلب فني معتمد (50 ج معاينة + صورة العطل)
-  // ================================================================
 
   function openTechModal(craft) {
     if (!clientAddress.phone) return openAddressModal();
@@ -1135,7 +1150,7 @@
 
   async function submitTechOrder() {
     const desc = document.getElementById('techIssueDesc').value.trim();
-    if (!desc) return alert('يرجى كتابة وصف المشكلة الفنية بدقة!');
+    if (!desc) return showToast('⚠️ يرجى كتابة وصف المشكلة الفنية');
 
     const imgFile = document.getElementById('techIssueImg').files[0];
     const base64Img = await fileToBase64(imgFile);
@@ -1162,14 +1177,11 @@
     if (!error) {
       closeModal('techModal');
       triggerChime('stage');
+      showToast('🔧 تم إرسال الطلب للفنيين المعتمدين');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
     }
   }
-
-  // ================================================================
-  // منافسة سرعة التوصيل (ETA Bidding - 15 ثانية)
-  // ================================================================
 
   function startBiddingCountdown(orderId) {
     activeBiddingOrderId = orderId;
@@ -1208,7 +1220,6 @@
     });
     container.innerHTML = html;
 
-    // إذا وصل 5 عروض
     if (order.offers.length >= 5) {
       clearInterval(biddingTimerInterval);
       document.getElementById('countdownTimer').innerText = 'تم اكتمال 5 عروض';
@@ -1224,7 +1235,7 @@
     }).eq('id', orderId);
 
     triggerChime('stage');
-    alert('تم اختيار الكابتن بنجاح! جاري تحركه إليك فوراً.');
+    showToast('✓ تم اختيار الكابتن وبدأ التحرك إليك فوراً');
     loadClientActiveOrder();
   }
 
@@ -1234,11 +1245,9 @@
     if (!ord || ord.status !== 'جديد') return;
 
     if (ord.offers && ord.offers.length > 0) {
-      // اختيار الأسرع ثم الأعلى تقييماً تلقائياً
       const best = ord.offers.sort((a,b) => a.eta - b.eta || b.rating - a.rating)[0];
       await clientPickCourier(orderId, best.courier_phone);
     } else {
-      // فتح نافذة الاستفسار
       document.getElementById('retryModal').classList.add('show');
     }
   }
@@ -1254,12 +1263,9 @@
       await dbClient.from('orders').update({ status: 'ملغي' }).eq('id', activeBiddingOrderId);
       activeBiddingOrderId = null;
       loadClientActiveOrder();
+      showToast('تم إلغاء البحث عن كابتن');
     }
   }
-
-  // ================================================================
-  // متابعة الطلب النشط للعميل
-  // ================================================================
 
   async function loadClientActiveOrder() {
     const container = document.getElementById('clientActiveOrderContainer');
@@ -1299,8 +1305,8 @@
         ${courierInfo ? `
           <div style="background:#f8fafc; border:1px solid var(--border); padding:8px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-weight:900; font-size:11.5px;">الكابتن: ${courierInfo.name} ${courierInfo.is_verified ? '🛡️' : ''}</div>
-              <div style="font-size:10.5px; color:var(--gray);">⭐ ${courierInfo.rating_avg.toFixed(1)} • ${courierInfo.completed_orders} مشوار ناجح</div>
+              <div style="font-weight:900; font-size:11.5px;">الكابتن: ${courierInfo.name}${courierInfo.is_verified ? '🛡️' : ''}</div>
+              <div style="font-size:10.5px; color:var(--gray);">⭐ ${courierInfo.rating_avg.toFixed(1)} •${courierInfo.completed_orders} مشوار ناجح</div>
             </div>
             <a href="tel:${courierInfo.phone}" style="background:var(--navy); color:white; padding:5px 10px; border-radius:6px; font-size:10.5px; text-decoration:none; font-weight:bold;">اتصال 📞</a>
           </div>
@@ -1308,8 +1314,7 @@
 
         ${o.total_price > 0 ? `
           <div class="order-bill-box">
-            <div style="font-weight:900; color:var(--navy); margin-bottom:4px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>
-            ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
+            <div style="font-weight:900; color:var(--navy); margin-bottom:4px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
             <div style="display:flex; justify-content:space-between;"><span>مصاريف التوصيل / المعاينة:</span><b>${o.delivery_fee} ج</b></div>
             <div style="display:flex; justify-content:space-between;"><span>تأمين الطلب وضمان الجودة:</span><b>1 ج</b></div>
             ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:#b45309;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
@@ -1323,10 +1328,6 @@
       </div>
     `;
   }
-
-  // ================================================================
-  // واجهة المندوب والفني (تنفيذ المشاوير وتحديد وقت ETA)
-  // ================================================================
 
   async function loadProviderOrders() {
     const feed = document.getElementById('providerOrdersFeed');
@@ -1372,7 +1373,6 @@
             ${!isMyActive ? '<span style="color:var(--gray); font-weight:normal;">(السمعة: ⭐ 5.0)</span>' : ''}
           </div>
 
-          <!-- العنوان التفصيلي يظهر فقط بعد القبول -->
           <div style="font-size:11.5px; margin-bottom:6px;">📍 ${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
 
           <div style="font-size:11px; color:var(--gray); background:white; padding:8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:8px;">
@@ -1418,7 +1418,7 @@
 
   async function submitCourierETA(orderId, etaMins) {
     const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
-    if (!prov) return alert('أنت غير مسجل كشريك!');
+    if (!prov) return showToast('⚠️ أنت غير مسجل كشريك بعد');
 
     const { data: ord } = await dbClient.from('orders').select('offers').eq('id', orderId).single();
     const currOffers = ord.offers || [];
@@ -1435,13 +1435,14 @@
 
     await dbClient.from('orders').update({ offers: currOffers }).eq('id', orderId);
     triggerChime('soft');
+    showToast(`✓ تم إرسال عرضك (${etaMins} دقيقة) للعميل`);
     loadProviderOrders();
   }
 
   async function updateTripStage(id, stage) {
     await dbClient.from('orders').update({ trip_stage: stage }).eq('id', id);
     triggerChime('stage');
-    alert('تم تحديث المرحلة: ' + stage);
+    showToast('✓ تم تحديث المرحلة: ' + stage);
     loadProviderOrders();
   }
 
@@ -1480,13 +1481,9 @@
 
     closeModal('billModal');
     triggerChime('stage');
-    alert('تم إرسال الفاتورة بنجاح لشاشة العميل! 🚀');
+    showToast('🧾 تم إرسال الفاتورة لشاشة العميل بنجاح');
     loadProviderOrders();
   }
-
-  // ================================================================
-  // التقييم والتسجيل والمستندات
-  // ================================================================
 
   function openRatingPrompt(orderId, userType) {
     activeOrderIdToRate = orderId;
@@ -1523,11 +1520,11 @@
         const newCount = (prov.completed_orders || 0) + 1;
         await dbClient.from('service_providers').update({ wallet_balance: newBal, completed_orders: newCount }).eq('phone', courierPhone);
       }
-      alert('تم إنهاء المشوار بنجاح وتسجيل التقييم ✓');
+      showToast('✓ تم إنهاء المشوار وتسجيل التقييم بنجاح');
       render();
     } else {
       await dbClient.from('orders').update({ client_rating: currentSelectedRating, client_rated: true }).eq('id', activeOrderIdToRate);
-      alert('شكراً لتقييمك الكريم! نسعد دائماً بخدمتك.');
+      showToast('⭐ شكراً لتقييمك الكريم! نسعد دائماً بخدمتك');
       render();
     }
   }
@@ -1580,8 +1577,8 @@
     const phone = document.getElementById('regPhone').value.trim();
     const vehicle = document.getElementById('regVehicle').value;
 
-    if (!name || !phone || phone.length < 10) return alert('أدخل الاسم ورقم الواتساب الصحيح!');
-    if (!hasAgreedPolicy) return alert('يرجى قراءة شروط وسياسة المنصة والموافقة عليها أولاً!');
+    if (!name || !phone || phone.length < 10) return showToast('⚠️ يرجى إدخال الاسم ورقم الواتساب الصحيح');
+    if (!hasAgreedPolicy) return showToast('⚠️ يرجى قراءة شروط وسياسة المنصة أولاً');
 
     const btn = document.getElementById('btnSubmitProvider');
     btn.innerText = 'جارٍ معالجة المستندات...'; btn.disabled = true;
@@ -1607,20 +1604,16 @@
 
     btn.innerText = 'إرسال البيانات للمراجعة والاعتماد 🚀'; btn.disabled = false;
 
-    if (error) alert("خطأ: " + error.message);
+    if (error) showToast("خطأ: " + error.message);
     else {
       localStorage.setItem('x_courier_phone', phone);
       courierPhone = phone;
       closeModal('providerRegisterModal');
       triggerChime('stage');
-      alert('تم إرسال مستنداتك بنجاح! حسابك قيد المراجعة والتدقيق وسيتم تفعيله من الإدارة.');
+      showToast('🛡️ تم إرسال أوراقك بنجاح وجارٍ مراجعتها');
       render();
     }
   }
-
-  // ================================================================
-  // سجل الفواتير والمشاوير المؤرخة مع حجب الأرقام
-  // ================================================================
 
   async function openHistory(viewerType) {
     const modal = document.getElementById('historyModal');
