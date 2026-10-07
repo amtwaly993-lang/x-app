@@ -33,13 +33,14 @@
     .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; }
     .badge-new { background: #e0f2fe; color: #0369a1; }
     .badge-done { background: #dcfce7; color: #15803d; }
+    .badge-pending { background: #fef3c7; color: #b45309; }
     .badge-banned { background: #fee2e2; color: #b91c1c; }
 
     .action-btn { background: var(--navy); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
     .btn-green { background: var(--green); }
     .btn-danger { background: var(--danger); }
 
-    .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
+    .doc-preview-img { width: 45px; height: 32px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e1; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -48,7 +49,7 @@
   <div class="lock-box">
     <div style="font-size:30px; margin-bottom:6px;">🔐</div>
     <h3 style="margin-bottom:10px;">لوحة تحكم منصة X</h3>
-    <input type="password" id="adminPass" class="input-box" placeholder="كلمة السر" style="text-align:center;">
+    <input type="password" id="adminPass" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-bottom:10px; text-align:center;" placeholder="كلمة السر">
     <button class="action-btn" style="width:100%; padding:9px;" onclick="unlockAdmin()">دخول ⚡</button>
   </div>
 </div>
@@ -62,73 +63,47 @@
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-lbl">إجمالي الطلبات</div><div class="stat-val" id="totalOrders">0</div></div>
     <div class="stat-card"><div class="stat-lbl">الطلبات النشطة الآن</div><div class="stat-val" id="activeOrders" style="color:#0284c7;">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">المناديب المسجلين</div><div class="stat-val" id="totalProviders" style="color:var(--green);">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">عمولة المنصة الحالية للمشوار</div><div class="stat-val" id="currentFeeDisplay" style="color:var(--accent);">0 ج</div></div>
+    <div class="stat-card"><div class="stat-lbl">المناديب المعتمدين</div><div class="stat-val" id="totalProviders" style="color:var(--green);">0</div></div>
+    <div class="stat-card"><div class="stat-lbl">طلبات انضمام قيد المراجعة</div><div class="stat-val" id="pendingProvidersCount" style="color:var(--amber);">0</div></div>
   </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('tabOrders', this)">الطلبات اللحظية</button>
-    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب واعتماد 50 مشوار</button>
-    <button class="tab-btn" onclick="showTab('tabClients', this)">حظر وإدارة العملاء</button>
-    <button class="tab-btn" onclick="showTab('tabSettings', this)">العمولة وسجل المعاملات</button>
+    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب والمستندات</button>
+    <button class="tab-btn" onclick="showTab('tabSettings', this)">إعدادات العمولة</button>
   </div>
 
-  <!-- 1. الطلبات -->
+  <!-- 1. الطلبات اللحظية -->
   <div id="tabOrders" class="section-card">
     <table>
       <thead>
-        <tr>
-          <th>#</th><th>القسم والخدمة</th><th>العميل</th><th>العنوان والتفاصيل</th><th>المندوب</th><th>الحساب والفاتورة</th><th>الحالة</th><th>إجراء</th>
-        </tr>
+        <tr><th>#</th><th>الخدمة</th><th>العميل</th><th>العنوان والتفاصيل</th><th>المندوب</th><th>الحساب والفاتورة</th><th>تقييم العميل</th><th>الحالة</th></tr>
       </thead>
       <tbody id="ordersBody"></tbody>
     </table>
   </div>
 
-  <!-- 2. المناديب واعتماد الـ 50 مشوار -->
+  <!-- 2. المناديب والمستندات والاعتماد -->
   <div id="tabProviders" class="section-card" style="display:none;">
     <table>
       <thead>
         <tr>
-          <th>الاسم والوسيلة</th><th>الهاتف</th><th>الرقم القومي والأوراق</th><th>المشاوير والتقييم</th><th>الرصيد</th><th>الحالة</th><th>شحن رصيد</th><th>اعتماد تاون كلينك</th><th>الحظر</th>
+          <th>الكابتن والوسيلة</th><th>الهاتف</th><th>مستندات البطاقة والرخص</th><th>المشاوير والتقييم</th><th>المحفظة</th><th>الحالة</th><th>إجراء الاعتماد</th>
         </tr>
       </thead>
       <tbody id="providersBody"></tbody>
     </table>
   </div>
 
-  <!-- 3. العملاء المحظورين -->
-  <div id="tabClients" class="section-card" style="display:none;">
-    <div style="max-width:380px; margin-bottom:14px; background:#f1f5f9; padding:10px; border-radius:8px;">
-      <h4 style="font-size:11.5px; margin-bottom:6px;">حظر عميل مخالف:</h4>
-      <input type="tel" id="banClientPhone" class="input-box" placeholder="رقم الهاتف">
-      <input type="text" id="banClientReason" class="input-box" placeholder="سبب الحظر">
-      <div style="display:flex; gap:6px;">
-        <button class="action-btn btn-danger" onclick="banClient(24)">24 ساعة</button>
-        <button class="action-btn btn-danger" onclick="banClient(48)">48 ساعة</button>
-        <button class="action-btn btn-danger" onclick="banClient(0)">دائم</button>
-      </div>
-    </div>
-    <table>
-      <thead><tr><th>رقم الهاتف</th><th>السبب</th><th>نوع الحظر</th><th>إجراء</th></tr></thead>
-      <tbody id="clientsBody"></tbody>
-    </table>
-  </div>
-
-  <!-- 4. العمولة والسجل -->
+  <!-- 3. العمولة -->
   <div id="tabSettings" class="section-card" style="display:none;">
     <div style="max-width:380px; background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px; margin-bottom:16px;">
-      <h4 style="font-size:12px; margin-bottom:6px;">تعديل عمولة المنصة المقتطعة من المندوب:</h4>
+      <h4 style="font-size:12px; margin-bottom:6px;">تعديل عمولة المنصة المقتطعة من المشوار:</h4>
       <div style="display:flex; gap:6px;">
-        <input type="number" id="newFeeInput" class="input-box" placeholder="القيمة (مثلاً 0 أو 3 أو 5)" style="margin-bottom:0;">
+        <input type="number" id="newFeeInput" style="width:100%; padding:8px; border:1.5px solid var(--border); border-radius:6px; font-size:12px;" placeholder="0 أو 3 أو 5">
         <button class="action-btn btn-green" onclick="updateFee()">حفظ ✓</button>
       </div>
     </div>
-    <h4 style="font-size:12px; margin-bottom:8px;">سجل الحركات المالية والمحافظ:</h4>
-    <table>
-      <thead><tr><th>المندوب</th><th>المبلغ</th><th>النوع</th><th>الملاحظات</th><th>التوقيت</th></tr></thead>
-      <tbody id="txBody"></tbody>
-    </table>
   </div>
 </div>
 
@@ -153,10 +128,7 @@
   async function loadAllData() {
     // 1. العمولة
     const { data: set } = await db.from('platform_settings').select('commission_fee').eq('id', 1).single();
-    if (set) {
-      document.getElementById('currentFeeDisplay').innerText = set.commission_fee + ' ج';
-      document.getElementById('newFeeInput').value = set.commission_fee;
-    }
+    if (set) document.getElementById('newFeeInput').value = set.commission_fee;
 
     // 2. الطلبات
     const { data: orders } = await db.from('orders').select('*').order('id', { ascending: false });
@@ -165,26 +137,20 @@
       document.getElementById('activeOrders').innerText = orders.filter(o => o.status !== 'مكتمل').length;
       let html = '';
       orders.forEach(o => {
-        const cleanPhone = o.client_phone.startsWith('0') ? '2' + o.client_phone : o.client_phone;
         html += `
           <tr>
             <td>#${o.id}</td>
             <td><b>${o.order_type}</b><br><small style="color:#64748b;">${o.category}</small></td>
-            <td>
-              ${o.client_name}<br>
-              <a href="tel:${o.client_phone}" style="color:var(--navy); font-weight:bold;">${o.client_phone}</a>
-              • <a href="https://wa.me/${cleanPhone}" target="_blank" style="color:var(--green); font-size:10px;">واتساب 💬</a>
-            </td>
+            <td>${o.client_name}<br><small>${o.client_phone}</small></td>
             <td>${o.client_address}<br><small style="color:#64748b;">${o.details}</small></td>
             <td>${o.courier_phone || '<span style="color:#94a3b8;">معلق</span>'}</td>
             <td>
-              توصيل: ${o.delivery_fee} ج<br>
-              إجمالي: <b>${o.total_price || 0} ج</b> (${o.payment_method})
+              توصيل: ${o.delivery_fee}ج<br>
+              تحويل: ${o.transfer_fee || 0}ج<br>
+              إجمالي: <b>${o.total_price || 0}ج</b> (${o.payment_method})
             </td>
+            <td>${o.client_rating ? '⭐ ' + o.client_rating : '-'}</td>
             <td><span class="badge ${o.status === 'مكتمل' ? 'badge-done' : 'badge-new'}">${o.status}</span></td>
-            <td>
-              ${o.status !== 'مكتمل' ? `<button class="action-btn btn-green" onclick="markDone(${o.id})">إنهاء ✓</button>` : 'مكتمل'}
-            </td>
           </tr>
         `;
       });
@@ -194,143 +160,58 @@
     // 3. المناديب
     const { data: provs } = await db.from('service_providers').select('*').order('id', { ascending: false });
     if (provs) {
-      document.getElementById('totalProviders').innerText = provs.length;
+      document.getElementById('totalProviders').innerText = provs.filter(p => p.status === 'معتمد').length;
+      const pendingCount = provs.filter(p => p.status === 'قيد المراجعة').length;
+      document.getElementById('pendingProvidersCount').innerText = pendingCount;
+
       let html = '';
       provs.forEach(p => {
-        const isBanned = (p.status === 'محظور' || (p.banned_until && new Date(p.banned_until) > Date.now()));
-        const isReadyForVerification = (p.completed_orders >= 50 && !p.is_verified);
+        const isPending = (p.status === 'قيد المراجعة');
         html += `
           <tr>
-            <td><b>${p.name}</b> ${p.is_verified ? '🛡️' : ''}<br><small style="color:#64748b;">${p.vehicle_type || p.role}</small></td>
+            <td><b>${p.name}</b> ${p.is_verified ? '🛡️' : ''}<br><small style="color:#64748b;">${p.vehicle_type}</small></td>
             <td>${p.phone}</td>
-            <td>${p.national_id || '-'}<br><small style="color:#64748b;">${p.driving_license || ''}</small></td>
+            <td>
+              <div style="display:flex; gap:4px; align-items:center;">
+                ${p.id_front_img ? `<img src="${p.id_front_img}" class="doc-preview-img" title="بطاقة وجه" onclick="window.open(this.src)">` : ''}
+                ${p.id_back_img ? `<img src="${p.id_back_img}" class="doc-preview-img" title="بطاقة ظهر" onclick="window.open(this.src)">` : ''}
+                ${p.license_front_img ? `<img src="${p.license_front_img}" class="doc-preview-img" title="رخصة قيادة" onclick="window.open(this.src)">` : ''}
+              </div>
+            </td>
             <td>⭐ ${p.rating_avg.toFixed(1)}<br><b>${p.completed_orders} مشوار</b></td>
             <td><b style="color:var(--green);">${p.wallet_balance} ج</b></td>
-            <td><span class="badge ${isBanned ? 'badge-banned' : 'badge-done'}">${isBanned ? 'محظور' : 'نشط'}</span></td>
+            <td><span class="badge ${isPending ? 'badge-pending' : 'badge-done'}">${p.status}</span></td>
             <td>
-              <button class="action-btn btn-green" onclick="rechargeProv(${p.id}, '${p.phone}', 50)">+50</button>
-              <button class="action-btn" onclick="rechargeProv(${p.id}, '${p.phone}', 100)">+100</button>
-            </td>
-            <td>
-              ${isReadyForVerification ? `
-                <button class="action-btn btn-green" onclick="verifyAndCashback(${p.id}, '${p.phone}', 250)">صرف كاش باك 250ج وتوثيق 🛡️</button>
-              ` : (p.is_verified ? '<span style="color:green; font-weight:bold;">موثق 🛡️</span>' : 'قيد التقدم')}
-            </td>
-            <td>
-              ${isBanned ? `
-                <button class="action-btn btn-green" onclick="unbanProv(${p.id})">فك الحظر</button>
+              ${isPending ? `
+                <button class="action-btn btn-green" onclick="approveProvider(${p.id})">اعتماد وتفعيل 🟢</button>
               ` : `
-                <button class="action-btn btn-danger" onclick="banProv(${p.id}, 24)">24س</button>
-                <button class="action-btn btn-danger" onclick="banProv(${p.id}, 48)">48س</button>
-                <button class="action-btn btn-danger" onclick="banProv(${p.id}, 0)">دائم</button>
+                <button class="action-btn btn-danger" onclick="suspendProvider(${p.id})">إيقاف 🔴</button>
               `}
             </td>
           </tr>
         `;
       });
-      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="9">لا يوجد مناديب.</td></tr>';
+      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7">لا يوجد مناديب.</td></tr>';
     }
+  }
 
-    // 4. العملاء المحظورين
-    const { data: banned } = await db.from('banned_clients').select('*').order('created_at', { ascending: false });
-    if (banned) {
-      let html = '';
-      banned.forEach(b => {
-        html += `
-          <tr>
-            <td><b>${b.phone}</b></td>
-            <td>${b.ban_reason || 'مخالفة'}</td>
-            <td>${b.banned_until ? 'مؤقت حتى: ' + new Date(b.banned_until).toLocaleDateString('ar-EG') : '<b style="color:red;">دائم</b>'}</td>
-            <td><button class="action-btn btn-green" onclick="unbanClient('${b.phone}')">فك الحظر</button></td>
-          </tr>
-        `;
-      });
-      document.getElementById('clientsBody').innerHTML = html || '<tr><td colspan="4">لا يوجد عملاء محظورين.</td></tr>';
-    }
+  async function approveProvider(id) {
+    await db.from('service_providers').update({ status: 'معتمد' }).eq('id', id);
+    alert('تم اعتماد وتفعيل حساب الكابتن بنجاح! يمكنه الآن استقبال المشاوير.');
+    loadAllData();
+  }
 
-    // 5. سجل المعاملات
-    const { data: txs } = await db.from('wallet_transactions').select('*').order('id', { ascending: false }).limit(20);
-    if (txs) {
-      let html = '';
-      txs.forEach(t => {
-        html += `
-          <tr>
-            <td>${t.provider_phone}</td>
-            <td style="color:${t.amount > 0 ? 'green' : 'red'}; font-weight:bold;">${t.amount > 0 ? '+' : ''}${t.amount} ج</td>
-            <td>${t.type}</td>
-            <td>${t.notes || '-'}</td>
-            <td>${new Date(t.created_at).toLocaleTimeString('ar-EG')}</td>
-          </tr>
-        `;
-      });
-      document.getElementById('txBody').innerHTML = html || '<tr><td colspan="5">لا توجد حركات سابقة.</td></tr>';
-    }
+  async function suspendProvider(id) {
+    if (!confirm('هل تريد إيقاف هذا الحساب؟')) return;
+    await db.from('service_providers').update({ status: 'محظور' }).eq('id', id);
+    alert('تم إيقاف الحساب.');
+    loadAllData();
   }
 
   async function updateFee() {
     const val = Number(document.getElementById('newFeeInput').value) || 0;
     await db.from('platform_settings').update({ commission_fee: val }).eq('id', 1);
     alert('تم تعديل عمولة المنصة بنجاح!');
-    loadAllData();
-  }
-
-  async function markDone(id) {
-    await db.from('orders').update({ status: 'مكتمل' }).eq('id', id);
-    loadAllData();
-  }
-
-  async function rechargeProv(id, phone, amt) {
-    const { data } = await db.from('service_providers').select('wallet_balance').eq('id', id).single();
-    if (data) {
-      const newB = (Number(data.wallet_balance) || 0) + amt;
-      await db.from('service_providers').update({ wallet_balance: newB }).eq('id', id);
-      await db.from('wallet_transactions').insert([{ provider_phone: phone, amount: amt, type: 'شحن رصيد إداري', notes: 'شحن مباشر من الداشبورد' }]);
-      loadAllData();
-    }
-  }
-
-  async function verifyAndCashback(id, phone, amt) {
-    if (!confirm(`هل راجعت الفيش الجنائي وتحليل تاون كلينك وتؤكد صرف كاش باك ${amt} ج وتوثيق الحساب؟`)) return;
-    const { data } = await db.from('service_providers').select('wallet_balance').eq('id', id).single();
-    if (data) {
-      const newB = (Number(data.wallet_balance) || 0) + amt;
-      await db.from('service_providers').update({ wallet_balance: newB, is_verified: true }).eq('id', id);
-      await db.from('wallet_transactions').insert([{ provider_phone: phone, amount: amt, type: 'كاش باك 100% تاون كلينك', notes: 'اعتماد الفيش وتحليل تاون كلينك' }]);
-      alert('تم توثيق الحساب وصرف الكاش باك بنجاح! 🛡️');
-      loadAllData();
-    }
-  }
-
-  async function banProv(id, hours) {
-    let until = null;
-    if (hours > 0) { const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString(); }
-    await db.from('service_providers').update({ status: 'محظور', banned_until: until }).eq('id', id);
-    alert('تم تطبيق الحظر!');
-    loadAllData();
-  }
-
-  async function unbanProv(id) {
-    await db.from('service_providers').update({ status: 'معتمد', banned_until: null }).eq('id', id);
-    alert('تم فك الحظر!');
-    loadAllData();
-  }
-
-  async function banClient(hours) {
-    const phone = document.getElementById('banClientPhone').value.trim();
-    const reason = document.getElementById('banClientReason').value.trim();
-    if (!phone) return alert('أدخل رقم هاتف العميل!');
-    let until = null;
-    if (hours > 0) { const d = new Date(); d.setHours(d.getHours() + hours); until = d.toISOString(); }
-    await db.from('banned_clients').upsert({ phone, ban_reason: reason, banned_until: until });
-    alert('تم حظر العميل بنجاح!');
-    document.getElementById('banClientPhone').value = '';
-    loadAllData();
-  }
-
-  async function unbanClient(phone) {
-    await db.from('banned_clients').delete().eq('phone', phone);
-    alert('تم فك الحظر!');
-    loadAllData();
   }
 </script>
 </body>
