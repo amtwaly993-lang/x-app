@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة منصة X | حدائق أكتوبر</title>
+  
+  <!-- مكتبة السحابة -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --navy: #0c1d37;
+      --accent: #4a7c6f;
+      --green: #10b981;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; }
+    body { background-color: var(--bg); color: #0f172a; min-height: 100vh; }
+
+    /* شاشة الدخول السرية */
+    .lock-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--navy);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .lock-box {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 340px;
+      text-align: center;
+    }
+
+    /* الشريط العلوي */
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px 14px; }
+
+    /* كروت الأرقام */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-val { font-size: 24px; font-weight: 900; color: var(--navy); }
+    .stat-lbl { font-size: 11.5px; color: #64748b; font-weight: 600; }
+
+    /* التبويبات */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab-btn {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+    /* الجدول */
+    .section-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12.5px; }
+    th { background: #f8fafc; padding: 10px; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-new { background: #e0f2fe; color: #0369a1; }
+    .badge-done { background: #dcfce7; color: #15803d; }
+
+    .action-btn {
+      background: var(--navy);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-green { background: var(--green); }
+
+    .input-box {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- شاشة الحماية بالرمز السري -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div style="font-size:32px; margin-bottom:8px;">🔐</div>
+    <h3 style="margin-bottom:6px; color:var(--navy);">لوحة إدارة منصة X</h3>
+    <p style="font-size:12px; color:#64748b; margin-bottom:14px;">أدخل كلمة السر للدخول</p>
+    <input type="password" id="adminPass" class="input-box" placeholder="كلمة السر" style="text-align:center;">
+    <button class="action-btn" style="width:100%; padding:10px;" onclick="unlockAdmin()">دخول ⚡</button>
+  </div>
+</div>
+
+<!-- الشريط العلوي -->
+<div class="admin-header">
+  <div style="font-weight:900; font-size:16px; color:var(--navy);">⚡ مركز عمليات منصة X</div>
+  <button class="action-btn" onclick="loadData()">تحديث مباشر 🔄</button>
+</div>
+
+<div class="container">
+  <!-- المؤشرات السريعة -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-lbl">إجمالي الطلبات المسجلة</span>
+      <span class="stat-val" id="totalOrdersCount">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-lbl">الطلبات الجديدة الآن</span>
+      <span class="stat-val" id="newOrdersCount" style="color:#0284c7;">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-lbl">عدد المناديب المسجلين</span>
+      <span class="stat-val" id="providersCount" style="color:var(--green);">0</span>
+    </div>
+  </div>
+
+  <!-- التبويبات -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('tabOrders', this)">الطلبات اللحظية</button>
+    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب والمحافظ</button>
+    <button class="tab-btn" onclick="showTab('tabNewProvider', this)">+ إضافة مندوب وشحن رصيد</button>
+  </div>
+
+  <!-- 1. جدول الطلبات -->
+  <div id="tabOrders" class="section-card">
+    <table>
+      <thead>
+        <tr>
+          <th>رقم</th>
+          <th>الخدمة</th>
+          <th>هاتف العميل</th>
+          <th>العنوان والتفاصيل</th>
+          <th>الميزانية</th>
+          <th>الحالة</th>
+          <th>إجراء</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTableBody">
+        <tr><td colspan="7" style="text-align:center; padding:16px;">جارٍ تحميل الطلبات...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. جدول المناديب والمحافظ -->
+  <div id="tabProviders" class="section-card" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الهاتف</th>
+          <th>الصفة</th>
+          <th>رصيد المحفظة</th>
+          <th>شحن سريع</th>
+        </tr>
+      </thead>
+      <tbody id="providersTableBody">
+        <tr><td colspan="5" style="text-align:center; padding:16px;">جارٍ التحميل...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3. إضافة مندوب -->
+  <div id="tabNewProvider" class="section-card" style="display:none; max-width:500px;">
+    <label style="font-size:12px; font-weight:700;">اسم المندوب / الفني:</label>
+    <input type="text" id="provName" class="input-box" placeholder="مثال: أحمد عبد الله">
+
+    <label style="font-size:12px; font-weight:700;">رقم الهاتف:</label>
+    <input type="tel" id="provPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
+
+    <label style="font-size:12px; font-weight:700;">الصفة:</label>
+    <select id="provRole" class="input-box">
+      <option value="مندوب توصيل">مندوب توصيل</option>
+      <option value="فني صيانة">فني صيانة معتمد</option>
+    </select>
+
+    <label style="font-size:12px; font-weight:700;">شحن رصيد افتتاحي (جنيه):</label>
+    <input type="number" id="provBalance" class="input-box" placeholder="50">
+
+    <button class="action-btn btn-green" style="width:100%; padding:10px;" onclick="addProvider()">حفظ واعتماد المندوب 🚀</button>
+  </div>
+</div>
+
+<script>
+  const db = supabase.createClient(
+    "https://jopymfpdovhtdrfanbig.supabase.co",
+    "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm"
+  );
+
+  function unlockAdmin() {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "123456" || pass === "admin") {
+      document.getElementById('lockScreen').style.display = "none";
+      loadData();
+    } else {
+      alert("كلمة المرور غير صحيحة!");
+    }
+  }
+
+  function showTab(tabId, btn) {
+    document.querySelectorAll('.section-card').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  async function loadData() {
+    // جلب الطلبات
+    const { data: orders } = await db.from('orders').select('*').order('id', { ascending: false });
+    if (orders) {
+      document.getElementById('totalOrdersCount').innerText = orders.length;
+      document.getElementById('newOrdersCount').innerText = orders.filter(o => o.status === 'جديد').length;
+      
+      let html = '';
+      orders.forEach(o => {
+        let isNew = o.status === 'جديد';
+        html += `
+          <tr>
+            <td>#${o.id}</td>
+            <td><b>${o.order_type}</b></td>
+            <td><a href="tel:${o.client_phone}" style="color:var(--navy); font-weight:bold;">${o.client_phone}</a></td>
+            <td>${o.client_address}<br><small style="color:#64748b;">${o.details}</small></td>
+            <td>${o.max_budget ? o.max_budget + ' ج' : '-'}</td>
+            <td><span class="badge ${isNew ? 'badge-new' : 'badge-done'}">${o.status}</span></td>
+            <td>
+              ${isNew ? `<button class="action-btn" onclick="completeOrder(${o.id})">تم التسليم ✓</button>` : 'مكتمل'}
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('ordersTableBody').innerHTML = html || '<tr><td colspan="7" style="text-align:center;">لا توجد طلبات بعد.</td></tr>';
+    }
+
+    // جلب المناديب
+    const { data: providers } = await db.from('service_providers').select('*').order('id', { ascending: false });
+    if (providers) {
+      document.getElementById('providersCount').innerText = providers.length;
+      let html = '';
+      providers.forEach(p => {
+        html += `
+          <tr>
+            <td><b>${p.name}</b></td>
+            <td>${p.phone}</td>
+            <td>${p.role}</td>
+            <td><b style="color:var(--green);">${p.wallet_balance} ج</b></td>
+            <td>
+              <button class="action-btn btn-green" onclick="rechargeWallet(${p.id}, 50)">+50 ج</button>
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('providersTableBody').innerHTML = html || '<tr><td colspan="5" style="text-align:center;">لا يوجد مناديب مسجلين.</td></tr>';
+    }
+  }
+
+  async function completeOrder(id) {
+    await db.from('orders').update({ status: 'مكتمل' }).eq('id', id);
+    loadData();
+  }
+
+  async function rechargeWallet(id, amount) {
+    const { data } = await db.from('service_providers').select('wallet_balance').eq('id', id).single();
+    if (data) {
+      const newBalance = (Number(data.wallet_balance) || 0) + amount;
+      await db.from('service_providers').update({ wallet_balance: newBalance }).eq('id', id);
+      loadData();
+    }
+  }
+
+  async function addProvider() {
+    const name = document.getElementById('provName').value.trim();
+    const phone = document.getElementById('provPhone').value.trim();
+    const role = document.getElementById('provRole').value;
+    const balance = Number(document.getElementById('provBalance').value) || 0;
+
+    if (!name || !phone) {
+      alert("يرجى إدخال الاسم ورقم الهاتف!");
+      return;
+    }
+
+    const { error } = await db.from('service_providers').insert([
+      { name, phone, role, wallet_balance: balance, status: 'معتمد' }
+    ]);
+
+    if (error) {
+      alert("خطأ: " + error.message);
+    } else {
+      alert("تمت إضافة المندوب واعتماده بنجاح! 🚀");
+      document.getElementById('provName').value = '';
+      document.getElementById('provPhone').value = '';
+      showTab('tabProviders', document.querySelectorAll('.tab-btn')[1]);
+      loadData();
+    }
+  }
+</script>
+</body>
+</html>
