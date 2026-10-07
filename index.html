@@ -418,11 +418,17 @@
     <div class="input-row">
       <label>الكمبوند / المنطقة:</label>
       <select id="inputCompound" class="input-box">
-        <option value="سكن مصر الداون تاون">سكن مصر الداون تاون</option>
-        <option value="طريق المنطقة ص - حدائق أكتوبر">طريق المنطقة ص - حدائق أكتوبر</option>
-        <option value="مدينة هرم سيتي">مدينة هرم سيتي</option>
-        <option value="محيط إدارة حدائق أكتوبر">محيط إدارة حدائق أكتوبر</option>
-        <option value="منطقة أخرى بالمحيط">منطقة أخرى بالمحيط</option>
+        <option value="كمبوند سكن مصر الداون تاون">كمبوند سكن مصر الداون تاون</option>
+        <option value="كمبوند حورس">كمبوند حورس</option>
+        <option value="كمبوند فاليرا جاردن">كمبوند فاليرا جاردن</option>
+        <option value="ابني بيتك السابعة قطاع ص">ابني بيتك السابعة قطاع ص</option>
+        <option value="كمبوند أو ويست">كمبوند أو ويست</option>
+        <option value="كمبوند دار مصر حدائق اكتوبر">كمبوند دار مصر حدائق اكتوبر</option>
+        <option value="كمبوند اشجار ستي">كمبوند اشجار ستي</option>
+        <option value="كمبوند ريحانا">كمبوند ريحانا</option>
+        <option value="هرم لايف">هرم لايف</option>
+        <option value="الحي الاول">الحي الاول</option>
+        <option value="جامعة MSA">جامعة MSA</option>
       </select>
     </div>
 
@@ -476,7 +482,7 @@
   // 1. استرجاع العنوان ورقم الهاتف المحفوظين مسبقاً في ذاكرة جهاز العميل
   const savedAddressData = localStorage.getItem('x_client_address');
   let clientAddress = savedAddressData ? JSON.parse(savedAddressData) : {
-    compound: 'سكن مصر الداون تاون',
+    compound: 'كمبوند سكن مصر الداون تاون',
     building: '',
     floor: '',
     apartment: '',
@@ -625,7 +631,7 @@
           <div class="section-title">خدمات سريعة فورية للمنزل</div>
           <div class="grid-3">
             <div class="service-card" onclick="openOrderModal('أنبوبة غاز')">
-              <span class="service-card-icon">🔥</span>
+              <span class="service-card-icon">⛽</span>
               <span class="service-card-title">أنبوبة غاز</span>
               <span class="service-card-desc">تبديل وتركيب</span>
             </div>
@@ -646,7 +652,7 @@
             <div class="service-card" onclick="openOrderModal('سباكة منزلية')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
             <div class="service-card" onclick="openOrderModal('كهرباء منزلية')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
             <div class="service-card" onclick="openOrderModal('صيانة دش وستالايت')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
-            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🔨<br><b style="font-size:11px;">نجار</b></center></div>
+            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
           </div>
         </div>
       `;
@@ -677,7 +683,7 @@
   }
 
   function openAddressModal() {
-    document.getElementById('inputCompound').value = clientAddress.compound || 'سكن مصر الداون تاون';
+    document.getElementById('inputCompound').value = clientAddress.compound || 'كمبوند سكن مصر الداون تاون';
     document.getElementById('inputBuilding').value = clientAddress.building || '';
     document.getElementById('inputFloor').value = clientAddress.floor || '';
     document.getElementById('inputApartment').value = clientAddress.apartment || '';
@@ -719,7 +725,6 @@
     document.getElementById('coordsText').innerText = `تم تحديد الإحداثيات: (${lat.toFixed(4)}, ${lng.toFixed(4)}) 🟢`;
   }
 
-  // 2. حفظ العنوان ورقم الهاتف في ذاكرة جهاز العميل نهائياً
   function saveAddressData() {
     const phone = document.getElementById('inputPhone').value.trim();
     const building = document.getElementById('inputBuilding').value.trim();
@@ -739,7 +744,6 @@
     clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
     clientAddress.phone = phone;
 
-    // تخزين في ذاكرة الجهاز المحلية
     localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
 
     closeAddressModal();
@@ -748,7 +752,6 @@
   }
 
   function openOrderModal(typeName, count = 1) {
-    // التأكد من أن العميل سجل بياناته أولاً
     if (!clientAddress.phone || !clientAddress.building) {
       alert('يرجى تحديد عنوانك ورقم هاتفك أولاً للمتابعة!');
       openAddressModal();
