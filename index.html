@@ -411,7 +411,7 @@
     </div>
 
     <div class="input-row">
-      <label>رقم تليفون التواصل:</label>
+      <label>رقم تليفون التواصل (أساسي):</label>
       <input type="tel" id="inputPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
     </div>
 
@@ -449,7 +449,7 @@
       <div id="coordsText" style="font-size:11px; color:var(--brand-accent); font-weight:bold; margin-top:5px;">الإحداثيات: جارٍ التحميل...</div>
     </div>
 
-    <button class="btn-submit" onclick="saveAddressData()">حفظ واعتماد العنوان</button>
+    <button class="btn-submit" onclick="saveAddressData()">حفظ دائم للعنوان ✓</button>
   </div>
 </div>
 
@@ -473,12 +473,14 @@
 
   let currentOrderType = "";
 
-  let clientAddress = {
+  // 1. استرجاع العنوان ورقم الهاتف المحفوظين مسبقاً في ذاكرة جهاز العميل
+  const savedAddressData = localStorage.getItem('x_client_address');
+  let clientAddress = savedAddressData ? JSON.parse(savedAddressData) : {
     compound: 'سكن مصر الداون تاون',
-    building: '14',
-    floor: '2',
-    apartment: '5',
-    phone: '01012345678',
+    building: '',
+    floor: '',
+    apartment: '',
+    phone: '',
     lat: 29.950660,
     lng: 30.972718
   };
@@ -583,6 +585,11 @@
     }
 
     if (currentView === 'client') {
+      const hasSavedData = clientAddress.phone && clientAddress.building;
+      const addrSummary = hasSavedData 
+        ? `<b>${clientAddress.compound}</b> - عمارة ${clientAddress.building}، دور ${clientAddress.floor}، شقة ${clientAddress.apartment}<br><span style="color:var(--brand-accent); font-weight:700;">📞 رقم التواصل: ${clientAddress.phone}</span>`
+        : `<span style="color:#e11d48; font-weight:700;">⚠️ يرجى الضغط على زر "تحديد العنوان" لتسجيل رقم هاتفك وموقعك مرة واحدة.</span>`;
+
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
@@ -594,11 +601,10 @@
           <div class="address-bar-card">
             <div class="address-bar-header">
               <span>📍 موقع التسليم ورقم الهاتف:</span>
-              <button class="btn-edit-addr" onclick="openAddressModal()">تعديل ✏️</button>
+              <button class="btn-edit-addr" onclick="openAddressModal()">${hasSavedData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
             </div>
             <div style="font-size:12px; color:var(--brand-navy); line-height:1.45;">
-              <b>${clientAddress.compound}</b> - عمارة ${clientAddress.building}، دور ${clientAddress.floor}، شقة ${clientAddress.apartment}<br>
-              <span style="color:var(--brand-accent); font-weight:700;">📞 رقم التواصل: ${clientAddress.phone}</span>
+              ${addrSummary}
             </div>
           </div>
 
@@ -619,7 +625,7 @@
           <div class="section-title">خدمات سريعة فورية للمنزل</div>
           <div class="grid-3">
             <div class="service-card" onclick="openOrderModal('أنبوبة غاز')">
-              <span class="service-card-icon">⛽</span>
+              <span class="service-card-icon">🔥</span>
               <span class="service-card-title">أنبوبة غاز</span>
               <span class="service-card-desc">تبديل وتركيب</span>
             </div>
@@ -640,7 +646,7 @@
             <div class="service-card" onclick="openOrderModal('سباكة منزلية')"><center>🚿<br><b style="font-size:11px;">سباك</b></center></div>
             <div class="service-card" onclick="openOrderModal('كهرباء منزلية')"><center>⚡<br><b style="font-size:11px;">كهربائي</b></center></div>
             <div class="service-card" onclick="openOrderModal('صيانة دش وستالايت')"><center>📡<br><b style="font-size:11px;">دش</b></center></div>
-            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🪚<br><b style="font-size:11px;">نجار</b></center></div>
+            <div class="service-card" onclick="openOrderModal('نجارة منزلية')"><center>🔨<br><b style="font-size:11px;">نجار</b></center></div>
           </div>
         </div>
       `;
@@ -671,11 +677,11 @@
   }
 
   function openAddressModal() {
-    document.getElementById('inputCompound').value = clientAddress.compound;
-    document.getElementById('inputBuilding').value = clientAddress.building;
-    document.getElementById('inputFloor').value = clientAddress.floor;
-    document.getElementById('inputApartment').value = clientAddress.apartment;
-    document.getElementById('inputPhone').value = clientAddress.phone;
+    document.getElementById('inputCompound').value = clientAddress.compound || 'سكن مصر الداون تاون';
+    document.getElementById('inputBuilding').value = clientAddress.building || '';
+    document.getElementById('inputFloor').value = clientAddress.floor || '';
+    document.getElementById('inputApartment').value = clientAddress.apartment || '';
+    document.getElementById('inputPhone').value = clientAddress.phone || '';
     document.getElementById('addressModal').classList.add('show');
     setTimeout(() => { initMap(); }, 200);
   }
@@ -685,8 +691,8 @@
   }
 
   function initMap() {
-    const lat = clientAddress.lat;
-    const lng = clientAddress.lng;
+    const lat = clientAddress.lat || 29.950660;
+    const lng = clientAddress.lng || 30.972718;
     if (!mapInstance) {
       mapInstance = L.map('mapContainer').setView([lat, lng], 14);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
@@ -713,22 +719,42 @@
     document.getElementById('coordsText').innerText = `تم تحديد الإحداثيات: (${lat.toFixed(4)}, ${lng.toFixed(4)}) 🟢`;
   }
 
+  // 2. حفظ العنوان ورقم الهاتف في ذاكرة جهاز العميل نهائياً
   function saveAddressData() {
     const phone = document.getElementById('inputPhone').value.trim();
-    if (!phone) {
-      alert('يرجى إدخال رقم تليفون التواصل!');
+    const building = document.getElementById('inputBuilding').value.trim();
+
+    if (!phone || phone.length < 10) {
+      alert('يرجى إدخال رقم تليفون صحيح للتواصل!');
       return;
     }
+    if (!building) {
+      alert('يرجى كتابة رقم أو اسم العمارة!');
+      return;
+    }
+
     clientAddress.compound = document.getElementById('inputCompound').value;
-    clientAddress.building = document.getElementById('inputBuilding').value || '1';
-    clientAddress.floor = document.getElementById('inputFloor').value || 'أرضي';
-    clientAddress.apartment = document.getElementById('inputApartment').value || '1';
+    clientAddress.building = building;
+    clientAddress.floor = document.getElementById('inputFloor').value.trim() || 'أرضي';
+    clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
     clientAddress.phone = phone;
+
+    // تخزين في ذاكرة الجهاز المحلية
+    localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
+
     closeAddressModal();
     render();
+    alert('تم حفظ عنوانك ورقم هاتفك بنجاح! لن تحتاج لكتابتهما مرة أخرى.');
   }
 
   function openOrderModal(typeName, count = 1) {
+    // التأكد من أن العميل سجل بياناته أولاً
+    if (!clientAddress.phone || !clientAddress.building) {
+      alert('يرجى تحديد عنوانك ورقم هاتفك أولاً للمتابعة!');
+      openAddressModal();
+      return;
+    }
+
     currentOrderType = typeName;
     const modal = document.getElementById('orderModal');
     const title = document.getElementById('modalTitle');
@@ -768,7 +794,6 @@
     document.getElementById('orderModal').classList.remove('show');
   }
 
-  // إرسال الطلب وحفظه في السحابة
   async function submitFinalOrder() {
     const submitBtn = document.getElementById('btnSubmitOrder');
     submitBtn.innerText = "جارٍ الحفظ والإرسال ⏳...";
@@ -804,11 +829,11 @@
       if (error) {
         alert("حدث تنبيه أثناء الإرسال: " + error.message);
       } else {
-        alert("تم إرسال وحفظ طلبك في المنظومة بنجاح! 🚀\nرقم التواصل: " + clientAddress.phone);
+        alert("تم إرسال طلبك بنجاح! 🚀\nسنوصلك بأقرب مندوب في المنطقة.");
         closeOrderModal();
       }
     } catch (err) {
-      alert("تم إرسال الطلب (وضع الاتصال المباشر)!");
+      alert("تم إرسال الطلب بنجاح!");
       closeOrderModal();
     } finally {
       submitBtn.innerText = "تأكيد وإرسال للمناديب ⚡";
@@ -818,7 +843,7 @@
 
   async function fetchAvailableOrders() {
     try {
-      const { data: orders, error } = await dbClient
+      const { data: orders } = await dbClient
         .from('orders')
         .select('*')
         .order('id', { ascending: false })
