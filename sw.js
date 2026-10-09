@@ -1,4 +1,4 @@
-const CACHE_NAME = 'x-app-v4';
+const CACHE_NAME = 'x-app-v5';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -36,5 +36,22 @@ self.addEventListener('fetch', (event) => {
   }
   event.respondWith(
     caches.match(event.request).then((response) => response || fetch(event.request))
+  );
+});
+
+// التعامل مع النقر على إشعار الهاتف الخارجي
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./index.html');
+      }
+    })
   );
 });

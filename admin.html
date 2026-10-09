@@ -6,7 +6,7 @@
   <title>لوحة إدارة منصة X | التحكم والعمليات الشاملة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root { --navy: #0c1d37; --accent: #4a7c6f; --green: #10b981; --danger: #ef4444; --bg: #f8fafc; --border: #e2e8f0; }
+    :root { --navy: #0c1d37; --accent: #4a7c6f; --green: #10b981; --danger: #ef4444; --bg: #f8fafc; --border: #e2e8f0; --amber: #f59e0b; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; }
     body { background-color: var(--bg); color: #0f172a; min-height: 100vh; }
 
@@ -29,7 +29,7 @@
 
     .section-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; overflow-x: auto; margin-bottom: 14px; }
     table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12px; }
-    th { background: #f8fafc; padding: 9px; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; padding: 9px; border-bottom: 1px solid var(--border); color: var(--navy); font-weight: 800; }
     td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
 
     .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; }
@@ -124,25 +124,69 @@
     </table>
   </div>
 
-  <!-- 4. البث والبانر الإعلاني -->
+  <!-- 4. البث وإدارة الإشعارات والبانر المطور -->
   <div id="tabBroadcast" class="section-card" style="display:none;">
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-      <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px;">
-        <h4 style="font-size:12px; margin-bottom:6px;">📢 إرسال إشعار لحظي عاجل للجميع:</h4>
-        <input type="text" id="broadcastMsgInput" class="input-box" placeholder="اكتب نص العرض أو التنبيه هنا...">
-        <button class="action-btn btn-green" style="width:100%;" onclick="publishBroadcast()">بث الإشعار الآن ⚡</button>
+    <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
+      
+      <!-- إرسال الإشعار المخصص والذكي -->
+      <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
+        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">📢 إرسال إشعار لحظي مخصص:</h4>
+        
+        <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نص الإشعار أو التنبيه:</label>
+        <textarea id="broadcastMsgInput" class="input-box" rows="2" placeholder="اكتب نص العرض، التنبيه أو التعليمات هنا..."></textarea>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+          <div>
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">الفئة المستهدفة:</label>
+            <select id="broadcastTargetRole" class="input-box">
+              <option value="all">🌐 الجميع (كافة المستخدمين)</option>
+              <option value="client">🛒 العملاء فقط</option>
+              <option value="courier">🛵 كباتن الدليفري فقط</option>
+              <option value="services">⚡ خدمات الغاز وشحن الكروت</option>
+              <option value="ride">🚗 سيارات النقل الداخلي</option>
+              <option value="technician">🔧 الفنيين المعتمدين</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نوع ومكان الظهور:</label>
+            <select id="broadcastChannel" class="input-box">
+              <option value="both">📲 شريط بالتطبيق + إشعار هاتف</option>
+              <option value="app">📱 شريط داخل التطبيق فقط</option>
+              <option value="push">🔔 إشعار نظام على الهاتف فقط</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="action-btn btn-green" style="width:100%; padding:10px; font-size:12px;" onclick="publishBroadcast()">بث الإشعار المخصص الآن ⚡</button>
       </div>
 
-      <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px;">
-        <h4 style="font-size:12px; margin-bottom:6px;">🖼️ إدارة البانر الإعلاني بالتطبيق:</h4>
+      <!-- إدارة البانر الإعلاني بالتطبيق -->
+      <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
+        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">🖼️ إدارة البانر الإعلاني بالتطبيق:</h4>
         <input type="file" id="bannerImgFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
         <input type="text" id="bannerLinkInput" class="input-box" placeholder="رابط الواتساب أو الموقع (اختياري)">
-        <div style="display:flex; gap:6px;">
-          <button class="action-btn btn-green" onclick="saveBanner(true)">حفظ وتفعيل 🟢</button>
-          <button class="action-btn btn-danger" onclick="saveBanner(false)">إخفاء البانر ⚪</button>
+        <div style="display:flex; gap:6px; margin-top:6px;">
+          <button class="action-btn btn-green" style="flex:1;" onclick="saveBanner(true)">حفظ وتفعيل 🟢</button>
+          <button class="action-btn btn-danger" style="flex:1;" onclick="saveBanner(false)">إخفاء البانر ⚪</button>
         </div>
       </div>
     </div>
+
+    <!-- جدول إدارة ومراقبة الإشعارات السابقة -->
+    <h4 style="font-size:12.5px; font-weight:800; margin-bottom:8px; color:var(--navy);">📋 سجل الإشعارات والتحكم في ظهورها:</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>نص الإشعار</th>
+          <th>الفئة المستهدفة</th>
+          <th>نوع الظهور</th>
+          <th>تاريخ البث</th>
+          <th>الحالة الحالية</th>
+          <th>إجراء</th>
+        </tr>
+      </thead>
+      <tbody id="announcementsTableBody"></tbody>
+    </table>
   </div>
 </div>
 
@@ -237,7 +281,7 @@
       document.getElementById('activeClientsCount').innerText = clients.length;
     }
 
-    // 3. طلبات الشحن
+    // 3. طلبات الشحن المعلقة
     const { data: recharges } = await db.from('wallet_recharge_requests').select('*').eq('status', 'معلق').order('id', { ascending: false });
     if (recharges) {
       document.getElementById('pendingRechargesCount').innerText = recharges.length;
@@ -279,6 +323,9 @@
       });
       document.getElementById('vouchersBody').innerHTML = html || '<tr><td colspan="6">لا توجد كوبونات.</td></tr>';
     }
+
+    // 5. تحميل سجل الإشعارات
+    loadAnnouncementsTable();
   }
 
   // فتح نافذة الكباتن المتصلين فعلياً
@@ -373,12 +420,98 @@
     loadAllData();
   }
 
+  // ==========================================
+  // وظائف منظومة الإشعارات والبث الذكية
+  // ==========================================
+
+  async function loadAnnouncementsTable() {
+    const { data: list } = await db.from('platform_announcements').select('*').order('id', { ascending: false });
+    const tbody = document.getElementById('announcementsTableBody');
+    if (!tbody) return;
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:12px;">لا توجد إشعارات مسجلة مسبقاً.</td></tr>';
+      return;
+    }
+
+    const roleLabels = {
+      'all': '🌐 الجميع',
+      'client': '🛒 العملاء',
+      'courier': '🛵 كباتن الدليفري',
+      'services': '⚡ خدمات الغاز والكروت',
+      'ride': '🚗 سيارات داخلية',
+      'technician': '🔧 فنيين معتمدين'
+    };
+
+    const channelLabels = {
+      'both': '📲 شريط + إشعار هاتف',
+      'app': '📱 شريط بالتطبيق',
+      'push': '🔔 إشعار هاتف فقط'
+    };
+
+    let html = '';
+    list.forEach(item => {
+      const isLive = item.is_active;
+      const targetLbl = roleLabels[item.target_role] || item.target_role;
+      const chanLbl = channelLabels[item.channel || 'both'] || '📲 شريط + إشعار هاتف';
+      const timeStr = item.created_at ? new Date(item.created_at).toLocaleString('ar-EG') : 'الآن';
+
+      html += `
+        <tr>
+          <td style="max-width:250px; font-weight:bold;">${item.message}</td>
+          <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${targetLbl}</span></td>
+          <td><span style="font-size:10.5px; color:#475569;">${chanLbl}</span></td>
+          <td style="font-size:10.5px; color:#64748b;">${timeStr}</td>
+          <td>
+            <span class="badge ${isLive ? 'badge-done' : 'badge-banned'}">
+              ${isLive ? 'معروض حالياً 🟢' : 'متوقف ⚪'}
+            </span>
+          </td>
+          <td>
+            <button class="action-btn ${isLive ? 'btn-danger' : 'btn-green'}" onclick="toggleAnnouncementStatus(${item.id}, ${!isLive})">
+              ${isLive ? 'إيقاف ⏸️' : 'تفعيل ▶️'}
+            </button>
+            <button class="action-btn" style="background:#64748b; margin-right:4px;" onclick="deleteAnnouncement(${item.id})">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  }
+
   async function publishBroadcast() {
     const msg = document.getElementById('broadcastMsgInput').value.trim();
-    if (!msg) return alert('أدخل نص الإشعار!');
-    await db.from('platform_announcements').insert([{ message: msg, target_role: 'all', is_active: true }]);
-    alert('تم بث الإشعار بنجاح لجميع المستخدمين!');
-    document.getElementById('broadcastMsgInput').value = '';
+    const role = document.getElementById('broadcastTargetRole').value;
+    const channel = document.getElementById('broadcastChannel').value;
+
+    if (!msg) return alert('يرجى كتابة نص الإشعار أولاً!');
+
+    const { error } = await db.from('platform_announcements').insert([{
+      message: msg,
+      target_role: role,
+      channel: channel,
+      is_active: true,
+      created_at: new Date().toISOString()
+    }]);
+
+    if (error) {
+      alert('خطأ أثناء البث: ' + error.message);
+    } else {
+      alert('🚀 تم بث الإشعار بنجاح للفئة المحددة!');
+      document.getElementById('broadcastMsgInput').value = '';
+      loadAnnouncementsTable();
+    }
+  }
+
+  async function toggleAnnouncementStatus(id, newStatus) {
+    await db.from('platform_announcements').update({ is_active: newStatus }).eq('id', id);
+    loadAnnouncementsTable();
+  }
+
+  async function deleteAnnouncement(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا الإشعار تماماً؟')) return;
+    await db.from('platform_announcements').delete().eq('id', id);
+    loadAnnouncementsTable();
   }
 
   function fileToBase64(file) {
