@@ -31,51 +31,31 @@
     body { background-color: var(--bg); display: flex; justify-content: center; color: var(--navy); min-height: 100vh; }
     .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; }
 
-    /* الإشعار العائم الراقي (بديل رسائل المتصفح المزعجة) */
+    /* الإشعار العائم الراقي */
     .toast-msg {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--navy);
-      color: #ffffff;
-      padding: 11px 20px;
-      border-radius: 30px;
-      font-size: 11.5px;
-      font-weight: 800;
-      box-shadow: 0 10px 25px rgba(12, 29, 55, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 99999;
-      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
-      opacity: 0;
-      pointer-events: none;
-      max-width: 90%;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.1);
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--navy); color: #ffffff; padding: 11px 20px; border-radius: 30px; font-size: 11.5px;
+      font-weight: 800; box-shadow: 0 10px 25px rgba(12, 29, 55, 0.3); z-index: 99999;
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s; opacity: 0;
+      pointer-events: none; max-width: 90%; text-align: center; border: 1px solid rgba(255,255,255,0.1);
     }
-    .toast-msg.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* شاشات الإيقاف والانتظار */
-    .status-screen { padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; }
+    /* شريط البث والإعلانات الإدارية العاجلة */
+    .announcement-bar { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 9px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 
-    /* البوابة الرئيسية */
+    /* البانر الإعلاني التجاري */
+    .ad-banner-box { width: 100%; border-radius: 14px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid var(--border); display: none; }
+    .ad-banner-box img { width: 100%; height: auto; display: block; object-fit: cover; }
+
+    /* البوابة */
     .portal-screen { padding: 26px 16px; display: flex; flex-direction: column; align-items: center; }
-    .logo-hero-container { margin: 8px 0 16px 0; }
-    .logo-hero-img { max-width: 150px; height: auto; }
-    .hero-title { font-size: 21px; font-weight: 900; color: var(--navy); text-align: center; margin-bottom: 4px; }
-    .hero-subtitle { font-size: 12px; color: var(--gray); text-align: center; margin-bottom: 18px; }
-
+    .logo-hero-img { max-width: 150px; height: auto; margin-bottom: 12px; }
     .portal-roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 12px; }
     .portal-card {
       background: white; border-radius: 16px; padding: 16px 12px; display: flex; flex-direction: column; align-items: center;
-      border: 1px solid var(--border); cursor: pointer; transition: transform 0.12s; text-align: center; box-shadow: 0 4px 12px rgba(12,29,55,0.03);
+      border: 1px solid var(--border); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(12,29,55,0.03);
     }
-    .portal-card:active { transform: scale(0.97); background: #f8fafc; }
     .portal-card.full-width { grid-column: span 2; display: flex; flex-direction: row; gap: 14px; text-align: right; padding: 15px; align-items: center; }
     .portal-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
     .portal-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; color: var(--navy); }
@@ -87,46 +67,32 @@
     .back-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--navy); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
     .content-area { flex: 1; padding: 14px; overflow-y: auto; }
+    .online-indicator-bar { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: 10px; padding: 8px 12px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 
-    /* مؤشر المناديب المتاحين */
-    .online-indicator-bar { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: 10px; padding: 8px 12px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-
-    /* كروت العميل */
     .address-bar-card { background: white; border: 1px solid var(--border); border-right: 4px solid var(--accent); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
-    .address-bar-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; margin-bottom: 6px; }
-    .btn-action-small { background: var(--navy); color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; }
-
     .section-title { font-size: 12px; font-weight: 800; color: var(--navy); margin: 16px 0 8px 0; display: flex; justify-content: space-between; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
     .service-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; cursor: pointer; }
-    .service-card:active { transform: scale(0.97); }
     .service-card.highlight { border: 1.5px solid var(--accent); background: #fafdfc; }
     .service-card-title { font-size: 11.5px; font-weight: 800; color: var(--navy); }
     .service-card-desc { font-size: 9.5px; color: var(--gray); }
 
-    /* كروت المتابعة والعروض */
-    .active-order-box { background: #ffffff; border: 2px solid var(--accent); border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(74,124,111,0.08); }
-    .order-bill-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 11.5px; }
+    /* كارت الشريك الطبي */
+    .medical-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .medical-discount-tag { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 900; }
 
-    /* كروت المندوب */
-    .order-feed-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(12,29,55,0.04); }
+    /* كروت المندوب والمهام */
+    .order-feed-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
     .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
     .badge-new { background: #e0f2fe; color: #0369a1; }
     .badge-active { background: #dcfce7; color: #15803d; }
-    .badge-urgent { background: #fee2e2; color: #b91c1c; }
 
-    .eta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; }
-    .btn-eta { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 7px 2px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; color: var(--navy); }
-    .btn-eta:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .toggle-online-btn { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; }
+    .btn-online { background: #dcfce7; color: #15803d; }
+    .btn-offline { background: #f1f5f9; color: #64748b; }
 
-    .order-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .btn-action-green { background: var(--green); color: white; border: none; padding: 9px; border-radius: 8px; font-size: 11.5px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
-    .btn-action-blue { background: #0284c7; color: white; border: none; padding: 9px; border-radius: 8px; font-size: 11.5px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
-
-    /* النوافذ المنبثقة */
     .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
     .modal.show { display: flex; }
     .modal-sheet { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px 16px; max-height: 88vh; overflow-y: auto; }
@@ -135,12 +101,6 @@
     .input-box { width: 100%; padding: 9px 11px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; }
     .btn-submit { width: 100%; background: var(--navy); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-top: 8px; }
     #mapContainer { height: 160px; width: 100%; border-radius: 10px; border: 1px solid #cbd5e1; margin-top: 4px; }
-
-    /* سجل الفواتير الرقمية */
-    .receipt-card { background: white; border: 1px solid #cbd5e1; border-radius: 14px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); font-size: 11.5px; }
-    .receipt-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 6px; margin-bottom: 6px; font-weight: bold; }
-    .receipt-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--gray); }
-    .receipt-total { display: flex; justify-content: space-between; font-weight: 900; font-size: 12.5px; color: var(--navy); border-top: 1px dashed #e2e8f0; padding-top: 6px; margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -149,501 +109,143 @@
   <div id="mainView"></div>
 </div>
 
-<!-- عنصر الإشعار العائم الموحد -->
 <div id="toastNotification" class="toast-msg"></div>
 
-<!-- 1. نافذة ضبط عنوان العميل -->
-<div class="modal" id="addressModal">
+<!-- نافذة الخصومات الطبية والشريك المختار -->
+<div class="modal" id="medPartnerModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">📍 عنوان التوصيل ورقم الهاتف</h3>
-      <span onclick="closeModal('addressModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-
-    <div class="input-row">
-      <label>اسم العميل الكريم:</label>
-      <input type="text" id="inputClientName" class="input-box" placeholder="مثال: عمرو محمد">
-    </div>
-
-    <div class="input-row">
-      <label>رقم تليفون التواصل (أساسي):</label>
-      <input type="tel" id="inputPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
-    </div>
-
-    <div class="input-row">
-      <label>الكمبوند / المنطقة:</label>
-      <select id="inputCompound" class="input-box">
-        <option value="كمبوند سكن مصر الداون تاون">كمبوند سكن مصر الداون تاون</option>
-        <option value="كمبوند حورس">كمبوند حورس</option>
-        <option value="كمبوند فاليرا جاردن">كمبوند فاليرا جاردن</option>
-        <option value="ابني بيتك السابعة قطاع ص">ابني بيتك السابعة قطاع ص</option>
-        <option value="كمبوند أو ويست">كمبوند أو ويست</option>
-        <option value="كمبوند دار مصر حدائق اكتوبر">كمبوند دار مصر حدائق اكتوبر</option>
-        <option value="كمبوند اشجار ستي">كمبوند اشجار ستي</option>
-        <option value="كمبوند ريحانا">كمبوند ريحانا</option>
-        <option value="هرم لايف">هرم لايف</option>
-        <option value="الحي الاول">الحي الاول</option>
-        <option value="جامعة MSA">جامعة MSA</option>
-      </select>
-    </div>
-
-    <div class="input-row">
-      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-        <div><label>العمارة</label><input type="text" id="inputBuilding" class="input-box" placeholder="14"></div>
-        <div><label>الدور</label><input type="text" id="inputFloor" class="input-box" placeholder="3"></div>
-        <div><label>الشقة</label><input type="text" id="inputApartment" class="input-box" placeholder="8"></div>
-      </div>
-    </div>
-
-    <div class="input-row">
-      <label>حدد موقعك بدقة على الخريطة:</label>
-      <div id="mapContainer"></div>
-    </div>
-
-    <button class="btn-submit" onclick="saveAddressData()">حفظ دائم للعنوان ✓</button>
-  </div>
-</div>
-
-<!-- 2. نافذة تقديم طلب المشتريات والدليفري -->
-<div class="modal" id="orderModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 id="modalTitle" style="font-size:13.5px; font-weight:800;">تفاصيل الطلب</h3>
-      <span onclick="closeModal('orderModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <div id="modalBody"></div>
-
-    <div class="input-row" style="margin-top:8px;">
-      <label>طريقة دفع الحساب للمندوب:</label>
-      <select id="orderPaymentMethod" class="input-box" onchange="calculateClientPrice()">
-        <option value="كاش">كاش عند الاستلام 💵 (رسوم تحويل 0 ج)</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية (فودافون/أورنج/اتصالات/وي) 📱</option>
-      </select>
-    </div>
-
-    <div id="urgentOptionContainer" style="display:none; margin-bottom:10px;">
-      <label style="display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--danger); cursor:pointer;">
-        <input type="checkbox" id="isUrgentCheck" onchange="calculateClientPrice()">
-        <span>🚨 مشوار مستعجل (أولوية انطلاق قصوى للمناديب)</span>
-      </label>
-    </div>
-
-    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px; margin-bottom:10px;">
-      <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:800; color:#166534;">
-        <span>قيمة مشوار التوصيل:</span>
-        <span id="calculatedDeliveryFee">25 ج</span>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-top:2px;">
-        <span>تأمين المشوار وضمان الخدمة:</span>
-        <span>1 ج</span>
-      </div>
-      <div id="transferFeeRow" style="display:none; justify-content:space-between; font-size:11px; color:#b45309; margin-top:2px;">
-        <span>رسوم تحويل (إنستاباي / محفظة):</span>
-        <span id="calculatedTransferFee">5 ج</span>
-      </div>
-    </div>
-
-    <button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button>
-  </div>
-</div>
-
-<!-- 3. نافذة شحن كروت المرافق -->
-<div class="modal" id="utilityModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">⚡ شحن كروت المرافق عند باب الشقة</h3>
-      <span onclick="closeModal('utilityModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <p style="font-size:11px; color:var(--gray); margin-bottom:12px;">يصلك الكابتن بجهاز فوري أو هاتف NFC لشحن كروتك فوراً عند باب المنزل.</p>
-
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkElec" onchange="toggleUtilityInput('Elec')"> ⚡ كارت الكهرباء
-      </label>
-      <div id="boxElec" style="display:none; margin-right:20px;">
-        <input type="number" id="amtElec" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
-      </div>
-
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkGas" onchange="toggleUtilityInput('Gas')"> ⛽ كارت الغاز
-      </label>
-      <div id="boxGas" style="display:none; margin-right:20px;">
-        <input type="number" id="amtGas" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
-      </div>
-
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkWater" onchange="toggleUtilityInput('Water')"> 💧 كارت المياه
-      </label>
-      <div id="boxWater" style="display:none; margin-right:20px;">
-        <input type="number" id="amtWater" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 50 ج)" oninput="updateUtilityTotal()">
-      </div>
-    </div>
-
-    <div class="input-row">
-      <label>طريقة السداد:</label>
-      <select id="utilityPayMethod" class="input-box" onchange="updateUtilityTotal()">
-        <option value="كاش">كاش عند الاستلام 💵 (رسوم تحويل 0 ج)</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية 📱</option>
-      </select>
-    </div>
-
-    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; font-size:11.5px; margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between;"><span>إجمالي مبالغ الشحن:</span><b id="utilTotalAmt">0 ج</b></div>
-      <div style="display:flex; justify-content:space-between;"><span>مصاريف مشوار الحركة:</span><b>25 ج</b></div>
-      <div style="display:flex; justify-content:space-between;"><span>تأمين الطلب والضمان:</span><b>1 ج</b></div>
-      <div style="display:flex; justify-content:space-between; color:#b45309;" id="utilTransferRow"><span>رسوم تحويل:</span><b id="utilTransferVal">0 ج</b></div>
-      <hr style="margin:4px 0; border:none; border-top:1px dashed #cbd5e1;">
-      <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13px; color:var(--navy);">
-        <span>الإجمالي المتوقع:</span>
-        <span id="utilGrandTotal" style="color:var(--green);">26 ج</span>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="submitUtilityOrder()">طلب كابتن للشحن الآن ⚡</button>
-  </div>
-</div>
-
-<!-- 4. نافذة اسطوانة الغاز -->
-<div class="modal" id="gasCylinderModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">⛽ اسطوانة الغاز (الخدمات السريعة)</h3>
-      <span onclick="closeModal('gasCylinderModal')" style="cursor:pointer; font-size:18px;">✕</span>
+      <h3 style="font-size:13.5px; font-weight:900;" id="medModalTitle">الجهة الطبية</h3>
+      <span onclick="closeModal('medPartnerModal')" style="cursor:pointer; font-size:18px;">✕</span>
     </div>
     
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('تغيير اسطوانة غاز (استبدال)', 320, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
-          <span>تغيير اسطوانة (استبدال)</span>
-          <span style="color:var(--green);">320 ج</span>
-        </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">شامل الاسطوانة + مشوار النقل والتوصيل حتى باب الشقة + التركيب الآمن واختبار التسريب.</p>
-      </div>
+    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px; margin-bottom:12px; text-align:center;">
+      <div style="font-weight:900; font-size:13px; color:#991b1b;" id="medModalDiscount">خصم معتمد</div>
+      <div style="font-size:10px; color:#7f1d1d; margin-top:2px;">معتمد حصرياً لأهالي حدائق أكتوبر عبر منصة X</div>
+    </div>
 
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('شراء اسطوانة غاز جديدة', 1950, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
-          <span>شراء اسطوانة جديدة</span>
-          <span style="color:var(--green);">1950 ج</span>
-        </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">استلام اسطوانة معبأة وجاهزة بالكامل حتى باب المنزل.</p>
-      </div>
-
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('بيع اسطوانة غاز زائدة', 1750, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
-          <span>بيع اسطوانة غاز زائدة لديك</span>
-          <span style="color:var(--navy);">1750 ج (كاش لك)</span>
-        </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">يستلم مقدم الخدمة الاسطوانة من باب شقتك ويسلمك 1750 ج فوراً.</p>
-      </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+      <a href="#" id="medCallBtn" style="background:#f1f5f9; color:var(--navy); padding:8px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; text-align:center;">📞 اتصال مباشر</a>
+      <a href="#" id="medWaBtn" target="_blank" style="background:#ecfdf5; color:#065f46; padding:8px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; text-align:center;">💬 استفسار واتساب</a>
     </div>
 
     <div class="input-row">
-      <label>طريقة الدفع / الاستلام:</label>
-      <select id="gasPayMethod" class="input-box">
-        <option value="كاش">كاش عند الباب 💵</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية 📱</option>
+      <label>اسم المستفيد من الخصم:</label>
+      <input type="text" id="medBeneficiaryName" class="input-box" placeholder="الاسم ثلاثي">
+    </div>
+
+    <div class="input-row">
+      <label>رقم هاتف المستفيد:</label>
+      <input type="tel" id="medBeneficiaryPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
+    </div>
+
+    <button class="btn-submit" onclick="generateMedicalVoucher()">احصل على كود الخصم المعتمد 🏷️</button>
+
+    <div id="voucherResultBox" style="display:none; margin-top:14px; background:#f0fdf4; border:1.5px dashed var(--green); border-radius:12px; padding:12px; text-align:center;">
+      <div style="font-size:11px; color:#15803d; font-weight:bold;">كود الخصم المعتمد الخاص بك:</div>
+      <div style="font-size:24px; font-weight:900; letter-spacing:4px; color:var(--navy); margin:6px 0;" id="generatedVoucherCode">XXXXXXXX</div>
+      <div style="font-size:10px; color:var(--gray); margin-bottom:10px;">صالح للاستخدام خلال 48 ساعة من الآن</div>
+      <a href="#" id="medSendVoucherBtn" target="_blank" style="background:var(--green); color:white; padding:10px; border-radius:8px; text-decoration:none; display:block; font-size:11.5px; font-weight:800;">📲 أبلغ الجهة الطبية بالخصم والكود عبر واتساب</a>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة شحن محفظة المندوب -->
+<div class="modal" id="walletRechargeModal">
+  <div class="modal-sheet">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="font-size:13.5px; font-weight:900;">شحن رصيد المحفظة 💳</h3>
+      <span onclick="closeModal('walletRechargeModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    </div>
+
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; font-size:11px; line-height:1.5;">
+      <div style="font-weight:bold; color:var(--navy); margin-bottom:4px;">بيانات التحويل المعتمدة (Amr Mohamed):</div>
+      <div>📱 <b>اتصالات كاش:</b> <code>01110807050</code></div>
+      <div>⚡ <b>إنستاباي / بطاقة بنكية:</b> <code>5078086712394258</code></div>
+      <div style="color:var(--amber); font-weight:bold; margin-top:4px;">⏰ مواعيد الشحن: من 1:00 ص حتى 11:00 م.</div>
+    </div>
+
+    <div class="input-row">
+      <label>المبلغ المحوّل (جنيه):</label>
+      <input type="number" id="rechargeAmount" class="input-box" placeholder="مثال: 100">
+    </div>
+
+    <div class="input-row">
+      <label>وسيلة التحويل المستخدمة:</label>
+      <select id="rechargeMethod" class="input-box">
+        <option value="اتصالات كاش">اتصالات كاش (01110807050)</option>
+        <option value="إنستاباي">إنستاباي (5078086712394258)</option>
       </select>
     </div>
 
-    <button class="btn-submit" onclick="submitGasOrder()">تأكيد وطلب اسطوانة الغاز ⚡</button>
-  </div>
-</div>
-
-<!-- 5. نافذة طلب فني معتمد -->
-<div class="modal" id="techModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;" id="techTitle">طلب فني معتمد</h3>
-      <span onclick="closeModal('techModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-
     <div class="input-row">
-      <label>اوصف الطلب أو المشكلة الفنية بدقة:</label>
-      <textarea id="techIssueDesc" class="input-box" rows="3" placeholder="مثال: تسريب مياه أسفل الحوض يحتاج تغيير محبس..."></textarea>
+      <label>صورة أو سكرين شوت إيصال التحويل 📸:</label>
+      <input type="file" id="rechargeReceiptFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
-    <div class="input-row">
-      <label>إرفاق صورة المشكلة أو العطل 📷:</label>
-      <input type="file" id="techIssueImg" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
-    </div>
-
-    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px; margin-bottom:12px; font-size:11px; color:#991b1b; line-height:1.45;">
-      <b>⚠️ إقرار الزيارة والفحص:</b><br>
-      أؤكد بأن زيارة الفني للمعاينة والكشف هي بقيمة <b>50 ج (لا تُرد)</b> + <b>1 ج تأمين المشوار</b>. وتكلفة الصيانة أو قطع الغيار يتفق عليها بعد الفحص.
-    </div>
-
-    <button class="btn-submit" onclick="submitTechOrder()">تأكيد وإرسال للفنيين المعتمدين 🔧</button>
+    <button class="btn-submit" id="btnSubmitRecharge" onclick="submitWalletRecharge()">تأكيد وإرسال الإيصال للإدارة 📤</button>
   </div>
 </div>
 
-<!-- 6. نافذة منافسة سرعة التوصيل (15 ثانية) -->
-<div class="modal" id="biddingModal">
-  <div class="modal-sheet" style="text-align:center;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="font-size:13px; font-weight:900; color:var(--navy);">عروض الكباتن المتاحة ⏱️</h3>
-      <span id="countdownTimer" style="background:var(--danger); color:white; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">15 ث</span>
-    </div>
-    <p style="font-size:11px; color:var(--gray); margin-bottom:12px;">اختر الكابتن الأنسب لك حسب وقت الوصول والتقييم:</p>
-    <div id="offersContainer" style="display:flex; flex-direction:column; gap:8px; max-height:50vh; overflow-y:auto;">
-      <div style="padding:20px; font-size:11.5px; color:var(--gray);">جارٍ استقبال عروض الكباتن حولك... 📡</div>
-    </div>
-  </div>
-</div>
-
-<!-- 7. نافذة استفسار العميل -->
-<div class="modal" id="retryModal">
-  <div class="modal-sheet" style="text-align:center;">
-    <div style="font-size:36px; margin-bottom:6px;">🤔</div>
-    <h3 style="font-size:14px; font-weight:900; margin-bottom:6px;">هل ما زلت تحتاج إلى الطلب؟</h3>
-    <p style="font-size:11.5px; color:var(--gray); margin-bottom:16px;">لم يتم اختيار كابتن للطلب الحالي أو انتهت مهلة العروض.</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-      <button class="btn-submit" style="background:var(--green); margin:0;" onclick="retryOrderSearch()">نعم، أعد البحث 🔄</button>
-      <button class="btn-submit" style="background:#64748b; margin:0;" onclick="cancelOrderSearch()">لا أحتاج الآن ✕</button>
-    </div>
-  </div>
-</div>
-
-<!-- 8. نافذة تسجيل المندوب -->
-<div class="modal" id="providerRegisterModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">تسجيل كابتن جديد وتدقيق الأوراق 🛡️</h3>
-      <span onclick="closeModal('providerRegisterModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-
-    <div class="input-row">
-      <label>الاسم بالكامل (مطابق للبطاقة):</label>
-      <input type="text" id="regName" class="input-box" placeholder="اسمك الثلاثي">
-    </div>
-
-    <div class="input-row">
-      <label>رقم هاتف الواتساب:</label>
-      <input type="tel" id="regPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
-    </div>
-
-    <div class="input-row">
-      <label>وسيلة التنقل:</label>
-      <select id="regVehicle" class="input-box" onchange="toggleVehicleInputs()">
-        <option value="موتوسيكل / سكوتر">دراجة نارية (موتوسيكل / سكوتر)</option>
-        <option value="دراجة هوائية">دراجة هوائية (عجلة)</option>
-        <option value="سيراً على الأقدام">سيراً على الأقدام</option>
-      </select>
-    </div>
-
-    <div class="input-row" style="background:#f8fafc; padding:8px; border-radius:8px; border:1px solid var(--border);">
-      <label style="font-weight:bold; color:var(--navy);">بطاقة الرقم القومي (إلزامي):</label>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
-        <div>
-          <span style="font-size:10px; color:var(--gray);">وجه البطاقة 🪪</span>
-          <input type="file" id="fileIdFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-        <div>
-          <span style="font-size:10px; color:var(--gray);">ظهر البطاقة 🪪</span>
-          <input type="file" id="fileIdBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-      </div>
-    </div>
-
-    <div class="input-row">
-      <label>صورة وسيلة التنقل (المركبة/العجلة):</label>
-      <input type="file" id="fileVehicle" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-    </div>
-
-    <div id="licenseUploadSection" style="background:#f8fafc; padding:8px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px;">
-      <label style="font-weight:bold; color:var(--navy);">تراخيص القيادة والمركبة (للموتوسيكل):</label>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
-        <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة القيادة (وجه)</span>
-          <input type="file" id="fileLicFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-        <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة القيادة (ظهر)</span>
-          <input type="file" id="fileLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-        <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة الموتوسيكل (وجه)</span>
-          <input type="file" id="fileVehLicFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-        <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة الموتوسيكل (ظهر)</span>
-          <input type="file" id="fileVehLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
-        </div>
-      </div>
-    </div>
-
-    <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-bottom:10px; font-size:11px; text-align:center;">
-      <p style="color:var(--gray); margin-bottom:6px;">يجب الاطلاع على سياسة العمل المعتمدة أولاً للمتابعة:</p>
-      <button type="button" onclick="openPolicyModal()" style="background:var(--navy); color:white; border:none; padding:6px 12px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">📖 قراءة شروط وسياسة المنصة</button>
-      <div id="policyStatusText" style="color:var(--danger); font-weight:bold; margin-top:6px; font-size:10px;">لم يتم تأكيد قراءة السياسة بعد ✖</div>
-    </div>
-
-    <button class="btn-submit" id="btnSubmitProvider" onclick="submitProviderRegistration()">إرسال البيانات للمراجعة والاعتماد 🚀</button>
-  </div>
-</div>
-
-<!-- 9. نافذة سياسة المنصة -->
-<div class="modal" id="policyModal">
-  <div class="modal-sheet">
-    <h3 style="font-size:13.5px; font-weight:900; margin-bottom:10px; color:var(--navy);">📜 وثيقة شروط وسياسة كباتن منصة X</h3>
-    <div style="font-size:11px; color:#334155; line-height:1.6; max-height:55vh; overflow-y:auto; padding-left:4px; margin-bottom:12px;">
-      <p>1. <b>الالتزام بأسعار المتاجر:</b> الالتزام التام بأسعار الفواتير الرسمية الصادرة من المحلات دون زيادة شخصية، وتسليم أصل الفاتورة للعميل.</p>
-      <p>2. <b>استرجاع المشتريات:</b> التأكد من إمكانية استرجاع أي مشتريات من المحل قبل شرائها في حال تعذر استلام العميل.</p>
-      <p>3. <b>الطلبات الناقصة:</b> في حال سقوط أو نسيان أي غرض يتحمل المندوب استكماله على نفقته الخاصة فوراً.</p>
-      <p>4. <b>حظر الممنوعات:</b> يحظر تماماً نقل أي مواد غير قانونية أو أدوية جدول بدون وصفة طبية.</p>
-      <p>5. <b>حفظ الخصوصية:</b> يحظر تماماً حفظ أرقام العملاء أو التواصل معهم في أمور شخصية.</p>
-      <p>6. <b>الأمانة والتحصيل:</b> لا يحق للمندوب طلب أي نقدية مسبقة من العميل قبل تسليم الطلب.</p>
-      <p>7. <b>المسؤولية القضائية:</b> يعلم الكابتن بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة للرجوع القانوني عند أي تجاوز.</p>
-    </div>
-    <button class="btn-submit" onclick="confirmPolicyRead()" style="background:var(--green);">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً ✓</button>
-  </div>
-</div>
-
-<!-- 10. نافذة الفاتورة السريعة -->
-<div class="modal" id="billModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">إصدار فاتورة سريعة للعميل 🧾</h3>
-      <span onclick="closeModal('billModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <div class="input-row">
-      <label>إجمالي سعر فواتير المشتريات من المتاجر (جنيه):</label>
-      <input type="number" id="inputItemsCost" class="input-box" placeholder="مثال: 145" oninput="calculateCourierBillTotal()">
-    </div>
-    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; font-size:11.5px; margin-bottom:12px;">
-      <div>قيمة المشتريات: <b id="dispItems">0 ج</b></div>
-      <div>مصاريف التوصيل المحددة: <b id="dispDelivery">0 ج</b></div>
-      <div>تأمين المشوار وضمان الجودة: <b>1 ج</b></div>
-      <div id="dispTransferRow">رسوم التحويل: <b id="dispTransfer">0 ج</b></div>
-      <hr style="margin:6px 0; border:none; border-top:1px dashed #cbd5e1;">
-      <div style="font-size:13px; font-weight:900; color:var(--navy);">الإجمالي المطلوب من العميل: <span id="dispTotal" style="color:var(--green);">0 ج</span></div>
-    </div>
-    <button class="btn-submit" onclick="sendBillToClient()">إرسال الفاتورة لشاشة العميل والتحرك ⚡</button>
-  </div>
-</div>
-
-<!-- 11. نافذة التقييم التبادلي -->
-<div class="modal" id="ratingModal">
-  <div class="modal-sheet" style="text-align:center;">
-    <h3 style="font-size:14px; font-weight:900; margin-bottom:6px;" id="ratingModalTitle">تقييم المشوار</h3>
-    <p style="font-size:11.5px; color:var(--gray); margin-bottom:14px;" id="ratingModalSubtitle">كيف كانت التجربة؟</p>
-    <div style="font-size:32px; letter-spacing:8px; cursor:pointer; margin-bottom:14px;" id="starRatingContainer">
-      <span onclick="setStars(1)">⭐</span><span onclick="setStars(2)">⭐</span><span onclick="setStars(3)">⭐</span><span onclick="setStars(4)">⭐</span><span onclick="setStars(5)">⭐</span>
-    </div>
-    <button class="btn-submit" onclick="submitRating()">تأكيد التقييم ✓</button>
-  </div>
-</div>
-
-<!-- 12. نافذة سجل الفواتير -->
-<div class="modal" id="historyModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;" id="historyTitle">سجل الفواتير المؤرخة 📋</h3>
-      <span onclick="closeModal('historyModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <div id="historyListContainer" style="max-height:65vh; overflow-y:auto;">
-      <div style="text-align:center; padding:20px; color:var(--gray); font-size:11px;">جارٍ تحميل السجل...</div>
-    </div>
-  </div>
-</div>
+<!-- باقي النوافذ المعتمدة مسبقاً (العنوان، الطلبات، الكروت، الغاز، الفنيين) -->
+<div class="modal" id="addressModal"><div class="modal-sheet"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h3 style="font-size:13.5px; font-weight:800;">📍 عنوان التوصيل ورقم الهاتف</h3><span onclick="closeModal('addressModal')" style="cursor:pointer; font-size:18px;">✕</span></div><div class="input-row"><label>اسم العميل الكريم:</label><input type="text" id="inputClientName" class="input-box" placeholder="مثال: عمرو محمد"></div><div class="input-row"><label>رقم تليفون التواصل (أساسي):</label><input type="tel" id="inputPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;"></div><div class="input-row"><label>الكمبوند / المنطقة:</label><select id="inputCompound" class="input-box"><option value="كمبوند سكن مصر الداون تاون">كمبوند سكن مصر الداون تاون</option><option value="كمبوند حورس">كمبوند حورس</option><option value="كمبوند فاليرا جاردن">كمبوند فاليرا جاردن</option><option value="ابني بيتك السابعة قطاع ص">ابني بيتك السابعة قطاع ص</option><option value="كمبوند أو ويست">كمبوند أو ويست</option><option value="كمبوند دار مصر حدائق اكتوبر">كمبوند دار مصر حدائق اكتوبر</option><option value="كمبوند اشجار ستي">كمبوند اشجار ستي</option><option value="كمبوند ريحانا">كمبوند ريحانا</option><option value="هرم لايف">هرم لايف</option><option value="الحي الاول">الحي الاول</option><option value="جامعة MSA">جامعة MSA</option></select></div><div class="input-row"><div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;"><div><label>العمارة</label><input type="text" id="inputBuilding" class="input-box" placeholder="14"></div><div><label>الدور</label><input type="text" id="inputFloor" class="input-box" placeholder="3"></div><div><label>الشقة</label><input type="text" id="inputApartment" class="input-box" placeholder="8"></div></div></div><div class="input-row"><label>حدد موقعك بدقة على الخريطة:</label><div id="mapContainer"></div></div><button class="btn-submit" onclick="saveAddressData()">حفظ دائم للعنوان ✓</button></div></div>
+<div class="modal" id="orderModal"><div class="modal-sheet"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h3 id="modalTitle" style="font-size:13.5px; font-weight:800;">تفاصيل الطلب</h3><span onclick="closeModal('orderModal')" style="cursor:pointer; font-size:18px;">✕</span></div><div id="modalBody"></div><div class="input-row" style="margin-top:8px;"><label>طريقة دفع الحساب للمندوب:</label><select id="orderPaymentMethod" class="input-box"><option value="كاش">كاش عند الاستلام 💵 (رسوم تحويل 0 ج)</option><option value="إنستاباي">إنستاباي InstaPay ⚡</option><option value="محفظة ذكية">محفظة إلكترونية 📱</option></select></div><div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:800; color:#166534;"><span>قيمة مشوار التوصيل:</span><span id="calculatedDeliveryFee">25 ج</span></div><div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-top:2px;"><span>تأمين المشوار وضمان الخدمة:</span><span>1 ج</span></div></div><button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button></div></div>
+<div class="modal" id="historyModal"><div class="modal-sheet"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><h3 style="font-size:13.5px; font-weight:800;" id="historyTitle">السجل المؤرخ 📋</h3><span onclick="closeModal('historyModal')" style="cursor:pointer; font-size:18px;">✕</span></div><div id="historyListContainer" style="max-height:65vh; overflow-y:auto;"></div></div></div>
 
 <script>
-  const dbClient = supabase.createClient(
-    "https://jopymfpdovhtdrfanbig.supabase.co",
-    "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm"
-  );
+  const dbClient = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
 
-  // دالة الإشعار العائم الحديثة التي تقضي تماماً على رسائل المتصفح ورابط جيت هاب
-  function showToast(message) {
-    const toast = document.getElementById('toastNotification');
-    if (!toast) return;
-    toast.innerText = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2400);
+  function showToast(msg) {
+    const t = document.getElementById('toastNotification');
+    if (!t) return;
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
   }
 
-  // نغمة رقيقة واهتزاز
-  function triggerChime(type = 'soft') {
+  function triggerChime() {
     try {
       if (navigator.vibrate) navigator.vibrate(80);
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      if (type === 'stage') {
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
-      } else {
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.12);
-      }
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.3);
+      osc.stop(ctx.currentTime + 0.25);
     } catch(e) {}
   }
 
   let activeRole = localStorage.getItem('x_active_role') || 'portal';
   const savedAddress = localStorage.getItem('x_client_address');
-  let clientAddress = savedAddress ? JSON.parse(savedAddress) : {
-    name: 'عميل جديد', phone: '', compound: 'كمبوند سكن مصر الداون تاون', building: '', floor: '', apartment: '', lat: 29.950660, lng: 30.972718
-  };
+  let clientAddress = savedAddress ? JSON.parse(savedAddress) : { name: 'عميل جديد', phone: '', compound: 'كمبوند سكن مصر الداون تاون', building: '', floor: '', apartment: '', lat: 29.950660, lng: 30.972718 };
   let courierPhone = localStorage.getItem('x_courier_phone') || '';
 
-  let currentCategory = 'delivery';
-  let currentOrderType = '';
-  let activeOrderForBill = null;
-  let activeOrderIdToRate = null;
-  let currentSelectedRating = 5;
-  let ratingUserType = 'courier';
-  let mapInstance = null;
-  let markerInstance = null;
-  let hasAgreedPolicy = false;
-
-  let activeBiddingOrderId = null;
-  let biddingTimerInterval = null;
-  let selectedGasItem = null;
+  const partnersData = {
+    'town_clinic': { name: 'تاون كلينك', discount: 'خصم 50% على جميع التخصصات', phone: '01021572161', wa: '201021572161' },
+    'town_lab': { name: 'معمل تاون كلينك', discount: 'خصم حتى 50% على جميع التحاليل', phone: '01021572161', wa: '201021572161' },
+    'horus_lab': { name: 'معمل حورس', discount: 'خصم حتى 50% على جميع التحاليل', phone: '01021572161', wa: '201021572161' },
+    'rosheta_pharmacy': { name: 'صيدلية روشتة', discount: 'خصم حتى 15% على جميع الأدوية', phone: '01021572161', wa: '201021572161' },
+    'makram_pharmacy': { name: 'صيدلية د. مكرم', discount: 'خصم حتى 15% على جميع الأدوية', phone: '01021572161', wa: '201021572161' }
+  };
+  let currentSelectedMedPartner = null;
 
   render();
-  initRealtimeWatcher();
+  sendHeartbeat();
+  setInterval(sendHeartbeat, 30000);
 
-  function setRole(roleName) {
-    activeRole = roleName;
-    localStorage.setItem('x_active_role', roleName);
-    render();
-    window.scrollTo(0,0);
-  }
-
-  function resetRole() {
-    activeRole = 'portal';
-    localStorage.removeItem('x_active_role');
-    render();
-    window.scrollTo(0,0);
-  }
-
+  function setRole(r) { activeRole = r; localStorage.setItem('x_active_role', r); render(); window.scrollTo(0,0); }
+  function resetRole() { activeRole = 'portal'; localStorage.removeItem('x_active_role'); render(); window.scrollTo(0,0); }
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-  function initRealtimeWatcher() {
-    dbClient.channel('realtime_all')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
-        triggerChime('soft');
-        if (activeRole === 'client') {
-          loadClientActiveOrder();
-          if (activeBiddingOrderId && payload.new && payload.new.id === activeBiddingOrderId) {
-            updateBiddingUI(payload.new);
-          }
-        } else {
-          loadProviderOrders();
-        }
-      })
-      .subscribe();
+  async function sendHeartbeat() {
+    let sId = localStorage.getItem('x_session_id');
+    if (!sId) { sId = 'sess_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('x_session_id', sId); }
+    await dbClient.from('active_sessions').upsert({ session_id: sId, role: activeRole, last_seen: new Date().toISOString() });
   }
 
   async function render() {
@@ -652,44 +254,15 @@
     if (activeRole === 'portal') {
       main.innerHTML = `
         <div class="portal-screen">
-          <div class="logo-hero-container">
-            <img src="logo.png" class="logo-hero-img" alt="X" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png';">
-          </div>
-          <h1 class="hero-title">منصة X | حدائق أكتوبر</h1>
-          <p class="hero-subtitle">اختر صفتك للدخول المباشر إلى المنظومة</p>
-
+          <img src="logo.png" class="logo-hero-img" alt="X" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png';">
+          <h1 style="font-size:21px; font-weight:900; margin-bottom:4px;">منصة X | حدائق أكتوبر</h1>
+          <p style="font-size:12px; color:var(--gray); margin-bottom:18px;">اختر صفتك للدخول المباشر إلى المنظومة</p>
           <div class="portal-roles-grid">
-            <div class="portal-card full-width" onclick="setRole('client')">
-              <div class="portal-icon">🛒</div>
-              <div>
-                <div class="portal-title">أنا عميل</div>
-                <div class="portal-desc">طلب مشتريات، دليفري، سيارة داخلية، أو فني صيانة منزلية</div>
-              </div>
-            </div>
-
-            <div class="portal-card" onclick="setRole('courier')">
-              <div class="portal-icon">🛵</div>
-              <div class="portal-title">كابتن دليفري</div>
-              <div class="portal-desc">استقبال مشاوير الشراء والمحلات</div>
-            </div>
-
-            <div class="portal-card" onclick="setRole('services')">
-              <div class="portal-icon">⚡</div>
-              <div class="portal-title">خدمات سريعة</div>
-              <div class="portal-desc">اسطوانة غاز، شحن كروت المرافق</div>
-            </div>
-
-            <div class="portal-card" onclick="setRole('ride')">
-              <div class="portal-icon">🚗</div>
-              <div class="portal-title">سيارة داخلية</div>
-              <div class="portal-desc">مشاوير وتوصيل الأفراد بين الكمبوندات</div>
-            </div>
-
-            <div class="portal-card" onclick="setRole('technician')">
-              <div class="portal-icon">🔧</div>
-              <div class="portal-title">فني معتمد</div>
-              <div class="portal-desc">سباكة، كهرباء، دش، نجارة وتكييف</div>
-            </div>
+            <div class="portal-card full-width" onclick="setRole('client')"><div class="portal-icon">🛒</div><div><div class="portal-title">أنا عميل</div><div class="portal-desc">طلب مشتريات، دليفري، كروت، وخصومات طبية</div></div></div>
+            <div class="portal-card" onclick="setRole('courier')"><div class="portal-icon">🛵</div><div class="portal-title">كابتن دليفري</div><div class="portal-desc">استقبال مشاوير الشراء</div></div>
+            <div class="portal-card" onclick="setRole('services')"><div class="portal-icon">⚡</div><div class="portal-title">خدمات سريعة</div><div class="portal-desc">اسطوانة غاز وشحن كروت</div></div>
+            <div class="portal-card" onclick="setRole('ride')"><div class="portal-icon">🚗</div><div class="portal-title">سيارة داخلية</div><div class="portal-desc">توصيل بين الكمبوندات</div></div>
+            <div class="portal-card" onclick="setRole('technician')"><div class="portal-icon">🔧</div><div class="portal-title">فني معتمد</div><div class="portal-desc">صيانة منزلية ومعاينة</div></div>
           </div>
         </div>
       `;
@@ -698,857 +271,172 @@
 
     if (activeRole === 'client') {
       const hasData = clientAddress.phone && clientAddress.building;
-      const { count } = await dbClient.from('service_providers').select('*', { count: 'exact', head: true }).eq('status', 'معتمد');
+      const { count } = await dbClient.from('service_providers').select('*', { count: 'exact', head: true }).eq('is_online', true).eq('status', 'معتمد');
 
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:900; font-size:13.5px;">منصة X للخدمات والمشاوير</div>
+          <div style="font-weight:900; font-size:13.5px;">منصة X | حدائق أكتوبر</div>
           <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
         </div>
-
         <div class="content-area">
+          <div id="clientAnnouncementBox"></div>
           <div class="online-indicator-bar">
-            <span>🟢 متاح الآن <b>${count || 6} كباتن</b> في نطاقك لتنفيذ طلبك</span>
+            <span>🟢 متاح الآن <b>${count || 6} كباتن متصلين</b> لتنفيذ طلبك</span>
             <small style="color:var(--accent); font-weight:bold;">جاهزون للتوصيل ⚡</small>
           </div>
-
+          <div class="ad-banner-box" id="clientAdBanner" onclick="clickBanner()">
+            <img id="adBannerImg" src="" alt="إعلان">
+          </div>
           <div class="address-bar-card">
-            <div class="address-bar-header">
-              <span>📍 موقع التسليم ورقمك:</span>
-              <button class="btn-action-small" onclick="openAddressModal()">${hasData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:11px; font-weight:bold;">📍 موقعك:</span>
+              <button onclick="openAddressModal()" style="background:var(--navy); color:white; border:none; padding:3px 8px; border-radius:6px; font-size:10px; cursor:pointer;">تعديل ✏️</button>
             </div>
-            <div style="font-size:11.5px; line-height:1.45;">
-              ${hasData ? `<b>${clientAddress.name}</b> • ${clientAddress.compound} - ع ${clientAddress.building} د ${clientAddress.floor} ش ${clientAddress.apartment}<br><span style="color:var(--accent); font-weight:bold;">📞 ${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:bold;">اضغط هنا لتحديد عنوانك ورقمك مرة واحدة للمتابعة.</span>'}
-            </div>
+            <div style="font-size:11.5px;">${hasData ? clientAddress.name + ' • ' + clientAddress.compound : '<span style="color:var(--danger);">حدد عنوانك ورقمك للمتابعة</span>'}</div>
           </div>
-
-          <div id="clientActiveOrderContainer"></div>
-
-          <div class="section-title">
-            <span>🛵 مشاوير ودليفري المشتريات</span>
-            <button onclick="openHistory('client')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button>
-          </div>
+          <div class="section-title"><span>🏥 الخصومات الطبية المعتمدة</span><button onclick="openVouchersHistory()" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 كوبوناتي</button></div>
+          <div class="medical-card" onclick="openMedModal('town_clinic')"><div><b style="font-size:12px;">🏥 تاون كلينك</b><div style="font-size:10px; color:var(--gray);">جميع التخصصات الطبية</div></div><span class="medical-discount-tag">خصم 50%</span></div>
+          <div class="medical-card" onclick="openMedModal('town_lab')"><div><b style="font-size:12px;">🔬 معمل تاون كلينك</b><div style="font-size:10px; color:var(--gray);">كافة التحاليل الطبية</div></div><span class="medical-discount-tag">خصم حتى 50%</span></div>
+          <div class="medical-card" onclick="openMedModal('horus_lab')"><div><b style="font-size:12px;">🧪 معمل حورس</b><div style="font-size:10px; color:var(--gray);">تحاليل وفحوصات شاملة</div></div><span class="medical-discount-tag">خصم حتى 50%</span></div>
+          <div class="medical-card" onclick="openMedModal('rosheta_pharmacy')"><div><b style="font-size:12px;">💊 صيدلية روشتة</b><div style="font-size:10px; color:var(--gray);">توصيل روشتات وأدوية</div></div><span class="medical-discount-tag">خصم حتى 15%</span></div>
+          <div class="medical-card" onclick="openMedModal('makram_pharmacy')"><div><b style="font-size:12px;">🩺 صيدلية د. مكرم</b><div style="font-size:10px; color:var(--gray);">أدوية ومستلزمات طبية</div></div><span class="medical-discount-tag">خصم حتى 15%</span></div>
+          <div class="section-title"><span>🛵 مشاوير وخدمات دليفري</span><button onclick="openHistory('client')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button></div>
           <div class="grid-2">
-            <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار خفيف (1 إلى 2 طلب)', 2)">
-              <div style="font-size:20px;">🛵</div>
-              <div class="service-card-title">مشوار خفيف</div>
-              <div class="service-card-desc">1-2 طلب (صيدلية، ماركت)</div>
-            </div>
-            <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار مجمّع (3 طلبات فأكثر)', 5)">
-              <div style="font-size:20px;">🛒</div>
-              <div class="service-card-title">مشوار مجمّع</div>
-              <div class="service-card-desc">مشتريات من محلات مختلفة</div>
-            </div>
-          </div>
-
-          <div class="section-title"><span>⚡ خدمات سريعة للمنزل</span></div>
-          <div class="grid-2">
-            <div class="service-card" onclick="openUtilityModal()">
-              <div style="font-size:20px;">⚡</div>
-              <div class="service-card-title">شحن كروت المرافق</div>
-              <div class="service-card-desc">كهرباء • غاز • مياه (عند الباب)</div>
-            </div>
-            <div class="service-card" onclick="openGasModal()">
-              <div style="font-size:20px;">⛽</div>
-              <div class="service-card-title">اسطوانة الغاز</div>
-              <div class="service-card-desc">تغيير (320ج) • شراء • بيع</div>
-            </div>
-          </div>
-
-          <div class="section-title"><span>🚗 سيارة داخلية (توصيل وسكان)</span></div>
-          <div class="grid-2">
-            <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة بين الكمبوندات')"><div style="font-size:20px;">🚗</div><div class="service-card-title">بين الكمبوندات</div><div class="service-card-desc">سكن مصر، حورس، فاليرا</div></div>
-            <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة (الواحات / MSA)')"><div style="font-size:20px;">🚘</div><div class="service-card-title">طريق الواحات / MSA</div><div class="service-card-desc">مشوار خارجي للنطاق</div></div>
-          </div>
-
-          <div class="section-title"><span>🔧 صيانة منزلية وفنيين معتمدين (معاينة 50ج)</span></div>
-          <div class="grid-4">
-            <div class="service-card" onclick="openTechModal('سباكة منزلية')">🚿<div style="font-weight:700; font-size:10px;">سباك</div></div>
-            <div class="service-card" onclick="openTechModal('كهرباء منزلية')">⚡<div style="font-weight:700; font-size:10px;">كهربائي</div></div>
-            <div class="service-card" onclick="openTechModal('صيانة دش وستالايت')">📡<div style="font-weight:700; font-size:10px;">دش</div></div>
-            <div class="service-card" onclick="openTechModal('نجارة منزلية')">🪚<div style="font-weight:700; font-size:10px;">نجار</div></div>
+            <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار خفيف')"><div style="font-size:20px;">🛵</div><div class="service-card-title">مشوار خفيف</div><div class="service-card-desc">1-2 طلب (صيدلية، ماركت)</div></div>
+            <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار مجمّع')"><div style="font-size:20px;">🛒</div><div class="service-card-title">مشوار مجمّع</div><div class="service-card-desc">أكثر من محل</div></div>
           </div>
         </div>
       `;
-      loadClientActiveOrder();
+      loadClientBannerAndAnnouncements();
       return;
     }
 
     if (['courier', 'services', 'ride', 'technician'].includes(activeRole)) {
-      let provData = null;
+      let prov = null;
       if (courierPhone) {
         const { data } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
-        provData = data;
+        prov = data;
       }
-
-      if (provData && provData.status === 'قيد المراجعة') {
-        main.innerHTML = `
-          <div class="inner-header">
-            <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-            <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
-          </div>
-          <div class="status-screen">
-            <div style="font-size:46px; margin-bottom:12px;">⏳</div>
-            <h3 style="color:var(--navy); margin-bottom:6px;">أوراقك قيد المراجعة والتدقيق</h3>
-            <p style="font-size:12px; color:var(--gray); line-height:1.5; margin-bottom:16px;">
-              مرحباً يا بطل! تم استلام أوراقك بنجاح وجارٍ مراجعتها وتفعيل حسابك من إدارة المنصة خلال دقائق.
-            </p>
-            <a href="https://wa.me/201021572161?text=مرحباً،%20قمت%20برفع%20أوراقي%20ككابتن%20جديد%20برقم%20${courierPhone}%20للاعتماد" target="_blank" class="btn-action-green" style="padding:10px 18px; text-decoration:none;">تواصل مع الإدارة عبر واتساب 💬</a>
-          </div>
-        `;
-        return;
-      }
-
       main.innerHTML = `
         <div class="inner-header">
           <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
           <div style="font-weight:900; font-size:13.5px;">لوحة تنفيذ المهام ⚡</div>
           <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
         </div>
-
         <div class="content-area">
           <div style="background:white; border:1px solid var(--border); padding:14px; border-radius:16px; margin-bottom:14px;">
-            ${provData ? `
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <div style="font-weight:900; font-size:14px; color:var(--navy);">
-                    ${provData.name} ${provData.is_verified ? '🛡️ (معتمد)' : ''}
-                  </div>
-                  <div style="font-size:11px; color:var(--gray);">
-                    ⭐ ${provData.rating_avg.toFixed(1)} • ${provData.completed_orders} مشوار مكتمل
-                  </div>
+            ${prov ? `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:900; font-size:14px;">${prov.name}${prov.is_verified ? '🛡️' : ''}</div>
+                  <div style="font-size:11.5px; color:var(--green); font-weight:bold; margin-top:2px;">رصيد المحفظة: ${prov.wallet_balance} ج</div>
                 </div>
-                <div style="font-size:11.5px; color:var(--green); font-weight:bold; margin-top:4px;">
-                  رصيد المحفظة: ${provData.wallet_balance} ج
-                </div>
-              </div>
-
-              <div style="margin-top:10px; background:#f8fafc; padding:8px; border-radius:8px; font-size:10.5px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:4px;">
-                  <span>محطة الاعتماد الرسمي (تاون كلينك):</span>
-                  <span>${provData.completed_orders} / 50 مشوار</span>
-                </div>
-                <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
-                  <div style="width:${Math.min((provData.completed_orders/50)*100, 100)}%; height:100%; background:var(--green);"></div>
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                  <button class="toggle-online-btn ${prov.is_online ? 'btn-online' : 'btn-offline'}" onclick="toggleProviderOnline(${prov.id},${!prov.is_online})">
+                    ${prov.is_online ? '🟢 متصل الآن' : '⚪ غير متصل'}
+                  </button>
+                  <button onclick="openRechargeModal()" style="background:var(--navy); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">+ شحن المحفظة 💳</button>
                 </div>
               </div>
-            ` : `
-              <div style="text-align:center;">
-                <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">أنت غير مسجل كشريك حتى الآن</p>
-                <button class="btn-submit" onclick="openProviderRegisterModal()">تسجيل حساب ورفع الأوراق 🚀</button>
-              </div>
-            `}
+            ` : '<p style="text-align:center; font-size:12px;">أنت غير مسجل كشريك بعد.</p>'}
           </div>
-
-          ${provData ? `
-            <div class="section-title">
-              <span>الطلبات المتاحة لك الآن ⚡ (تحديث لحظي)</span>
-              <button onclick="openHistory('courier')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل مشاويري</button>
-            </div>
-            <div id="providerOrdersFeed">
-              <div style="text-align:center; padding:20px; color:var(--gray); font-size:11.5px;">جارٍ تحميل المشاوير اللحظية...</div>
-            </div>
-          ` : ''}
+          <div class="section-title"><span>الطلبات المتاحة لك لحظياً ⚡</span><button onclick="openHistory('courier')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل مشاويري</button></div>
+          <div id="providerOrdersFeed"><div style="text-align:center; padding:20px; font-size:11px; color:var(--gray);">لا توجد مشاوير جديدة حالياً.</div></div>
         </div>
       `;
-
-      if (provData) loadProviderOrders();
-      return;
     }
   }
 
-  function calculateTransferFee(amount, method) {
-    if (method === 'كاش') return 0.00;
-    if (amount < 500) return 5.00;
-    if (amount <= 1000) return 10.00;
-    return 20.00;
-  }
-
-  function calculateDeliveryPricing(compound, isMultiStore, isUrgent) {
-    const zone1 = ['كمبوند سكن مصر الداون تاون', 'كمبوند حورس', 'كمبوند فاليرا جاردن'];
-    if (zone1.includes(compound)) {
-      if (isUrgent) return 50.00;
-      return isMultiStore ? 35.00 : 25.00;
+  async function loadClientBannerAndAnnouncements() {
+    const { data: b } = await dbClient.from('platform_banners').select('*').eq('id', 1).single();
+    if (b && b.is_active && b.image_url) {
+      document.getElementById('adBannerImg').src = b.image_url;
+      document.getElementById('clientAdBanner').style.display = 'block';
+      document.getElementById('clientAdBanner').dataset.link = b.target_link || '';
     }
-    if (compound === 'ابني بيتك السابعة قطاع ص') return 50.00;
-    return 70.00;
-  }
-
-  function openAddressModal() {
-    document.getElementById('inputClientName').value = clientAddress.name || '';
-    document.getElementById('inputCompound').value = clientAddress.compound || 'كمبوند سكن مصر الداون تاون';
-    document.getElementById('inputBuilding').value = clientAddress.building || '';
-    document.getElementById('inputFloor').value = clientAddress.floor || '';
-    document.getElementById('inputApartment').value = clientAddress.apartment || '';
-    document.getElementById('inputPhone').value = clientAddress.phone || '';
-    document.getElementById('addressModal').classList.add('show');
-    setTimeout(() => initMap(), 200);
-  }
-
-  function initMap() {
-    const lat = clientAddress.lat || 29.950660;
-    const lng = clientAddress.lng || 30.972718;
-    if (!mapInstance) {
-      mapInstance = L.map('mapContainer').setView([lat, lng], 14);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
-      markerInstance = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
-      markerInstance.on('dragend', function () {
-        const pos = markerInstance.getLatLng();
-        clientAddress.lat = pos.lat; clientAddress.lng = pos.lng;
-      });
-    } else {
-      mapInstance.invalidateSize();
+    const { data: a } = await dbClient.from('platform_announcements').select('*').eq('is_active', true).order('id', { ascending: false }).limit(1);
+    if (a && a.length > 0) {
+      document.getElementById('clientAnnouncementBox').innerHTML = `<div class="announcement-bar"><span>📢 ${a[0].message}</span><span onclick="this.parentElement.remove()" style="cursor:pointer;">✕</span></div>`;
     }
   }
 
-  async function saveAddressData() {
-    const name = document.getElementById('inputClientName').value.trim() || 'عميل';
-    const phone = document.getElementById('inputPhone').value.trim();
-    const bld = document.getElementById('inputBuilding').value.trim();
-    if (!phone || phone.length < 10) return showToast('⚠️ يرجى إدخال رقم هاتف صحيح!');
-    if (!bld) return showToast('⚠️ يرجى إدخال رقم العمارة!');
-
-    clientAddress.name = name;
-    clientAddress.phone = phone;
-    clientAddress.compound = document.getElementById('inputCompound').value;
-    clientAddress.building = bld;
-    clientAddress.floor = document.getElementById('inputFloor').value.trim() || 'أرضي';
-    clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
-
-    localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
-    closeModal('addressModal');
-    triggerChime('soft');
-    showToast('✓ تم حفظ العنوان ورقم الهاتف بنجاح');
-    render();
+  function clickBanner() {
+    const link = document.getElementById('clientAdBanner').dataset.link;
+    if (link) window.open(link, '_blank');
   }
 
-  function openOrderModal(category, typeName, inputsCount = 1) {
-    if (!clientAddress.phone || !clientAddress.building) {
-      showToast('📍 يرجى تحديد عنوانك ورقم هاتفك أولاً');
-      openAddressModal();
-      return;
-    }
+  function openMedModal(pKey) {
+    currentSelectedMedPartner = partnersData[pKey];
+    document.getElementById('medModalTitle').innerText = currentSelectedMedPartner.name;
+    document.getElementById('medModalDiscount').innerText = currentSelectedMedPartner.discount;
+    document.getElementById('medCallBtn').href = 'tel:' + currentSelectedMedPartner.phone;
+    document.getElementById('medWaBtn').href = 'https://wa.me/' + currentSelectedMedPartner.wa;
+    document.getElementById('medBeneficiaryName').value = clientAddress.name || '';
+    document.getElementById('medBeneficiaryPhone').value = clientAddress.phone || '';
+    document.getElementById('voucherResultBox').style.display = 'none';
+    document.getElementById('medPartnerModal').classList.add('show');
+  }
 
-    currentCategory = category;
-    currentOrderType = typeName;
-    const modal = document.getElementById('orderModal');
-    const title = document.getElementById('modalTitle');
-    const body = document.getElementById('modalBody');
-    const urgentBox = document.getElementById('urgentOptionContainer');
+  function generateSecureVoucherCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    return code;
+  }
 
-    title.innerText = typeName;
-    const zone1 = ['كمبوند سكن مصر الداون تاون', 'كمبوند حورس', 'كمبوند فاليرا جاردن'];
-    urgentBox.style.display = (category === 'delivery' && zone1.includes(clientAddress.compound)) ? 'block' : 'none';
-    document.getElementById('isUrgentCheck').checked = false;
+  async function generateMedicalVoucher() {
+    const name = document.getElementById('medBeneficiaryName').value.trim();
+    const phone = document.getElementById('medBeneficiaryPhone').value.trim();
+    if (!name || !phone || phone.length < 10) return showToast('⚠️ يرجى إدخال اسم ورقم هاتف المستفيد');
 
-    if (inputsCount > 1) {
-      let inputs = '';
-      for (let i = 1; i <= inputsCount; i++) {
-        inputs += `<div class="input-row"><label>المحل والمطلوب (${i}):</label><input type="text" class="input-box order-detail-input" placeholder="مثلاً: صيدلية 19011 - شريط بنادول"></div>`;
-      }
-      body.innerHTML = inputs;
-    } else {
-      body.innerHTML = `<div class="input-row"><label>تفاصيل المطلوب بدقة:</label><textarea id="orderGeneralDetails" class="input-box" rows="3" placeholder="اكتب المطلوب بدقة هنا..."></textarea></div>`;
-    }
+    const vCode = generateSecureVoucherCode();
+    await dbClient.from('medical_vouchers').insert([{
+      client_phone: clientAddress.phone || phone,
+      beneficiary_name: name,
+      beneficiary_phone: phone,
+      partner_name: currentSelectedMedPartner.name,
+      discount_desc: currentSelectedMedPartner.discount,
+      voucher_code: vCode
+    }]);
 
-    calculateClientPrice();
+    document.getElementById('generatedVoucherCode').innerText = vCode;
+    const waText = encodeURIComponent(`مرحباً، أنا (${name})، رقم الهاتف: (${phone}).\nأرغب في الاستفادة من خصم منصة X بقيمة (${currentSelectedMedPartner.discount}).\nكود الخصم المعتمد الخاص بي هو: [ ${vCode} ].`);
+    document.getElementById('medSendVoucherBtn').href = `https://wa.me/${currentSelectedMedPartner.wa}?text=${waText}`;
+    document.getElementById('voucherResultBox').style.display = 'block';
+    triggerChime();
+    showToast('✓ تم إصدار كود الخصم المعتمد بنجاح');
+  }
+
+  async function openVouchersHistory() {
+    const modal = document.getElementById('historyModal');
+    document.getElementById('historyTitle').innerText = '📋 سجل كوبوناتي الطبية';
+    const cont = document.getElementById('historyListContainer');
+    cont.innerHTML = '<div style="text-align:center; padding:20px; font-size:11px;">جارٍ التحميل...</div>';
     modal.classList.add('show');
-  }
 
-  function calculateClientPrice() {
-    const isMulti = currentOrderType.includes('مجمّع');
-    const isUrgent = document.getElementById('isUrgentCheck')?.checked || false;
-    const fee = calculateDeliveryPricing(clientAddress.compound, isMulti, isUrgent);
-    document.getElementById('calculatedDeliveryFee').innerText = fee + ' ج';
-
-    const payMethod = document.getElementById('orderPaymentMethod').value;
-    const transferRow = document.getElementById('transferFeeRow');
-    if (payMethod !== 'كاش') {
-      transferRow.style.display = 'flex';
-      document.getElementById('calculatedTransferFee').innerText = 'حسب قيمة الفاتورة (5 - 20 ج)';
-    } else {
-      transferRow.style.display = 'none';
-    }
-  }
-
-  async function submitFinalOrder() {
-    const btn = document.getElementById('btnSubmitOrder');
-    btn.innerText = "جارٍ الإرسال..."; btn.disabled = true;
-
-    let details = "";
-    const detailInputs = document.querySelectorAll('.order-detail-input');
-    if (detailInputs.length > 0) {
-      detailInputs.forEach((inp, idx) => { if (inp.value.trim()) details += `(${idx + 1}) ` + inp.value.trim() + " | "; });
-    } else {
-      details = document.getElementById('orderGeneralDetails')?.value.trim() || '';
-    }
-
-    const isMulti = currentOrderType.includes('مجمّع');
-    const isUrgent = document.getElementById('isUrgentCheck')?.checked || false;
-    const fee = calculateDeliveryPricing(clientAddress.compound, isMulti, isUrgent);
-    const payMethod = document.getElementById('orderPaymentMethod').value;
-    const fullAddr = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
-
-    const { data, error } = await dbClient.from('orders').insert([{
-      category: currentCategory,
-      order_type: currentOrderType,
-      client_name: clientAddress.name,
-      client_phone: clientAddress.phone,
-      client_address: fullAddr,
-      details: details || "طلب مباشر بدون تفاصيل",
-      payment_method: payMethod,
-      is_urgent: isUrgent,
-      delivery_fee: fee,
-      insurance_fee: 1.00,
-      status: "جديد",
-      trip_stage: "قيد الانتظار",
-      offers: []
-    }]).select().single();
-
-    btn.innerText = "تأكيد وإرسال للمناديب ⚡"; btn.disabled = false;
-    if (error) showToast("خطأ: " + error.message);
-    else {
-      triggerChime('stage');
-      closeModal('orderModal');
-      showToast('🚀 تم نشر طلبك للكباتن بنجاح!');
-      startBiddingCountdown(data.id);
-      loadClientActiveOrder();
-    }
-  }
-
-  function openUtilityModal() {
-    if (!clientAddress.phone) return openAddressModal();
-    document.getElementById('chkElec').checked = false; document.getElementById('boxElec').style.display = 'none';
-    document.getElementById('chkGas').checked = false; document.getElementById('boxGas').style.display = 'none';
-    document.getElementById('chkWater').checked = false; document.getElementById('boxWater').style.display = 'none';
-    document.getElementById('amtElec').value = ''; document.getElementById('amtGas').value = ''; document.getElementById('amtWater').value = '';
-    updateUtilityTotal();
-    document.getElementById('utilityModal').classList.add('show');
-  }
-
-  function toggleUtilityInput(type) {
-    const isChecked = document.getElementById('chk' + type).checked;
-    document.getElementById('box' + type).style.display = isChecked ? 'block' : 'none';
-    updateUtilityTotal();
-  }
-
-  function updateUtilityTotal() {
-    const e = parseFloat(document.getElementById('amtElec').value) || 0;
-    const g = parseFloat(document.getElementById('amtGas').value) || 0;
-    const w = parseFloat(document.getElementById('amtWater').value) || 0;
-    const sum = e + g + w;
-    document.getElementById('utilTotalAmt').innerText = sum + ' ج';
-
-    const payMethod = document.getElementById('utilityPayMethod').value;
-    const tFee = calculateTransferFee(sum, payMethod);
-    document.getElementById('utilTransferVal').innerText = tFee + ' ج';
-    document.getElementById('utilTransferRow').style.display = (payMethod === 'كاش') ? 'none' : 'flex';
-
-    const grand = sum + 25.00 + 1.00 + tFee;
-    document.getElementById('utilGrandTotal').innerText = grand + ' ج';
-  }
-
-  async function submitUtilityOrder() {
-    const e = parseFloat(document.getElementById('amtElec').value) || 0;
-    const g = parseFloat(document.getElementById('amtGas').value) || 0;
-    const w = parseFloat(document.getElementById('amtWater').value) || 0;
-    if (e === 0 && g === 0 && w === 0) return showToast('⚠️ يرجى تحديد كارت واحد على الأقل مع المبلغ');
-
-    let details = 'شحن كروت مرافق: ';
-    if (e > 0) details += `كهرباء (${e}ج) `;
-    if (g > 0) details += `غاز (${g}ج) `;
-    if (w > 0) details += `مياه (${w}ج) `;
-
-    const sum = e + g + w;
-    const payMethod = document.getElementById('utilityPayMethod').value;
-    const tFee = calculateTransferFee(sum, payMethod);
-    const fullAddr = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
-
-    const { data, error } = await dbClient.from('orders').insert([{
-      category: 'services',
-      order_type: 'شحن كروت المرافق عند الباب',
-      client_name: clientAddress.name,
-      client_phone: clientAddress.phone,
-      client_address: fullAddr,
-      details: details,
-      payment_method: payMethod,
-      transfer_fee: tFee,
-      delivery_fee: 25.00,
-      insurance_fee: 1.00,
-      items_price: sum,
-      total_price: sum + 25.00 + 1.00 + tFee,
-      status: 'جديد',
-      trip_stage: 'قيد الانتظار',
-      offers: []
-    }]).select().single();
-
-    if (!error) {
-      closeModal('utilityModal');
-      triggerChime('stage');
-      showToast('⚡ تم إرسال طلب الشحن للكباتن');
-      startBiddingCountdown(data.id);
-      loadClientActiveOrder();
-    }
-  }
-
-  function openGasModal() {
-    if (!clientAddress.phone) return openAddressModal();
-    selectedGasItem = null;
-    document.querySelectorAll('.gas-opt-card').forEach(c => c.style.borderColor = 'var(--border)');
-    document.getElementById('gasCylinderModal').classList.add('show');
-  }
-
-  function selectGasType(title, price, el) {
-    selectedGasItem = { title, price };
-    document.querySelectorAll('.gas-opt-card').forEach(c => c.style.borderColor = 'var(--border)');
-    el.style.borderColor = 'var(--green)';
-  }
-
-  async function submitGasOrder() {
-    if (!selectedGasItem) return showToast('⚠️ يرجى اختيار نوع خدمة اسطوانة الغاز');
-
-    const payMethod = document.getElementById('gasPayMethod').value;
-    const tFee = calculateTransferFee(selectedGasItem.price, payMethod);
-    const fullAddr = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
-
-    const { data, error } = await dbClient.from('orders').insert([{
-      category: 'services',
-      order_type: 'اسطوانة الغاز: ' + selectedGasItem.title,
-      client_name: clientAddress.name,
-      client_phone: clientAddress.phone,
-      client_address: fullAddr,
-      details: `خدمة اسطوانة الغاز (${selectedGasItem.title}) بقيمة ${selectedGasItem.price} ج شاملة النقل`,
-      payment_method: payMethod,
-      transfer_fee: tFee,
-      delivery_fee: (selectedGasItem.title.includes('تغيير') ? 0 : 25),
-      insurance_fee: 1.00,
-      items_price: selectedGasItem.price,
-      total_price: selectedGasItem.price + 1.00 + tFee,
-      status: 'جديد',
-      trip_stage: 'قيد الانتظار',
-      offers: []
-    }]).select().single();
-
-    if (!error) {
-      closeModal('gasCylinderModal');
-      triggerChime('stage');
-      showToast('⛽ تم إرسال طلب اسطوانة الغاز');
-      startBiddingCountdown(data.id);
-      loadClientActiveOrder();
-    }
-  }
-
-  function openTechModal(craft) {
-    if (!clientAddress.phone) return openAddressModal();
-    document.getElementById('techTitle').innerText = 'طلب فني ' + craft;
-    document.getElementById('techIssueDesc').value = '';
-    document.getElementById('techIssueImg').value = '';
-    document.getElementById('techModal').classList.add('show');
-    currentOrderType = 'فني معتمد: ' + craft;
-  }
-
-  async function submitTechOrder() {
-    const desc = document.getElementById('techIssueDesc').value.trim();
-    if (!desc) return showToast('⚠️ يرجى كتابة وصف المشكلة الفنية');
-
-    const imgFile = document.getElementById('techIssueImg').files[0];
-    const base64Img = await fileToBase64(imgFile);
-    const fullAddr = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
-
-    const { data, error } = await dbClient.from('orders').insert([{
-      category: 'maintenance',
-      order_type: currentOrderType,
-      client_name: clientAddress.name,
-      client_phone: clientAddress.phone,
-      client_address: fullAddr,
-      details: desc,
-      issue_image: base64Img,
-      inspection_fee: 50.00,
-      insurance_fee: 1.00,
-      delivery_fee: 50.00,
-      total_price: 51.00,
-      payment_method: 'كاش',
-      status: 'جديد',
-      trip_stage: 'قيد الانتظار',
-      offers: []
-    }]).select().single();
-
-    if (!error) {
-      closeModal('techModal');
-      triggerChime('stage');
-      showToast('🔧 تم إرسال الطلب للفنيين المعتمدين');
-      startBiddingCountdown(data.id);
-      loadClientActiveOrder();
-    }
-  }
-
-  function startBiddingCountdown(orderId) {
-    activeBiddingOrderId = orderId;
-    let sec = 15;
-    const timerEl = document.getElementById('countdownTimer');
-    document.getElementById('offersContainer').innerHTML = '<div style="padding:20px; font-size:11.5px; color:var(--gray);">جارٍ استقبال عروض الكباتن حولك... 📡</div>';
-    document.getElementById('biddingModal').classList.add('show');
-
-    if (biddingTimerInterval) clearInterval(biddingTimerInterval);
-    biddingTimerInterval = setInterval(async () => {
-      sec--;
-      if (timerEl) timerEl.innerText = sec + ' ث';
-      if (sec <= 0) {
-        clearInterval(biddingTimerInterval);
-        handleBiddingExpiration(orderId);
-      }
-    }, 1000);
-  }
-
-  function updateBiddingUI(order) {
-    const container = document.getElementById('offersContainer');
-    if (!container || !order.offers || order.offers.length === 0) return;
-
-    let html = '';
-    order.offers.forEach((off, idx) => {
-      html += `
-        <div style="background:#f8fafc; border:1.5px solid var(--border); border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="text-align:right;">
-            <div style="font-weight:900; font-size:12px; color:var(--navy);">${off.name} ${off.is_verified ? '🛡️' : ''}</div>
-            <div style="font-size:10.5px; color:var(--gray);">⭐ ${off.rating} • ${off.vehicle}</div>
-            <div style="font-size:11.5px; color:var(--green); font-weight:bold; margin-top:2px;">خلال: ${off.eta} دقيقة ⚡</div>
-          </div>
-          <button onclick="clientPickCourier(${order.id}, '${off.courier_phone}')" style="background:var(--navy); color:white; border:none; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">اختيار ⚡</button>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
-
-    if (order.offers.length >= 5) {
-      clearInterval(biddingTimerInterval);
-      document.getElementById('countdownTimer').innerText = 'تم اكتمال 5 عروض';
-    }
-  }
-
-  async function clientPickCourier(orderId, cPhone) {
-    if (biddingTimerInterval) clearInterval(biddingTimerInterval);
-    closeModal('biddingModal');
-
-    await dbClient.from('orders').update({
-      status: 'قيد التنفيذ', courier_phone: cPhone, trip_stage: 'تم اختيار الكابتن وجارٍ التحرك'
-    }).eq('id', orderId);
-
-    triggerChime('stage');
-    showToast('✓ تم اختيار الكابتن وبدأ التحرك إليك فوراً');
-    loadClientActiveOrder();
-  }
-
-  async function handleBiddingExpiration(orderId) {
-    closeModal('biddingModal');
-    const { data: ord } = await dbClient.from('orders').select('*').eq('id', orderId).single();
-    if (!ord || ord.status !== 'جديد') return;
-
-    if (ord.offers && ord.offers.length > 0) {
-      const best = ord.offers.sort((a,b) => a.eta - b.eta || b.rating - a.rating)[0];
-      await clientPickCourier(orderId, best.courier_phone);
-    } else {
-      document.getElementById('retryModal').classList.add('show');
-    }
-  }
-
-  function retryOrderSearch() {
-    closeModal('retryModal');
-    if (activeBiddingOrderId) startBiddingCountdown(activeBiddingOrderId);
-  }
-
-  async function cancelOrderSearch() {
-    closeModal('retryModal');
-    if (activeBiddingOrderId) {
-      await dbClient.from('orders').update({ status: 'ملغي' }).eq('id', activeBiddingOrderId);
-      activeBiddingOrderId = null;
-      loadClientActiveOrder();
-      showToast('تم إلغاء البحث عن كابتن');
-    }
-  }
-
-  async function loadClientActiveOrder() {
-    const container = document.getElementById('clientActiveOrderContainer');
-    if (!container || !clientAddress.phone) return;
-
-    const { data: orders } = await dbClient
-      .from('orders')
-      .select('*')
-      .eq('client_phone', clientAddress.phone)
-      .order('id', { ascending: false })
-      .limit(1);
-
-    if (!orders || orders.length === 0) { container.innerHTML = ''; return; }
-
-    const o = orders[0];
-    if (o.status === 'مكتمل' && !o.client_rated) openRatingPrompt(o.id, 'client');
-    if (o.status === 'مكتمل' || o.status === 'ملغي') { container.innerHTML = ''; return; }
-
-    let courierInfo = null;
-    if (o.courier_phone) {
-      const { data: p } = await dbClient.from('service_providers').select('*').eq('phone', o.courier_phone).single();
-      courierInfo = p;
-    }
-
-    container.innerHTML = `
-      <div class="active-order-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span class="badge ${o.status === 'قيد التنفيذ' ? 'badge-active' : 'badge-new'}">
-            ${o.status === 'قيد التنفيذ' ? '⚡ ' + o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
-          </span>
-          <span style="font-size:11px; font-weight:800; color:var(--gray);">#${o.id}</span>
-        </div>
-
-        <div style="font-size:12.5px; font-weight:900; color:var(--navy); margin-bottom:4px;">${o.order_type}</div>
-        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">${o.details}</div>
-
-        ${courierInfo ? `
-          <div style="background:#f8fafc; border:1px solid var(--border); padding:8px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-weight:900; font-size:11.5px;">الكابتن: ${courierInfo.name}${courierInfo.is_verified ? '🛡️' : ''}</div>
-              <div style="font-size:10.5px; color:var(--gray);">⭐ ${courierInfo.rating_avg.toFixed(1)} •${courierInfo.completed_orders} مشوار ناجح</div>
-            </div>
-            <a href="tel:${courierInfo.phone}" style="background:var(--navy); color:white; padding:5px 10px; border-radius:6px; font-size:10.5px; text-decoration:none; font-weight:bold;">اتصال 📞</a>
-          </div>
-        ` : ''}
-
-        ${o.total_price > 0 ? `
-          <div class="order-bill-box">
-            <div style="font-weight:900; color:var(--navy); margin-bottom:4px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
-            <div style="display:flex; justify-content:space-between;"><span>مصاريف التوصيل / المعاينة:</span><b>${o.delivery_fee} ج</b></div>
-            <div style="display:flex; justify-content:space-between;"><span>تأمين الطلب وضمان الجودة:</span><b>1 ج</b></div>
-            ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:#b45309;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
-            <hr style="margin:4px 0; border:none; border-top:1px dashed #cbd5e1;">
-            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:12.5px; color:var(--green);">
-              <span>الإجمالي المطلوب:</span>
-              <span>${o.total_price} ج</span>
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }
-
-  async function loadProviderOrders() {
-    const feed = document.getElementById('providerOrdersFeed');
-    if (!feed) return;
-
-    let catFilter = 'delivery';
-    if (activeRole === 'services') catFilter = 'services';
-    if (activeRole === 'ride') catFilter = 'ride';
-    if (activeRole === 'technician') catFilter = 'maintenance';
-
-    const { data: orders } = await dbClient
-      .from('orders')
-      .select('*')
-      .eq('category', catFilter)
-      .in('status', ['جديد', 'قيد التنفيذ'])
-      .order('id', { ascending: false });
-
-    if (!orders || orders.length === 0) {
-      feed.innerHTML = '<div style="text-align:center; padding:24px; color:var(--gray); font-size:11.5px;">لا توجد مشاوير جديدة معلقة حالياً.</div>';
+    const { data: vList } = await dbClient.from('medical_vouchers').select('*').eq('client_phone', clientAddress.phone).order('id', { ascending: false });
+    if (!vList || vList.length === 0) {
+      cont.innerHTML = '<div style="text-align:center; padding:24px; font-size:11px; color:var(--gray);">لا توجد كوبونات مصدرة مسبقاً.</div>';
       return;
     }
-
     let html = '';
-    orders.forEach(o => {
-      const isMyActive = (o.status === 'قيد التنفيذ' && o.courier_phone === courierPhone);
-      if (o.status === 'قيد التنفيذ' && !isMyActive) return;
-
-      const hasOffered = o.offers && o.offers.some(off => off.courier_phone === courierPhone);
-      const cleanPhone = o.client_phone ? (o.client_phone.startsWith('0') ? '2' + o.client_phone : o.client_phone) : '';
-
+    vList.forEach(v => {
       html += `
-        <div class="order-feed-card" style="${isMyActive ? 'border: 2px solid var(--green); background: #f0fdf4;' : ''}">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <div>
-              <span class="badge ${isMyActive ? 'badge-active' : 'badge-new'}">${isMyActive ? 'مشوارك الحالي (' + o.trip_stage + ')' : 'طلب متاح'}</span>
-              ${o.is_urgent ? '<span class="badge badge-urgent">🚨 مستعجل</span>' : ''}
-            </div>
-            <span style="font-size:11px; font-weight:800; color:var(--green);">${o.category === 'maintenance' ? 'معاينة: 50 ج' : 'توصيل: ' + o.delivery_fee + ' ج'}</span>
+        <div style="background:white; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:8px; font-size:11.5px;">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:4px;">
+            <span>${v.partner_name}</span>
+            <span style="color:var(--green);">${v.voucher_code}</span>
           </div>
-
-          <div style="font-size:11.5px; margin-bottom:4px; font-weight:bold;">
-            👤 العميل: ${o.client_name}
-            ${!isMyActive ? '<span style="color:var(--gray); font-weight:normal;">(السمعة: ⭐ 5.0)</span>' : ''}
-          </div>
-
-          <div style="font-size:11.5px; margin-bottom:6px;">📍 ${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
-
-          <div style="font-size:11px; color:var(--gray); background:white; padding:8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:8px;">
-            🛒 المطلوب: ${o.details}<br>
-            💵 طريقة الدفع: <b>${o.payment_method}</b>
-            ${o.issue_image ? `<div style="margin-top:6px;"><img src="${o.issue_image}" style="width:70px; height:50px; border-radius:6px; object-fit:cover; cursor:pointer;" onclick="window.open('${o.issue_image}')" title="اضغط لتكبير صورة العطل"></div>` : ''}
-          </div>
-
-          ${!isMyActive ? `
-            ${hasOffered ? `
-              <div style="background:#e0f2fe; color:#0369a1; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; text-align:center;">
-                ✓ تم إرسال عرض وقتك للعميل (في انتظار اختياره)
-              </div>
-            ` : `
-              <p style="font-size:10.5px; font-weight:bold; color:var(--navy); margin-bottom:4px;">حدد الوقت المتوقع للتنفيذ والوصول:</p>
-              <div class="eta-grid">
-                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 15)">15 دقيقة ⚡</button>
-                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 20)">20 دقيقة</button>
-                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 30)">30 دقيقة</button>
-                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 45)">45 دقيقة</button>
-              </div>
-            `}
-          ` : `
-            <div class="order-actions-grid">
-              <a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-action-green">💬 واتساب العميل</a>
-              <a href="tel:${o.client_phone}" class="btn-action-blue">📞 اتصال فوري</a>
-            </div>
-
-            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
-              <button onclick="updateTripStage(${o.id}, 'جاري التحرك 🛒')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">1. جاري التحرك</button>
-              <button onclick="updateTripStage(${o.id}, 'في الطريق إليك 🛵')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">2. في الطريق 🛵</button>
-              <button onclick="updateTripStage(${o.id}, 'وصلت أسفل العمارة 📍')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">3. وصلت 📍</button>
-            </div>
-
-            <button class="btn-submit" style="background:#0284c7; margin-top:8px;" onclick="openBillModal(${o.id}, ${o.delivery_fee}, '${o.payment_method}')">إصدار فاتورة الحساب للعميل 🧾</button>
-            <button class="btn-submit" style="background:var(--green); margin-top:6px;" onclick="openRatingPrompt(${o.id}, 'courier')">تم تسليم الطلب واستلام الحساب ✓</button>
-          `}
+          <div style="color:var(--gray); font-size:10.5px;">المستفيد: ${v.beneficiary_name} (${v.beneficiary_phone})</div>
+          <div style="color:#b91c1c; font-size:10.5px; margin-top:2px;">${v.discount_desc}</div>
         </div>
       `;
     });
-    feed.innerHTML = html;
+    cont.innerHTML = html;
   }
 
-  async function submitCourierETA(orderId, etaMins) {
-    const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
-    if (!prov) return showToast('⚠️ أنت غير مسجل كشريك بعد');
-
-    const { data: ord } = await dbClient.from('orders').select('offers').eq('id', orderId).single();
-    const currOffers = ord.offers || [];
-
-    currOffers.push({
-      courier_phone: courierPhone,
-      name: prov.name,
-      rating: prov.rating_avg.toFixed(1),
-      vehicle: prov.vehicle_type,
-      is_verified: prov.is_verified,
-      eta: etaMins,
-      time: Date.now()
-    });
-
-    await dbClient.from('orders').update({ offers: currOffers }).eq('id', orderId);
-    triggerChime('soft');
-    showToast(`✓ تم إرسال عرضك (${etaMins} دقيقة) للعميل`);
-    loadProviderOrders();
-  }
-
-  async function updateTripStage(id, stage) {
-    await dbClient.from('orders').update({ trip_stage: stage }).eq('id', id);
-    triggerChime('stage');
-    showToast('✓ تم تحديث المرحلة: ' + stage);
-    loadProviderOrders();
-  }
-
-  function openBillModal(orderId, deliveryFee, payMethod) {
-    activeOrderForBill = { orderId, deliveryFee, payMethod };
-    document.getElementById('inputItemsCost').value = '';
-    document.getElementById('dispItems').innerText = '0 ج';
-    document.getElementById('dispDelivery').innerText = deliveryFee + ' ج';
-    document.getElementById('dispTransfer').innerText = '0 ج';
-    document.getElementById('dispTotal').innerText = (deliveryFee + 1) + ' ج';
-    document.getElementById('billModal').classList.add('show');
-  }
-
-  function calculateCourierBillTotal() {
-    const items = parseFloat(document.getElementById('inputItemsCost').value) || 0;
-    const fee = activeOrderForBill ? activeOrderForBill.deliveryFee : 0;
-    const payMethod = activeOrderForBill ? activeOrderForBill.payMethod : 'كاش';
-    const tFee = calculateTransferFee(items, payMethod);
-
-    const total = items + fee + 1.00 + tFee;
-    document.getElementById('dispItems').innerText = items + ' ج';
-    document.getElementById('dispTransfer').innerText = tFee + ' ج';
-    document.getElementById('dispTotal').innerText = total + ' ج';
-  }
-
-  async function sendBillToClient() {
-    const items = parseFloat(document.getElementById('inputItemsCost').value) || 0;
-    const fee = activeOrderForBill.deliveryFee;
-    const payMethod = activeOrderForBill.payMethod;
-    const tFee = calculateTransferFee(items, payMethod);
-    const total = items + fee + 1.00 + tFee;
-
-    await dbClient.from('orders').update({
-      items_price: items, transfer_fee: tFee, total_price: total, trip_stage: 'تم إصدار الفاتورة وفي الطريق إليك'
-    }).eq('id', activeOrderForBill.orderId);
-
-    closeModal('billModal');
-    triggerChime('stage');
-    showToast('🧾 تم إرسال الفاتورة لشاشة العميل بنجاح');
-    loadProviderOrders();
-  }
-
-  function openRatingPrompt(orderId, userType) {
-    activeOrderIdToRate = orderId;
-    ratingUserType = userType;
-    document.getElementById('ratingModalTitle').innerText = userType === 'courier' ? 'تقييم العميل الكريم' : 'تقييم تجربة المشوار مع الكابتن ⭐';
-    document.getElementById('ratingModalSubtitle').innerText = userType === 'courier' ? 'كيف كان التزام العميل والاستلام؟' : 'كيف كانت سرعة وأمانة الكابتن؟';
-    document.getElementById('ratingModal').classList.add('show');
-  }
-
-  function setStars(val) {
-    currentSelectedRating = val;
-    let stars = '';
-    for(let i=1; i<=5; i++) stars += (i <= val) ? '⭐' : '☆';
-    document.getElementById('starRatingContainer').innerHTML = stars;
-  }
-
-  async function submitRating() {
-    closeModal('ratingModal');
-    triggerChime('soft');
-
-    if (ratingUserType === 'courier') {
-      const { data: set } = await dbClient.from('platform_settings').select('commission_fee').eq('id', 1).single();
-      const fee = set ? Number(set.commission_fee) : 0;
-      const totalDeducted = fee + 1.00;
-
-      await dbClient.from('orders').update({
-        status: 'مكتمل', trip_stage: 'تم التسليم بنجاح', completed_at: new Date().toISOString(),
-        commission_deducted: totalDeducted, courier_rating: currentSelectedRating
-      }).eq('id', activeOrderIdToRate);
-
-      const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
-      if (prov) {
-        const newBal = (Number(prov.wallet_balance) || 0) - totalDeducted;
-        const newCount = (prov.completed_orders || 0) + 1;
-        await dbClient.from('service_providers').update({ wallet_balance: newBal, completed_orders: newCount }).eq('phone', courierPhone);
-      }
-      showToast('✓ تم إنهاء المشوار وتسجيل التقييم بنجاح');
-      render();
-    } else {
-      await dbClient.from('orders').update({ client_rating: currentSelectedRating, client_rated: true }).eq('id', activeOrderIdToRate);
-      showToast('⭐ شكراً لتقييمك الكريم! نسعد دائماً بخدمتك');
-      render();
-    }
-  }
-
-  function openProviderRegisterModal() {
-    hasAgreedPolicy = false;
-    document.getElementById('policyStatusText').innerText = 'لم يتم تأكيد قراءة السياسة بعد ✖';
-    document.getElementById('policyStatusText').style.color = 'var(--danger)';
-    document.getElementById('providerRegisterModal').classList.add('show');
-    toggleVehicleInputs();
-  }
-
-  function toggleVehicleInputs() {
-    const v = document.getElementById('regVehicle').value;
-    document.getElementById('licenseUploadSection').style.display = (v === 'موتوسيكل / سكوتر') ? 'block' : 'none';
-  }
-
-  function openPolicyModal() { document.getElementById('policyModal').classList.add('show'); }
-  function confirmPolicyRead() {
-    hasAgreedPolicy = true;
-    document.getElementById('policyStatusText').innerText = 'تمت قراءة الشروط والموافقة عليها بنجاح ✓';
-    document.getElementById('policyStatusText').style.color = 'var(--green)';
-    closeModal('policyModal');
-  }
+  function openRechargeModal() { document.getElementById('walletRechargeModal').classList.add('show'); }
 
   function fileToBase64(file) {
     return new Promise((resolve) => {
@@ -1560,112 +448,100 @@
         img.src = e.target.result;
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxW = 600;
+          const maxW = 700;
           const scale = maxW / img.width;
           canvas.width = img.width > maxW ? maxW : img.width;
           canvas.height = img.width > maxW ? img.height * scale : img.height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.6));
+          resolve(canvas.toDataURL('image/jpeg', 0.65));
         };
       };
     });
   }
 
-  async function submitProviderRegistration() {
-    const name = document.getElementById('regName').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    const vehicle = document.getElementById('regVehicle').value;
+  async function submitWalletRecharge() {
+    const amt = parseFloat(document.getElementById('rechargeAmount').value) || 0;
+    const file = document.getElementById('rechargeReceiptFile').files[0];
+    if (amt <= 0 || !file) return showToast('⚠️ يرجى إدخال المبلغ وإرفاق صورة الإيصال');
 
-    if (!name || !phone || phone.length < 10) return showToast('⚠️ يرجى إدخال الاسم ورقم الواتساب الصحيح');
-    if (!hasAgreedPolicy) return showToast('⚠️ يرجى قراءة شروط وسياسة المنصة أولاً');
+    const btn = document.getElementById('btnSubmitRecharge');
+    btn.innerText = 'جارٍ الإرسال...'; btn.disabled = true;
 
-    const btn = document.getElementById('btnSubmitProvider');
-    btn.innerText = 'جارٍ معالجة المستندات...'; btn.disabled = true;
+    const b64 = await fileToBase64(file);
+    const method = document.getElementById('rechargeMethod').value;
 
-    const idFront = await fileToBase64(document.getElementById('fileIdFront').files[0]);
-    const idBack = await fileToBase64(document.getElementById('fileIdBack').files[0]);
-    const vehImg = await fileToBase64(document.getElementById('fileVehicle').files[0]);
-    
-    let licFront = '', licBack = '', vehLicF = '', vehLicB = '';
-    if (vehicle === 'موتوسيكل / سكوتر') {
-      licFront = await fileToBase64(document.getElementById('fileLicFront').files[0]);
-      licBack = await fileToBase64(document.getElementById('fileLicBack').files[0]);
-      vehLicF = await fileToBase64(document.getElementById('fileVehLicFront').files[0]);
-      vehLicB = await fileToBase64(document.getElementById('fileVehLicBack').files[0]);
-    }
-
-    const { error } = await dbClient.from('service_providers').insert([{
-      name, phone, role: 'مندوب توصيل', vehicle_type: vehicle,
-      id_front_img: idFront, id_back_img: idBack, vehicle_img: vehImg,
-      license_front_img: licFront, license_back_img: licBack,
-      wallet_balance: 50.00, status: 'قيد المراجعة'
+    const { error } = await dbClient.from('wallet_recharge_requests').insert([{
+      provider_phone: courierPhone,
+      amount: amt,
+      method: method,
+      receipt_img: b64,
+      status: 'معلق'
     }]);
 
-    btn.innerText = 'إرسال البيانات للمراجعة والاعتماد 🚀'; btn.disabled = false;
+    btn.innerText = 'تأكيد وإرسال الإيصال للإدارة 📤'; btn.disabled = false;
 
-    if (error) showToast("خطأ: " + error.message);
-    else {
-      localStorage.setItem('x_courier_phone', phone);
-      courierPhone = phone;
-      closeModal('providerRegisterModal');
-      triggerChime('stage');
-      showToast('🛡️ تم إرسال أوراقك بنجاح وجارٍ مراجعتها');
-      render();
+    if (!error) {
+      closeModal('walletRechargeModal');
+      triggerChime();
+      showToast('✓ تم إرسال إثبات الشحن بنجاح وهو قيد المراجعة');
     }
   }
 
-  async function openHistory(viewerType) {
+  async function toggleProviderOnline(id, newStatus) {
+    await dbClient.from('service_providers').update({ is_online: newStatus }).eq('id', id);
+    showToast(newStatus ? '🟢 تم تفعيل وضع الاستقبال' : '⚪ تم إيقاف استقبال المشاوير');
+    render();
+  }
+
+  function openAddressModal() { document.getElementById('addressModal').classList.add('show'); }
+  async function saveAddressData() {
+    clientAddress.name = document.getElementById('inputClientName').value.trim() || 'عميل';
+    clientAddress.phone = document.getElementById('inputPhone').value.trim();
+    clientAddress.compound = document.getElementById('inputCompound').value;
+    clientAddress.building = document.getElementById('inputBuilding').value.trim();
+    clientAddress.floor = document.getElementById('inputFloor').value.trim() || 'أرضي';
+    clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
+    localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
+    closeModal('addressModal');
+    showToast('✓ تم حفظ العنوان');
+    render();
+  }
+
+  function openOrderModal(cat, name) {
+    document.getElementById('modalTitle').innerText = name;
+    document.getElementById('modalBody').innerHTML = `<div class="input-row"><label>تفاصيل المطلوب:</label><textarea id="orderDet" class="input-box" rows="3" placeholder="اكتب المطلوب..."></textarea></div>`;
+    document.getElementById('orderModal').classList.add('show');
+  }
+
+  async function submitFinalOrder() {
+    const det = document.getElementById('orderDet').value.trim();
+    const pay = document.getElementById('orderPaymentMethod').value;
+    await dbClient.from('orders').insert([{
+      category: 'delivery', order_type: 'مشوار مشتريات', client_name: clientAddress.name, client_phone: clientAddress.phone,
+      client_address: clientAddress.compound + ' - عمارة ' + clientAddress.building, details: det, payment_method: pay, delivery_fee: 25, insurance_fee: 1, status: 'جديد'
+    }]);
+    closeModal('orderModal');
+    triggerChime();
+    showToast('🚀 تم نشر الطلب للكباتن بنجاح');
+  }
+
+  async function openHistory(type) {
     const modal = document.getElementById('historyModal');
-    const title = document.getElementById('historyTitle');
-    const list = document.getElementById('historyListContainer');
-
-    title.innerText = viewerType === 'client' ? '📋 سجل فواتيري السابقة' : '📋 سجل مشاويري المكتملة';
-    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--gray); font-size:11px;">جارٍ تحميل الفواتير...</div>';
+    document.getElementById('historyTitle').innerText = type === 'client' ? '📋 سجل فواتيري' : '📋 سجل مشاويري';
+    const cont = document.getElementById('historyListContainer');
+    cont.innerHTML = '<div style="text-align:center; padding:20px; font-size:11px;">جارٍ التحميل...</div>';
     modal.classList.add('show');
-
-    let query = dbClient.from('orders').select('*').eq('status', 'مكتمل').order('id', { ascending: false });
-    if (viewerType === 'client') query = query.eq('client_phone', clientAddress.phone);
-    else query = query.eq('courier_phone', courierPhone);
-
-    const { data: orders } = await query;
-    if (!orders || orders.length === 0) {
-      list.innerHTML = '<div style="text-align:center; padding:24px; color:var(--gray); font-size:11px;">لا توجد فواتير سابقة حتى الآن.</div>';
-      return;
-    }
-
-    let html = '';
-    orders.forEach(o => {
-      const dateStr = o.completed_at ? new Date(o.completed_at).toLocaleString('ar-EG') : new Date().toLocaleDateString('ar-EG');
-      html += `
-        <div class="receipt-card">
-          <div class="receipt-header">
-            <span>فاتورة طلب #${o.id} - ${o.order_type}</span>
-            <span style="color:var(--gray); font-size:10px;">${dateStr}</span>
-          </div>
-
-          ${viewerType === 'client' ? `
-            <div class="receipt-row"><span>الكابتن المنفذ:</span><b>كابتن معتمد منصة X</b></div>
-          ` : `
-            <div class="receipt-row"><span>العميل:</span><b>${o.client_name} (${o.client_address.split('-')[0]})</b></div>
-          `}
-
-          ${o.items_price > 0 ? `<div class="receipt-row"><span>سعر المشتريات/الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
-          <div class="receipt-row"><span>مصاريف التوصيل/المعاينة:</span><b>${o.delivery_fee} ج</b></div>
-          <div class="receipt-row"><span>تأمين الطلب والضمان:</span><b>1 ج</b></div>
-          ${o.transfer_fee > 0 ? `<div class="receipt-row" style="color:#b45309;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
-          <div class="receipt-total">
-            <span>إجمالي الحساب المدفوع:</span>
-            <span style="color:var(--green);">${o.total_price || (o.delivery_fee + 1)} ج</span>
-          </div>
-          ${o.client_rating ? `<div style="margin-top:4px; font-size:10px; color:var(--amber);">تقييم المشوار: ${'⭐'.repeat(o.client_rating)}</div>` : ''}
-        </div>
-      `;
+    let q = dbClient.from('orders').select('*').eq('status', 'مكتمل').order('id', { ascending: false });
+    if (type === 'client') q = q.eq('client_phone', clientAddress.phone); else q = q.eq('courier_phone', courierPhone);
+    const { data: ords } = await q;
+    if (!ords || ords.length === 0) { cont.innerHTML = '<div style="text-align:center; padding:24px; font-size:11px;">لا توجد مشاوير مكتملة.</div>'; return; }
+    let h = '';
+    ords.forEach(o => {
+      h += `<div style="background:white; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:8px; font-size:11.5px;"><div style="display:flex; justify-content:space-between; font-weight:bold;"><span>طلب #${o.id}</span><span>${o.total_price || 26} ج</span></div><div style="color:var(--gray); font-size:10.5px;">${o.details}</div></div>`;
     });
-    list.innerHTML = html;
+    cont.innerHTML = h;
   }
-
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
 </body>
 </html>
