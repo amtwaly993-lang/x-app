@@ -18,8 +18,10 @@
 
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 18px; }
     .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-    .stat-val { font-size: 22px; font-weight: 900; color: var(--navy); }
-    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 600; }
+    .stat-card.clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 1.5px solid #cbd5e1; }
+    .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(12,29,55,0.08); border-color: var(--accent); }
+    .stat-val { font-size: 24px; font-weight: 900; color: var(--navy); }
+    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; display: flex; justify-content: space-between; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
     .tab-btn { background: white; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
@@ -32,14 +34,18 @@
 
     .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; }
     .badge-done { background: #dcfce7; color: #15803d; }
-    .badge-pending { background: #fef3c7; color: #b45309; }
     .badge-banned { background: #fee2e2; color: #b91c1c; }
 
-    .action-btn { background: var(--navy); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; }
+    .action-btn { background: var(--navy); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn-green { background: var(--green); }
     .btn-danger { background: var(--danger); }
     .doc-preview-img { width: 50px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e1; cursor: pointer; }
     .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
+
+    /* النوافذ المنبثقة للتفاصيل */
+    .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 14px; }
+    .modal.show { display: flex; }
+    .modal-box { background: white; width: 100%; max-width: 650px; border-radius: 16px; padding: 20px; max-height: 85vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -59,22 +65,34 @@
 </div>
 
 <div class="container">
-  <!-- المؤشرات الحية والإحصائيات -->
+  <!-- الكروت الإحصائية الذكية التفاعلية -->
   <div class="stats-grid">
-    <div class="stat-card"><div class="stat-lbl">كباتن متصلين الآن 🟢</div><div class="stat-val" id="onlineDriversCount" style="color:var(--green);">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">عملاء متصفحين الآن 📱</div><div class="stat-val" id="activeClientsCount" style="color:#0284c7;">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">طلبات شحن معلقة ⏳</div><div class="stat-val" id="pendingRechargesCount" style="color:var(--amber);">0</div></div>
-    <div class="stat-card"><div class="stat-lbl">كوبونات طبية مصدرة 🏥</div><div class="stat-val" id="totalVouchersCount" style="color:var(--accent);">0</div></div>
+    <div class="stat-card clickable" onclick="openOnlineDriversModal()">
+      <div class="stat-lbl"><span>كباتن متصلين فعلياً 🟢</span><span>(تفاصيل 🔍)</span></div>
+      <div class="stat-val" id="onlineDriversCount" style="color:var(--green);">0</div>
+    </div>
+    <div class="stat-card clickable" onclick="openActiveClientsModal()">
+      <div class="stat-lbl"><span>عملاء متصفحين الآن 📱</span><span>(تفاصيل 🔍)</span></div>
+      <div class="stat-val" id="activeClientsCount" style="color:#0284c7;">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl"><span>طلبات شحن معلقة ⏳</span></div>
+      <div class="stat-val" id="pendingRechargesCount" style="color:var(--amber);">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl"><span>كوبونات طبية مصدرة 🏥</span></div>
+      <div class="stat-val" id="totalVouchersCount" style="color:var(--accent);">0</div>
+    </div>
   </div>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('tabRecharges', this)">طلبات الشحن المعلقة 💳</button>
-    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب والحالة 🛵</button>
+    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب المسجلين 🛵</button>
     <button class="tab-btn" onclick="showTab('tabVouchers', this)">أكواد الخصومات الطبية 🏥</button>
     <button class="tab-btn" onclick="showTab('tabBroadcast', this)">إذاعة الإشعارات والبانر 📢</button>
   </div>
 
-  <!-- 1. طلبات شحن المحافظ المعلقة -->
+  <!-- 1. طلبات الشحن المعلقة -->
   <div id="tabRecharges" class="section-card">
     <h4 style="font-size:12.5px; margin-bottom:10px;">طلبات شحن المحافظ والتحويل اللحظي للمراجعة:</h4>
     <table>
@@ -85,11 +103,11 @@
     </table>
   </div>
 
-  <!-- 2. المناديب والحالة وفك الحظر -->
+  <!-- 2. المناديب والحالة -->
   <div id="tabProviders" class="section-card" style="display:none;">
     <table>
       <thead>
-        <tr><th>الكابتن</th><th>الهاتف</th><th>الاتصال</th><th>المحفظة</th><th>الحالة</th><th>إجراء</th></tr>
+        <tr><th>الكابتن والوسيلة</th><th>الهاتف</th><th>الاتصال اللحظي</th><th>المحفظة</th><th>الحالة</th><th>إجراء</th></tr>
       </thead>
       <tbody id="providersBody"></tbody>
     </table>
@@ -109,14 +127,12 @@
   <!-- 4. البث والبانر الإعلاني -->
   <div id="tabBroadcast" class="section-card" style="display:none;">
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-      <!-- بث إشعار لحظي -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px;">
         <h4 style="font-size:12px; margin-bottom:6px;">📢 إرسال إشعار لحظي عاجل للجميع:</h4>
         <input type="text" id="broadcastMsgInput" class="input-box" placeholder="اكتب نص العرض أو التنبيه هنا...">
         <button class="action-btn btn-green" style="width:100%;" onclick="publishBroadcast()">بث الإشعار الآن ⚡</button>
       </div>
 
-      <!-- البانر الإعلاني -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px;">
         <h4 style="font-size:12px; margin-bottom:6px;">🖼️ إدارة البانر الإعلاني بالتطبيق:</h4>
         <input type="file" id="bannerImgFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
@@ -130,14 +146,49 @@
   </div>
 </div>
 
+<!-- نافذة عرض الكباتن المتصلين فعلياً الآن -->
+<div class="modal" id="onlineDriversModal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:900; color:var(--navy);">🟢 الكباتن المتصلون فعلياً الآن في النطاق</h3>
+      <span onclick="closeModal('onlineDriversModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>الكابتن</th><th>الوسيلة</th><th>الهاتف</th><th>المحفظة</th><th>تواصل سريع</th></tr>
+      </thead>
+      <tbody id="onlineDriversBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- نافذة عرض العملاء المتصفحين الآن -->
+<div class="modal" id="activeClientsModal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:900; color:var(--navy);">📱 العملاء المتصفحون للمنصة حالياً</h3>
+      <span onclick="closeModal('activeClientsModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>اسم العميل</th><th>رقم الهاتف</th><th>المنطقة / الكمبوند</th><th>تواصل سريع</th></tr>
+      </thead>
+      <tbody id="activeClientsBody"></tbody>
+    </table>
+  </div>
+</div>
+
 <script>
   const db = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
+  let cachedOnlineDrivers = [];
+  let cachedActiveClients = [];
 
   function unlockAdmin() {
     const p = document.getElementById('adminPass').value;
     if (p === '123456' || p === 'admin') {
       document.getElementById('lockScreen').style.display = 'none';
       loadAllData();
+      setInterval(loadAllData, 20000); // تحديث دوري كل 20 ثانية
     } else alert('كلمة السر غير صحيحة!');
   }
 
@@ -148,23 +199,30 @@
     btn.classList.add('active');
   }
 
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
   async function loadAllData() {
-    // 1. الإحصائيات الحية
+    const twoMinsAgo = new Date(Date.now() - 90 * 1000).toISOString(); // 90 ثانية كحد أقصى للنبض الحي
+
+    // 1. الكباتن المتصلين فعلياً
     const { data: provs } = await db.from('service_providers').select('*');
     if (provs) {
-      document.getElementById('onlineDriversCount').innerText = provs.filter(p => p.is_online && p.status === 'معتمد').length;
+      cachedOnlineDrivers = provs.filter(p => p.is_online && p.status === 'معتمد' && p.last_seen && p.last_seen >= twoMinsAgo);
+      document.getElementById('onlineDriversCount').innerText = cachedOnlineDrivers.length;
+
       let html = '';
       provs.forEach(p => {
+        const isLive = (p.is_online && p.status === 'معتمد' && p.last_seen && p.last_seen >= twoMinsAgo);
         const isBanned = (p.status === 'محظور');
         html += `
           <tr>
-            <td><b>${p.name}</b></td>
+            <td><b>${p.name}</b><br><small style="color:#64748b;">${p.vehicle_type}</small></td>
             <td>${p.phone}</td>
-            <td><span class="badge ${p.is_online ? 'badge-done' : ''}">${p.is_online ? 'متصل 🟢' : 'غير متصل ⚪'}</span></td>
+            <td><span class="badge ${isLive ? 'badge-done' : ''}">${isLive ? 'متصل فعلياً 🟢' : 'غير متصل ⚪'}</span></td>
             <td><b>${p.wallet_balance} ج</b></td>
             <td><span class="badge ${isBanned ? 'badge-banned' : 'badge-done'}">${p.status}</span></td>
             <td>
-              ${isBanned ? `<button class="action-btn btn-green" onclick="unbanProvider(${p.id})">فك الحظر وتفعيل 🟢</button>` : `<button class="action-btn btn-danger" onclick="banProvider(${p.id})">حظر 🔴</button>`}
+              ${isBanned ? `<button class="action-btn btn-green" onclick="unbanProvider(${p.id})">فك الحظر 🟢</button>` : `<button class="action-btn btn-danger" onclick="banProvider(${p.id})">حظر 🔴</button>`}
             </td>
           </tr>
         `;
@@ -172,11 +230,14 @@
       document.getElementById('providersBody').innerHTML = html;
     }
 
-    const fiveMinsAgo = new Date(Date.now() - 5 * 60000).toISOString();
-    const { count: cCount } = await db.from('active_sessions').select('*', { count: 'exact', head: true }).eq('role', 'client').gte('last_seen', fiveMinsAgo);
-    document.getElementById('activeClientsCount').innerText = cCount || 0;
+    // 2. العملاء المتصفحين الآن
+    const { data: clients } = await db.from('active_sessions').select('*').eq('role', 'client').gte('last_seen', twoMinsAgo);
+    if (clients) {
+      cachedActiveClients = clients;
+      document.getElementById('activeClientsCount').innerText = clients.length;
+    }
 
-    // 2. طلبات الشحن المعلقة
+    // 3. طلبات الشحن
     const { data: recharges } = await db.from('wallet_recharge_requests').select('*').eq('status', 'معلق').order('id', { ascending: false });
     if (recharges) {
       document.getElementById('pendingRechargesCount').innerText = recharges.length;
@@ -190,16 +251,16 @@
             <td><img src="${r.receipt_img}" class="doc-preview-img" onclick="window.open('${r.receipt_img}')"></td>
             <td>${new Date(r.created_at).toLocaleTimeString('ar-EG')}</td>
             <td>
-              <button class="action-btn btn-green" onclick="approveRecharge(${r.id}, '${r.provider_phone}', ${r.amount})">اعتماد وشحن ✓</button>
+              <button class="action-btn btn-green" onclick="approveRecharge(${r.id}, '${r.provider_phone}', ${r.amount})">اعتماد ✓</button>
               <button class="action-btn btn-danger" onclick="rejectRecharge(${r.id}, '${r.provider_phone}')">رفض ✕</button>
             </td>
           </tr>
         `;
       });
-      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات شحن معلقة.</td></tr>';
+      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات معلقة.</td></tr>';
     }
 
-    // 3. الكوبونات الطبية
+    // 4. الكوبونات
     const { data: vList } = await db.from('medical_vouchers').select('*').order('id', { ascending: false });
     if (vList) {
       document.getElementById('totalVouchersCount').innerText = vList.length;
@@ -216,8 +277,62 @@
           </tr>
         `;
       });
-      document.getElementById('vouchersBody').innerHTML = html || '<tr><td colspan="6">لا توجد كوبونات مصدرة.</td></tr>';
+      document.getElementById('vouchersBody').innerHTML = html || '<tr><td colspan="6">لا توجد كوبونات.</td></tr>';
     }
+  }
+
+  // فتح نافذة الكباتن المتصلين فعلياً
+  function openOnlineDriversModal() {
+    let html = '';
+    if (cachedOnlineDrivers.length === 0) {
+      html = '<tr><td colspan="5" style="text-align:center; padding:18px; color:#64748b;">لا يوجد كباتن متصلين فعلياً في الوقت الحالي.</td></tr>';
+    } else {
+      cachedOnlineDrivers.forEach(d => {
+        const cleanPhone = d.phone.startsWith('0') ? '2' + d.phone : d.phone;
+        html += `
+          <tr>
+            <td><b>${d.name}</b> ${d.is_verified ? '🛡️' : ''}</td>
+            <td>${d.vehicle_type}</td>
+            <td>${d.phone}</td>
+            <td><b style="color:var(--green);">${d.wallet_balance} ج</b></td>
+            <td>
+              <a href="tel:${d.phone}" class="action-btn">📞 اتصال</a>
+              <a href="https://wa.me/${cleanPhone}" target="_blank" class="action-btn btn-green">💬 واتساب</a>
+            </td>
+          </tr>
+        `;
+      });
+    }
+    document.getElementById('onlineDriversBody').innerHTML = html;
+    document.getElementById('onlineDriversModal').classList.add('show');
+  }
+
+  // فتح نافذة العملاء المتصفحين الآن
+  function openActiveClientsModal() {
+    let html = '';
+    if (cachedActiveClients.length === 0) {
+      html = '<tr><td colspan="4" style="text-align:center; padding:18px; color:#64748b;">لا يوجد عملاء متصفحين للتطبيق حالياً.</td></tr>';
+    } else {
+      cachedActiveClients.forEach(c => {
+        const hasPhone = c.phone && c.phone !== 'غير مسجل' && c.phone.length > 9;
+        const cleanPhone = hasPhone ? (c.phone.startsWith('0') ? '2' + c.phone : c.phone) : '';
+        html += `
+          <tr>
+            <td><b>${c.name || 'عميل يتصفح'}</b></td>
+            <td>${c.phone || 'غير مسجل بعد'}</td>
+            <td>${c.compound || 'حدائق أكتوبر'}</td>
+            <td>
+              ${hasPhone ? `
+                <a href="tel:${c.phone}" class="action-btn">📞 اتصال</a>
+                <a href="https://wa.me/${cleanPhone}" target="_blank" class="action-btn btn-green">💬 واتساب</a>
+              ` : '<span style="color:#94a3b8; font-size:10px;">زائر</span>'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+    document.getElementById('activeClientsBody').innerHTML = html;
+    document.getElementById('activeClientsModal').classList.add('show');
   }
 
   async function approveRecharge(reqId, phone, amt) {
@@ -240,7 +355,7 @@
       alert('تم رفض الإيصال للمرة الثانية وحظر حساب المندوب مؤقتاً لمدة 24 ساعة!');
     } else {
       await db.from('service_providers').update({ recharge_rejection_count: rCount }).eq('phone', phone);
-      alert('تم رفض الإيصال (المرة الأولى). مطلوب منه إعادة رفع إيصال صحيح.');
+      alert('تم رفض الإيصال. مطلوب منه إعادة رفع إيصال صحيح.');
     }
     await db.from('wallet_recharge_requests').update({ status: 'مرفوض' }).eq('id', reqId);
     loadAllData();
@@ -279,9 +394,7 @@
     const link = document.getElementById('bannerLinkInput').value.trim();
     const file = document.getElementById('bannerImgFile').files[0];
     let updateObj = { is_active: isActive, target_link: link };
-    if (file) {
-      updateObj.image_url = await fileToBase64(file);
-    }
+    if (file) updateObj.image_url = await fileToBase64(file);
     await db.from('platform_banners').update(updateObj).eq('id', 1);
     alert(isActive ? 'تم تفعيل البانر الإعلاني بنجاح!' : 'تم إخفاء البانر الإعلاني.');
   }
