@@ -3,69 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة إدارة منصة X | التحكم والعمليات الشاملة</title>
+  <title>لوحة إدارة منصة Octa Hub | التحكم والعمليات الشاملة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root { --navy: #0c1d37; --accent: #4a7c6f; --green: #10b981; --danger: #ef4444; --bg: #f8fafc; --border: #e2e8f0; --amber: #f59e0b; }
+    :root { 
+      --navy: #0c1d37; 
+      --navy-light: #162c50;
+      --gold: #c5a059;
+      --gold-hover: #b38f4a;
+      --gold-light: rgba(197, 160, 89, 0.15);
+      --green: #10b981; 
+      --danger: #ef4444; 
+      --bg: #f8fafc; 
+      --border: #e2e8f0; 
+      --amber: #f59e0b; 
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; }
     body { background-color: var(--bg); color: #0f172a; min-height: 100vh; }
 
     .lock-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-    .lock-box { background: white; padding: 26px; border-radius: 18px; width: 90%; max-width: 320px; text-align: center; }
+    .lock-box { background: white; padding: 26px; border-radius: 18px; width: 90%; max-width: 320px; text-align: center; border-top: 5px solid var(--gold); }
 
-    .admin-header { background: white; border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 18px 12px; }
+    .admin-header { background: white; border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .header-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .commission-box { background: #fef9ee; border: 1.5px solid var(--gold); padding: 5px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: bold; color: var(--navy); }
+    .commission-input { width: 55px; padding: 4px 6px; border: 1px solid var(--gold); border-radius: 6px; text-align: center; font-weight: 900; color: var(--navy); outline: none; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 18px 12px; }
 
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 18px; }
-    .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: relative; }
     .stat-card.clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 1.5px solid #cbd5e1; }
-    .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(12,29,55,0.08); border-color: var(--accent); }
-    .stat-val { font-size: 24px; font-weight: 900; color: var(--navy); }
-    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; display: flex; justify-content: space-between; }
+    .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(12,29,55,0.08); border-color: var(--gold); }
+    .stat-val { font-size: 22px; font-weight: 900; color: var(--navy); }
+    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 4px; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
-    .tab-btn { background: white; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--navy); color: white; }
+    .tab-btn { background: white; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.15s; }
+    .tab-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
 
-    .section-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px; overflow-x: auto; margin-bottom: 14px; }
+    .section-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; overflow-x: auto; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12px; }
-    th { background: #f8fafc; padding: 9px; border-bottom: 1px solid var(--border); color: var(--navy); font-weight: 800; }
+    th { background: #f8fafc; padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--navy); font-weight: 800; }
     td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
 
-    .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; }
+    .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-block; }
     .badge-done { background: #dcfce7; color: #15803d; }
+    .badge-pending { background: #fef3c7; color: #b45309; }
     .badge-banned { background: #fee2e2; color: #b91c1c; }
 
-    .action-btn { background: var(--navy); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
+    .action-btn { background: var(--navy); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #a88438); color: var(--navy); }
     .btn-green { background: var(--green); }
     .btn-danger { background: var(--danger); }
-    .doc-preview-img { width: 50px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid #cbd5e1; cursor: pointer; }
+    .doc-preview-img { width: 60px; height: 42px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; cursor: pointer; transition: 0.15s; }
+    .doc-preview-img:hover { transform: scale(1.05); }
     .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
 
-    /* النوافذ المنبثقة للتفاصيل */
+    /* النوافذ المنبثقة */
     .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 14px; }
     .modal.show { display: flex; }
-    .modal-box { background: white; width: 100%; max-width: 650px; border-radius: 16px; padding: 20px; max-height: 85vh; overflow-y: auto; }
+    .modal-box { background: white; width: 100%; max-width: 700px; border-radius: 16px; padding: 22px; max-height: 88vh; overflow-y: auto; }
+
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 12px 0; }
+    .doc-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; }
+    .doc-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #cbd5e1; margin-top: 4px; }
+    .doc-card span { font-size: 10.5px; font-weight: bold; color: var(--navy); }
   </style>
 </head>
 <body>
 
 <div class="lock-screen" id="lockScreen">
   <div class="lock-box">
-    <div style="font-size:30px; margin-bottom:6px;">🔐</div>
-    <h3 style="margin-bottom:10px;">لوحة تحكم منصة X</h3>
+    <div style="font-size:32px; margin-bottom:6px;">🔐</div>
+    <h3 style="margin-bottom:6px; color:var(--navy);">لوحة تحكم OCTA HUB</h3>
+    <p style="font-size:11px; color:#64748b; margin-bottom:12px;">أدخل رمز التحقق للدخول لمركز العمليات</p>
     <input type="password" id="adminPass" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-bottom:10px; text-align:center;" placeholder="كلمة السر">
-    <button class="action-btn" style="width:100%; padding:9px;" onclick="unlockAdmin()">دخول ⚡</button>
+    <button class="action-btn" style="width:100%; padding:9px; justify-content:center;" onclick="unlockAdmin()">دخول لوحة التحكم ⚡</button>
   </div>
 </div>
 
 <div class="admin-header">
-  <div style="font-weight:900; font-size:15px;">⚡ مركز قيادة منصة X الشامل</div>
-  <button class="action-btn" onclick="loadAllData()">تحديث مباشر 🔄</button>
+  <div style="font-weight:900; font-size:16px; color:var(--navy); display:flex; align-items:center; gap:8px;">
+    <span>⚡ مركز قيادة وإدارة منصة OCTA HUB</span>
+  </div>
+
+  <div class="header-tools">
+    <!-- تحديد وتعديل العمولة العامة للطلب -->
+    <div class="commission-box">
+      <span>عمولة المنصة الثابتة لكل طلب:</span>
+      <input type="number" id="globalCommissionInput" class="commission-input" value="2.00" step="0.5" min="0">
+      <span>ج</span>
+      <button class="action-btn btn-gold" style="padding:4px 8px; font-size:10px;" onclick="saveGlobalCommission()">حفظ العمولة 💾</button>
+    </div>
+
+    <button class="action-btn" onclick="loadAllData()">تحديث مباشر 🔄</button>
+    <button class="action-btn btn-danger" onclick="openSelectiveResetModal()">تصفير البيانات المجدولة 🗑️</button>
+  </div>
 </div>
 
 <div class="container">
-  <!-- الكروت الإحصائية الذكية التفاعلية -->
+  <!-- الكروت الإحصائية الرئيسية -->
   <div class="stats-grid">
     <div class="stat-card clickable" onclick="openOnlineDriversModal()">
       <div class="stat-lbl"><span>كباتن متصلين فعلياً 🟢</span><span>(تفاصيل 🔍)</span></div>
@@ -80,20 +118,40 @@
       <div class="stat-val" id="pendingRechargesCount" style="color:var(--amber);">0</div>
     </div>
     <div class="stat-card">
-      <div class="stat-lbl"><span>كوبونات طبية مصدرة 🏥</span></div>
-      <div class="stat-val" id="totalVouchersCount" style="color:var(--accent);">0</div>
+      <div class="stat-lbl"><span>إجمالي مبيعات المنفذة (GMV)</span></div>
+      <div class="stat-val" id="kpiGmvVal" style="color:var(--navy);">0 <small style="font-size:12px;">ج</small></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl"><span>صافي عمولات Octa Hub 💰</span></div>
+      <div class="stat-val" id="kpiCommissionsVal" style="color:var(--gold);">0 <small style="font-size:12px;">ج</small></div>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('tabRecharges', this)">طلبات الشحن المعلقة 💳</button>
-    <button class="tab-btn" onclick="showTab('tabProviders', this)">المناديب المسجلين 🛵</button>
+    <button class="tab-btn active" onclick="showTab('tabProviders', this)">المناديب والشركاء 🛵</button>
+    <button class="tab-btn" onclick="showTab('tabRecharges', this)">طلبات الشحن المعلقة 💳</button>
+    <button class="tab-btn" onclick="showTab('tabAccounting', this)">النظام المحاسبي والمالي 📊</button>
+    <button class="tab-btn" onclick="showTab('tabLiveOrders', this)">سجل المشاوير الحية 📦</button>
     <button class="tab-btn" onclick="showTab('tabVouchers', this)">أكواد الخصومات الطبية 🏥</button>
     <button class="tab-btn" onclick="showTab('tabBroadcast', this)">إذاعة الإشعارات والبانر 📢</button>
   </div>
 
-  <!-- 1. طلبات الشحن المعلقة -->
-  <div id="tabRecharges" class="section-card">
+  <!-- 1. المناديب والحالة والتحكم بالأوراق والمحفظة -->
+  <div id="tabProviders" class="section-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+      <h4 style="font-size:13px; font-weight:800; color:var(--navy);">سجل الشركاء وإدارة الأوراق والاعتماد:</h4>
+      <span style="font-size:11px; color:#64748b;">اضغط على اسم الكابتن أو زر «فحص الأوراق» لمراجعة المستندات وشحن محفظته.</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>الكابتن والوسيلة</th><th>الهاتف</th><th>الاتصال اللحظي</th><th>المحفظة</th><th>الحالة</th><th>فحص الأوراق والمحفظة</th><th>إجراء</th></tr>
+      </thead>
+      <tbody id="providersBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 2. طلبات الشحن المعلقة -->
+  <div id="tabRecharges" class="section-card" style="display:none;">
     <h4 style="font-size:12.5px; margin-bottom:10px;">طلبات شحن المحافظ والتحويل اللحظي للمراجعة:</h4>
     <table>
       <thead>
@@ -103,17 +161,66 @@
     </table>
   </div>
 
-  <!-- 2. المناديب والحالة -->
-  <div id="tabProviders" class="section-card" style="display:none;">
+  <!-- 3. النظام المحاسبي المتكامل -->
+  <div id="tabAccounting" class="section-card" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+      <div>
+        <h3 style="font-size:14px; font-weight:900; color:var(--navy);">📊 النظام المحاسبي والمالي الموحد (Live Ledger)</h3>
+        <p style="font-size:11px; color:#64748b;">مراجعة الإيرادات، العمولات، ومستحقات المناديب بالفترات والتواريخ</p>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <span style="font-size:11px; font-weight:bold;">المدة:</span>
+        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('today')">اليوم</button>
+        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('7days')">آخر 7 أيام</button>
+        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('month')">الشهر الحالي</button>
+        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('all')">الكل</button>
+        <button class="action-btn btn-green" style="padding:4px 8px; font-size:10.5px;" onclick="exportAccountingCSV()">تصدير Excel / CSV 📥</button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:16px;">
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
+        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">إجمالي قيمة الشحنات المنفذة:</span>
+        <div style="font-size:20px; font-weight:900; color:var(--navy); margin-top:4px;" id="accTotalGmv">0.00 ج</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
+        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">عمولات المنصة المحصلة:</span>
+        <div style="font-size:20px; font-weight:900; color:var(--gold); margin-top:4px;" id="accTotalComm">0.00 ج</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
+        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">صافي أرباح المناديب في المدة:</span>
+        <div style="font-size:20px; font-weight:900; color:var(--green); margin-top:4px;" id="accCourierNet">0.00 ج</div>
+      </div>
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
+        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">إجمالي شحن المحافظ المعتمد:</span>
+        <div style="font-size:20px; font-weight:900; color:#0284c7; margin-top:4px;" id="accTotalRecharges">0.00 ج</div>
+      </div>
+    </div>
+
+    <!-- جدول العمليات المحاسبية التفصيلي -->
+    <h4 style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:8px;">📋 جدول تفصيل العمليات والأرباح عن المدة المحددة:</h4>
     <table>
       <thead>
-        <tr><th>الكابتن والوسيلة</th><th>الهاتف</th><th>الاتصال اللحظي</th><th>المحفظة</th><th>الحالة</th><th>إجراء</th></tr>
+        <tr><th>رقم الطلب</th><th>نوع الخدمة</th><th>المندوب</th><th>قيمة الطلب</th><th>عمولة المنصة</th><th>صافي المندوب</th><th>التاريخ</th></tr>
       </thead>
-      <tbody id="providersBody"></tbody>
+      <tbody id="accountingTableBody">
+        <tr><td colspan="7" style="text-align:center; padding:14px; color:#64748b;">جارٍ جلب العمليات المالية...</td></tr>
+      </tbody>
     </table>
   </div>
 
-  <!-- 3. سجل الكوبونات الطبية -->
+  <!-- 4. سجل المشاوير الحية -->
+  <div id="tabLiveOrders" class="section-card" style="display:none;">
+    <h4 style="font-size:12.5px; margin-bottom:10px;">إدارة وتتبع الطلبات الحية في المنظومة:</h4>
+    <table>
+      <thead>
+        <tr><th>رقم الطلب</th><th>نوع الخدمة</th><th>العميل</th><th>المندوب</th><th>المبلغ</th><th>الحالة</th><th>إجراء</th></tr>
+      </thead>
+      <tbody id="liveOrdersBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 5. سجل الكوبونات الطبية -->
   <div id="tabVouchers" class="section-card" style="display:none;">
     <h4 style="font-size:12.5px; margin-bottom:10px;">أرشيف أكواد الخصم المعتمدة للعيادات والمعامل:</h4>
     <table>
@@ -124,16 +231,13 @@
     </table>
   </div>
 
-  <!-- 4. البث وإدارة الإشعارات والبانر المطور -->
+  <!-- 6. البث وإدارة الإشعارات والبانر -->
   <div id="tabBroadcast" class="section-card" style="display:none;">
     <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
-      
-      <!-- إرسال الإشعار المخصص والذكي -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
         <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">📢 إرسال إشعار لحظي مخصص:</h4>
-        
-        <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نص الإشعار أو التنبيه:</label>
-        <textarea id="broadcastMsgInput" class="input-box" rows="2" placeholder="اكتب نص العرض، التنبيه أو التعليمات هنا..."></textarea>
+        <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نص الإشعار:</label>
+        <textarea id="broadcastMsgInput" class="input-box" rows="2" placeholder="اكتب نص الإشعار هنا..."></textarea>
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
           <div>
@@ -142,7 +246,7 @@
               <option value="all">🌐 الجميع (كافة المستخدمين)</option>
               <option value="client">🛒 العملاء فقط</option>
               <option value="courier">🛵 كباتن الدليفري فقط</option>
-              <option value="services">⚡ خدمات الغاز وشحن الكروت</option>
+              <option value="services">⚡ خدمات الغاز والكروت</option>
               <option value="ride">🚗 سيارات النقل الداخلي</option>
               <option value="technician">🔧 الفنيين المعتمدين</option>
             </select>
@@ -156,13 +260,11 @@
             </select>
           </div>
         </div>
-
-        <button class="action-btn btn-green" style="width:100%; padding:10px; font-size:12px;" onclick="publishBroadcast()">بث الإشعار المخصص الآن ⚡</button>
+        <button class="action-btn btn-green" style="width:100%; padding:10px; font-size:12px;" onclick="publishBroadcast()">بث الإشعار الآن ⚡</button>
       </div>
 
-      <!-- إدارة البانر الإعلاني بالتطبيق -->
       <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
-        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">🖼️ إدارة البانر الإعلاني بالتطبيق:</h4>
+        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">🖼️ إدارة البانر الإعلاني:</h4>
         <input type="file" id="bannerImgFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
         <input type="text" id="bannerLinkInput" class="input-box" placeholder="رابط الواتساب أو الموقع (اختياري)">
         <div style="display:flex; gap:6px; margin-top:6px;">
@@ -172,25 +274,125 @@
       </div>
     </div>
 
-    <!-- جدول إدارة ومراقبة الإشعارات السابقة -->
-    <h4 style="font-size:12.5px; font-weight:800; margin-bottom:8px; color:var(--navy);">📋 سجل الإشعارات والتحكم في ظهورها:</h4>
+    <h4 style="font-size:12.5px; font-weight:800; margin-bottom:8px; color:var(--navy);">📋 سجل الإشعارات والتحكم:</h4>
     <table>
       <thead>
-        <tr>
-          <th>نص الإشعار</th>
-          <th>الفئة المستهدفة</th>
-          <th>نوع الظهور</th>
-          <th>تاريخ البث</th>
-          <th>الحالة الحالية</th>
-          <th>إجراء</th>
-        </tr>
+        <tr><th>نص الإشعار</th><th>الفئة</th><th>نوع الظهور</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr>
       </thead>
       <tbody id="announcementsTableBody"></tbody>
     </table>
   </div>
 </div>
 
-<!-- نافذة عرض الكباتن المتصلين فعلياً الآن -->
+<!-- 1. نافذة فحص أوراق المندوب وإدارة محفظته -->
+<div class="modal" id="providerDocsModal">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:14px;">
+      <div>
+        <h3 style="font-size:15px; font-weight:900; color:var(--navy);" id="modalProvName">أوراق الكابتن</h3>
+        <span style="font-size:11.5px; color:#64748b;" id="modalProvMeta">010xxxxxxxxx | دراجة نارية</span>
+      </div>
+      <span onclick="closeModal('providerDocsModal')" style="cursor:pointer; font-size:20px; color:var(--gold);">✕</span>
+    </div>
+
+    <!-- بطاقة محفظة الكابتن المباشرة -->
+    <div style="background:#fef9ee; border:1.5px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <div style="font-size:11px; color:#64748b; font-weight:bold;">رصيد المحفظة الحالي:</div>
+        <div style="font-size:20px; font-weight:900; color:var(--navy);" id="modalProvBalance">0.00 ج</div>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input type="number" id="quickRechargeAmt" class="input-box" style="width:90px; margin:0;" placeholder="المبلغ (ج)">
+        <button class="action-btn btn-gold" onclick="executeQuickRecharge()">إيداع رصيد ⚡</button>
+      </div>
+    </div>
+
+    <!-- شبكة استعراض المستندات المرفوعة -->
+    <h4 style="font-size:13px; font-weight:800; color:var(--navy); margin-bottom:6px;">المستندات والأوراق الرسمية:</h4>
+    <div class="docs-grid" id="modalDocsGrid">
+      <!-- يتم حقن صور البطاقة والرخص ديناميكياً -->
+    </div>
+
+    <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div id="modalApprovalStatus">
+        <!-- شارة الحالة الحالية -->
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="action-btn btn-green" id="btnApproveProv" onclick="updateProviderStatus('معتمد')">اعتماد وتفعيل الحساب 🟢</button>
+        <button class="action-btn btn-danger" id="btnRejectProv" onclick="updateProviderStatus('محظور')">حظر الحساب 🔴</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. نافذة تصفير البيانات الذكي والمجدول بالتواريخ والصفحات -->
+<div class="modal" id="selectiveResetModal">
+  <div class="modal-box" style="max-width:480px;">
+    <div style="text-align:center; margin-bottom:12px;">
+      <div style="font-size:36px; margin-bottom:4px;">🗑️</div>
+      <h3 style="color:var(--danger); font-size:16px; font-weight:900;">تصفير وتنظيف البيانات المجدول</h3>
+      <p style="font-size:11.5px; color:#64748b; line-height:1.4;">حدد الصفحة ونطاق التاريخ لحذف البيانات القديمة مع الاحتفاظ بباقي السجلات.</p>
+    </div>
+
+    <!-- اختيار الصفحة/القسم -->
+    <div style="margin-bottom:12px;">
+      <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">اختر الصفحة أو القسم المراد حذفه:</label>
+      <select id="resetTargetSection" class="input-box">
+        <option value="orders">📦 سجل المشاوير والطلبات (سجل المشاوير الحية)</option>
+        <option value="wallet_recharge_requests">💳 طلبات شحن المحافظ فقط</option>
+        <option value="medical_vouchers">🏥 أكواد الخصومات الطبية فقط</option>
+        <option value="platform_announcements">📢 سجل الإشعارات والبث</option>
+      </select>
+    </div>
+
+    <!-- اختيار نوع نطاق التاريخ -->
+    <div style="margin-bottom:12px;">
+      <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">نطاق التصفير والتحديد:</label>
+      <select id="resetDateType" class="input-box" onchange="toggleResetDateInputs(this.value)">
+        <option value="month">شهر محدد بالكامل (مثال: شهر 8، 9، 10)</option>
+        <option value="day">يوم محدد فقط</option>
+        <option value="range">فترة مخصصة (من تاريخ إلى تاريخ)</option>
+        <option value="all">كافة سجلات هذا القسم بالكامل</option>
+      </select>
+    </div>
+
+    <!-- حقول التاريخ المتغيرة -->
+    <div id="resetMonthBox" style="margin-bottom:12px;">
+      <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">اختر الشهر والسنة لحذفه كاملاً:</label>
+      <input type="month" id="resetMonthInput" class="input-box">
+    </div>
+
+    <div id="resetDayBox" style="display:none; margin-bottom:12px;">
+      <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">اختر اليوم المراد حذفه:</label>
+      <input type="date" id="resetDayInput" class="input-box">
+    </div>
+
+    <div id="resetRangeBox" style="display:none; margin-bottom:12px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div>
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">من تاريخ:</label>
+          <input type="date" id="resetRangeFrom" class="input-box">
+        </div>
+        <div>
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">إلى تاريخ:</label>
+          <input type="date" id="resetRangeTo" class="input-box">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px; color:var(--danger);">كلمة مرور الآدمن للتأكيد:</label>
+      <input type="password" id="resetAdminPassConfirm" class="input-box" placeholder="كلمة المرور (admin)" style="text-align:center;">
+    </div>
+
+    <div style="display:flex; gap:8px;">
+      <button class="action-btn btn-danger" style="flex:1; padding:10px; justify-content:center;" onclick="executeSelectiveReset()">تنفيذ التصفير المحدد ⚠️</button>
+      <button class="action-btn" style="flex:1; background:#64748b; padding:10px; justify-content:center;" onclick="closeModal('selectiveResetModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة الكباتن المتصلين فعلياً -->
 <div class="modal" id="onlineDriversModal">
   <div class="modal-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -199,14 +401,14 @@
     </div>
     <table>
       <thead>
-        <tr><th>الكابتن</th><th>الوسيلة</th><th>الهاتف</th><th>المحفظة</th><th>تواصل سريع</th></tr>
+        <tr><th>الكابتن</th><th>الوسيلة</th><th>الهاتف</th><th>المحفظة</th><th>تواصل</th></tr>
       </thead>
       <tbody id="onlineDriversBody"></tbody>
     </table>
   </div>
 </div>
 
-<!-- نافذة عرض العملاء المتصفحين الآن -->
+<!-- نافذة العملاء المتصفحين الآن -->
 <div class="modal" id="activeClientsModal">
   <div class="modal-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -215,7 +417,7 @@
     </div>
     <table>
       <thead>
-        <tr><th>اسم العميل</th><th>رقم الهاتف</th><th>المنطقة / الكمبوند</th><th>تواصل سريع</th></tr>
+        <tr><th>اسم العميل</th><th>رقم الهاتف</th><th>المنطقة / الكمبوند</th><th>تواصل</th></tr>
       </thead>
       <tbody id="activeClientsBody"></tbody>
     </table>
@@ -226,13 +428,17 @@
   const db = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
   let cachedOnlineDrivers = [];
   let cachedActiveClients = [];
+  let cachedProviders = [];
+  let currentInspectedProvider = null;
+  let activeAccFilter = 'all';
 
   function unlockAdmin() {
     const p = document.getElementById('adminPass').value;
     if (p === '123456' || p === 'admin') {
       document.getElementById('lockScreen').style.display = 'none';
       loadAllData();
-      setInterval(loadAllData, 20000); // تحديث دوري كل 20 ثانية
+      loadGlobalCommissionSetting();
+      setInterval(loadAllData, 20000);
     } else alert('كلمة السر غير صحيحة!');
   }
 
@@ -244,34 +450,69 @@
   }
 
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+  function openSelectiveResetModal() { document.getElementById('selectiveResetModal').classList.add('show'); }
+
+  // ==========================================
+  // تحميل وتحديث عمولة المنصة
+  // ==========================================
+  async function loadGlobalCommissionSetting() {
+    const { data: set } = await db.from('platform_settings').select('commission_fee').eq('id', 1).single();
+    if (set && set.commission_fee !== undefined) {
+      document.getElementById('globalCommissionInput').value = Number(set.commission_fee).toFixed(2);
+    }
+  }
+
+  async function saveGlobalCommission() {
+    const fee = parseFloat(document.getElementById('globalCommissionInput').value);
+    if (isNaN(fee) || fee < 0) return alert('يرجى إدخال قيمة عمولة صحيحة');
+
+    const { error } = await db.from('platform_settings').upsert({ id: 1, commission_fee: fee });
+    if (error) alert('خطأ في حفظ العمولة: ' + error.message);
+    else alert(`✓ تم حفظ العمولة العامة بنجاح: ${fee.toFixed(2)} ج لكل طلب!`);
+  }
 
   async function loadAllData() {
-    const twoMinsAgo = new Date(Date.now() - 90 * 1000).toISOString(); // 90 ثانية كحد أقصى للنبض الحي
+    const twoMinsAgo = new Date(Date.now() - 90 * 1000).toISOString();
 
-    // 1. الكباتن المتصلين فعلياً
-    const { data: provs } = await db.from('service_providers').select('*');
+    // 1. الكباتن والشركاء
+    const { data: provs } = await db.from('service_providers').select('*').order('id', { ascending: false });
     if (provs) {
+      cachedProviders = provs;
       cachedOnlineDrivers = provs.filter(p => p.is_online && p.status === 'معتمد' && p.last_seen && p.last_seen >= twoMinsAgo);
       document.getElementById('onlineDriversCount').innerText = cachedOnlineDrivers.length;
 
       let html = '';
       provs.forEach(p => {
         const isLive = (p.is_online && p.status === 'معتمد' && p.last_seen && p.last_seen >= twoMinsAgo);
+        const isPending = (p.status === 'قيد المراجعة');
         const isBanned = (p.status === 'محظور');
+
         html += `
           <tr>
-            <td><b>${p.name}</b><br><small style="color:#64748b;">${p.vehicle_type}</small></td>
+            <td>
+              <b style="cursor:pointer; color:var(--navy);" onclick="openProviderDocs(${p.id})">${p.name}</b><br>
+              <small style="color:#64748b;">${p.vehicle_type}</small>
+            </td>
             <td>${p.phone}</td>
             <td><span class="badge ${isLive ? 'badge-done' : ''}">${isLive ? 'متصل فعلياً 🟢' : 'غير متصل ⚪'}</span></td>
-            <td><b>${p.wallet_balance} ج</b></td>
-            <td><span class="badge ${isBanned ? 'badge-banned' : 'badge-done'}">${p.status}</span></td>
+            <td><b style="color:var(--gold); font-size:13px;">${p.wallet_balance || 0} ج</b></td>
+            <td>
+              <span class="badge ${isPending ? 'badge-pending' : isBanned ? 'badge-banned' : 'badge-done'}">
+                ${p.status || 'معتمد'}
+              </span>
+            </td>
+            <td>
+              <button class="action-btn btn-gold" style="padding:4px 8px; font-size:10.5px;" onclick="openProviderDocs(${p.id})">
+                فحص الأوراق والمحفظة 📄
+              </button>
+            </td>
             <td>
               ${isBanned ? `<button class="action-btn btn-green" onclick="unbanProvider(${p.id})">فك الحظر 🟢</button>` : `<button class="action-btn btn-danger" onclick="banProvider(${p.id})">حظر 🔴</button>`}
             </td>
           </tr>
         `;
       });
-      document.getElementById('providersBody').innerHTML = html;
+      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7">لا يوجد مناديب مسجلين.</td></tr>';
     }
 
     // 2. العملاء المتصفحين الآن
@@ -301,34 +542,304 @@
           </tr>
         `;
       });
-      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات معلقة.</td></tr>';
+      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات شحن معلقة.</td></tr>';
     }
 
-    // 4. الكوبونات
-    const { data: vList } = await db.from('medical_vouchers').select('*').order('id', { ascending: false });
-    if (vList) {
-      document.getElementById('totalVouchersCount').innerText = vList.length;
-      let html = '';
-      vList.forEach(v => {
-        html += `
+    loadAccountingData();
+    loadLiveOrdersTable();
+    loadAnnouncementsTable();
+    loadVouchersTable();
+  }
+
+  // ==========================================
+  // فحص أوراق المندوب وإدارة المحفظة
+  // ==========================================
+  function openProviderDocs(provId) {
+    const prov = cachedProviders.find(p => p.id === provId);
+    if (!prov) return;
+    currentInspectedProvider = prov;
+
+    document.getElementById('modalProvName').innerText = prov.name;
+    document.getElementById('modalProvMeta').innerText = `${prov.phone} | ${prov.vehicle_type}`;
+    document.getElementById('modalProvBalance').innerText = `${(prov.wallet_balance || 0).toFixed(2)} ج`;
+    document.getElementById('quickRechargeAmt').value = '';
+
+    const isPending = (prov.status === 'قيد المراجعة');
+    document.getElementById('modalApprovalStatus').innerHTML = `
+      <span class="badge ${isPending ? 'badge-pending' : prov.status === 'محظور' ? 'badge-banned' : 'badge-done'}" style="font-size:12px; padding:6px 12px;">
+        الحالة الحالية: ${prov.status || 'معتمد'}
+      </span>
+    `;
+
+    // تجميع وعرض الصور المرفوعة
+    let docsHtml = '';
+    const docs = [
+      { label: 'بطاقة الرقم القومي (وجه)', img: prov.id_front_img },
+      { label: 'بطاقة الرقم القومي (ظهر)', img: prov.id_back_img },
+      { label: 'وسيلة التنقل / المركبة', img: prov.vehicle_img },
+      { label: 'رخصة القيادة (وجه)', img: prov.license_front_img },
+      { label: 'رخصة القيادة (ظهر)', img: prov.license_back_img },
+      { label: 'رخصة المركبة (وجه)', img: prov.vehicle_license_front_img },
+      { label: 'رخصة المركبة (ظهر)', img: prov.vehicle_license_back_img }
+    ];
+
+    docs.forEach(d => {
+      if (d.img) {
+        docsHtml += `
+          <div class="doc-card">
+            <span>${d.label}</span>
+            <img src="${d.img}" onclick="window.open('${d.img}')" title="اضغط للتكبير في صفحة مستقلة">
+          </div>
+        `;
+      }
+    });
+
+    if (!docsHtml) {
+      docsHtml = '<div style="grid-column:1/-1; text-align:center; padding:18px; color:#64748b;">لم يقم الشريك برفع مستندات مصورة بعد.</div>';
+    }
+
+    document.getElementById('modalDocsGrid').innerHTML = docsHtml;
+    document.getElementById('providerDocsModal').classList.add('show');
+  }
+
+  async function updateProviderStatus(newStatus) {
+    if (!currentInspectedProvider) return;
+    const { error } = await db.from('service_providers').update({ status: newStatus }).eq('id', currentInspectedProvider.id);
+    if (!error) {
+      alert(`✓ تم تحديث حالة الحساب إلى: [${newStatus}] بنجاح!`);
+      closeModal('providerDocsModal');
+      loadAllData();
+    } else {
+      alert('خطأ: ' + error.message);
+    }
+  }
+
+  async function executeQuickRecharge() {
+    if (!currentInspectedProvider) return;
+    const amt = parseFloat(document.getElementById('quickRechargeAmt').value);
+    if (isNaN(amt) || amt <= 0) return alert('أدخل مبلغ شحن صحيح');
+
+    const newBal = (Number(currentInspectedProvider.wallet_balance) || 0) + amt;
+    const { error } = await db.from('service_providers').update({ wallet_balance: newBal }).eq('id', currentInspectedProvider.id);
+    if (!error) {
+      alert(`✓ تم إيداع ${amt} ج في محفظة ${currentInspectedProvider.name} بنجاح! الرصيد الجديد: ${newBal} ج`);
+      document.getElementById('modalProvBalance').innerText = `${newBal.toFixed(2)} ج`;
+      document.getElementById('quickRechargeAmt').value = '';
+      loadAllData();
+    } else {
+      alert('خطأ: ' + error.message);
+    }
+  }
+
+  // ==========================================
+  // نظام التصفير الذكي بالمدد والتواريخ المخصصة
+  // ==========================================
+  function toggleResetDateInputs(mode) {
+    document.getElementById('resetMonthBox').style.display = (mode === 'month') ? 'block' : 'none';
+    document.getElementById('resetDayBox').style.display = (mode === 'day') ? 'block' : 'none';
+    document.getElementById('resetRangeBox').style.display = (mode === 'range') ? 'block' : 'none';
+  }
+
+  async function executeSelectiveReset() {
+    const pass = document.getElementById('resetAdminPassConfirm').value;
+    if (pass !== 'admin' && pass !== '123456') return alert('كلمة مرور الآدمن غير صحيحة!');
+
+    const table = document.getElementById('resetTargetSection').value;
+    const dateType = document.getElementById('resetDateType').value;
+    let query = db.from(table).delete();
+
+    let startDate = null;
+    let endDate = null;
+
+    if (dateType === 'month') {
+      const ym = document.getElementById('resetMonthInput').value; // e.g. "2026-08"
+      if (!ym) return alert('يرجى تحديد الشهر والسنة للحذف');
+      const parts = ym.split('-');
+      const y = parseInt(parts[0]);
+      const m = parseInt(parts[1]);
+      startDate = new Date(y, m - 1, 1).toISOString();
+      endDate = new Date(y, m, 0, 23, 59, 59).toISOString();
+    } else if (dateType === 'day') {
+      const d = document.getElementById('resetDayInput').value;
+      if (!d) return alert('يرجى تحديد اليوم');
+      startDate = new Date(d + 'T00:00:00').toISOString();
+      endDate = new Date(d + 'T23:59:59').toISOString();
+    } else if (dateType === 'range') {
+      const from = document.getElementById('resetRangeFrom').value;
+      const to = document.getElementById('resetRangeTo').value;
+      if (!from || !to) return alert('يرجى تحديد تاريخ البداية والنهاية');
+      startDate = new Date(from + 'T00:00:00').toISOString();
+      endDate = new Date(to + 'T23:59:59').toISOString();
+    }
+
+    if (dateType !== 'all') {
+      const dateCol = (table === 'orders') ? 'created_at' : 'created_at';
+      query = query.gte(dateCol, startDate).lte(dateCol, endDate);
+    } else {
+      query = query.neq('id', 0);
+    }
+
+    if (!confirm('هل أنت متأكد تماماً من تنفيذ هذا الحذف في النطاق المحدد؟')) return;
+
+    const { error } = await query;
+    if (error) {
+      alert('خطأ أثناء التصفير: ' + error.message);
+    } else {
+      alert('✓ تم تصفير وحذف البيانات المحددة بنجاح، وظلت باقي السجلات آمنة ومسجلة!');
+      closeModal('selectiveResetModal');
+      document.getElementById('resetAdminPassConfirm').value = '';
+      loadAllData();
+    }
+  }
+
+  // ==========================================
+  // النظام المحاسبي وتصدير التقارير
+  // ==========================================
+  function setAccDateFilter(filter) {
+    activeAccFilter = filter;
+    loadAccountingData();
+  }
+
+  async function loadAccountingData() {
+    let query = db.from('orders').select('*').eq('status', 'مكتمل');
+
+    const now = new Date();
+    if (activeAccFilter === 'today') {
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+      query = query.gte('completed_at', todayStart);
+    } else if (activeAccFilter === '7days') {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      query = query.gte('completed_at', sevenDaysAgo);
+    } else if (activeAccFilter === 'month') {
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      query = query.gte('completed_at', monthStart);
+    }
+
+    const { data: completedOrders } = await query;
+    let totalGmv = 0;
+    let totalComm = 0;
+    let courierNet = 0;
+
+    let tableHtml = '';
+    if (completedOrders && completedOrders.length > 0) {
+      completedOrders.forEach(o => {
+        const orderVal = Number(o.total_price) || (Number(o.delivery_fee) + 1);
+        const comm = Number(o.commission_deducted) || 2.00;
+        const net = Math.max(0, (Number(o.delivery_fee) || 25) - comm);
+
+        totalGmv += orderVal;
+        totalComm += comm;
+        courierNet += net;
+
+        tableHtml += `
           <tr>
-            <td><b style="color:var(--green);">${v.voucher_code}</b></td>
-            <td><b>${v.partner_name}</b></td>
-            <td>${v.beneficiary_name}</td>
-            <td>${v.beneficiary_phone}</td>
-            <td>${v.discount_desc}</td>
-            <td>${new Date(v.created_at).toLocaleDateString('ar-EG')}</td>
+            <td><b style="color:var(--gold);">#${o.id}</b></td>
+            <td>${o.order_type}</td>
+            <td>${o.courier_phone || 'غير مسجل'}</td>
+            <td><b>${orderVal.toFixed(2)} ج</b></td>
+            <td style="color:var(--gold); font-weight:bold;">${comm.toFixed(2)} ج</td>
+            <td style="color:var(--green); font-weight:bold;">${net.toFixed(2)} ج</td>
+            <td>${o.completed_at ? new Date(o.completed_at).toLocaleDateString('ar-EG') : 'اليوم'}</td>
           </tr>
         `;
       });
-      document.getElementById('vouchersBody').innerHTML = html || '<tr><td colspan="6">لا توجد كوبونات.</td></tr>';
+    } else {
+      tableHtml = '<tr><td colspan="7" style="text-align:center; padding:14px; color:#64748b;">لا توجد عمليات مكتملة مسجلة في هذا النطاق الزمني.</td></tr>';
     }
 
-    // 5. تحميل سجل الإشعارات
-    loadAnnouncementsTable();
+    document.getElementById('accTotalGmv').innerText = totalGmv.toFixed(2) + ' ج';
+    document.getElementById('accTotalComm').innerText = totalComm.toFixed(2) + ' ج';
+    document.getElementById('accCourierNet').innerText = courierNet.toFixed(2) + ' ج';
+    document.getElementById('kpiGmvVal').innerHTML = `${totalGmv.toFixed(0)} <small style="font-size:12px;">ج</small>`;
+    document.getElementById('kpiCommissionsVal').innerHTML = `${totalComm.toFixed(0)} <small style="font-size:12px;">ج</small>`;
+    document.getElementById('accountingTableBody').innerHTML = tableHtml;
+
+    const { data: approvedRec } = await db.from('wallet_recharge_requests').select('amount').eq('status', 'مقبول');
+    const recSum = approvedRec ? approvedRec.reduce((acc, r) => acc + (Number(r.amount) || 0), 0) : 0;
+    document.getElementById('accTotalRecharges').innerText = recSum.toFixed(2) + ' ج';
   }
 
-  // فتح نافذة الكباتن المتصلين فعلياً
+  function exportAccountingCSV() {
+    const rows = [["رقم الطلب", "نوع الخدمة", "المندوب", "قيمة الطلب", "عمولة المنصة", "صافي المندوب", "التاريخ"]];
+    const trs = document.querySelectorAll('#accountingTableBody tr');
+    trs.forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      if (tds.length === 7) {
+        rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText, tds[5].innerText, tds[6].innerText]);
+      }
+    });
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + rows.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Octa_Hub_Financial_Report_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function loadLiveOrdersTable() {
+    const { data: list } = await db.from('orders').select('*').order('id', { ascending: false }).limit(20);
+    const tbody = document.getElementById('liveOrdersBody');
+    if (!tbody) return;
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#64748b;">لا توجد طلبات مسجلة حالياً.</td></tr>';
+      return;
+    }
+    let html = '';
+    list.forEach(o => {
+      html += `
+        <tr>
+          <td><b style="color:var(--gold);">#${o.id}</b></td>
+          <td>${o.order_type}</td>
+          <td>${o.client_name} (${o.client_phone})</td>
+          <td>${o.courier_phone || 'في الانتظار'}</td>
+          <td><b>${o.total_price || o.delivery_fee} ج</b></td>
+          <td><span class="badge ${o.status==='مكتمل'?'badge-done':o.status==='جديد'?'badge-pending':'badge-banned'}">${o.status}</span></td>
+          <td>
+            <button class="action-btn btn-danger" style="padding:3px 7px; font-size:10px;" onclick="cancelOrderFromAdmin(${o.id})">إلغاء ✕</button>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  }
+
+  async function cancelOrderFromAdmin(id) {
+    if (!confirm('هل تريد إلغاء هذا الطلب؟')) return;
+    await db.from('orders').update({ status: 'ملغي' }).eq('id', id);
+    loadLiveOrdersTable();
+  }
+
+  async function approveRecharge(reqId, phone, amt) {
+    const { data: p } = await db.from('service_providers').select('wallet_balance').eq('phone', phone).single();
+    if (p) {
+      const newBal = (Number(p.wallet_balance) || 0) + amt;
+      await db.from('service_providers').update({ wallet_balance: newBal, recharge_rejection_count: 0 }).eq('phone', phone);
+      await db.from('wallet_recharge_requests').update({ status: 'مقبول' }).eq('id', reqId);
+      alert('تم اعتماد التحويل وشحن الرصيد بنجاح!');
+      loadAllData();
+    }
+  }
+
+  async function rejectRecharge(reqId, phone) {
+    await db.from('wallet_recharge_requests').update({ status: 'مرفوض' }).eq('id', reqId);
+    alert('تم رفض الإيصال.');
+    loadAllData();
+  }
+
+  async function unbanProvider(id) {
+    await db.from('service_providers').update({ status: 'معتمد' }).eq('id', id);
+    alert('تم فك الحظر وتفعيل الحساب بنجاح!');
+    loadAllData();
+  }
+
+  async function banProvider(id) {
+    await db.from('service_providers').update({ status: 'محظور' }).eq('id', id);
+    alert('تم حظر الحساب.');
+    loadAllData();
+  }
+
   function openOnlineDriversModal() {
     let html = '';
     if (cachedOnlineDrivers.length === 0) {
@@ -354,7 +865,6 @@
     document.getElementById('onlineDriversModal').classList.add('show');
   }
 
-  // فتح نافذة العملاء المتصفحين الآن
   function openActiveClientsModal() {
     let html = '';
     if (cachedActiveClients.length === 0) {
@@ -382,96 +892,50 @@
     document.getElementById('activeClientsModal').classList.add('show');
   }
 
-  async function approveRecharge(reqId, phone, amt) {
-    const { data: p } = await db.from('service_providers').select('wallet_balance').eq('phone', phone).single();
-    if (p) {
-      const newBal = (Number(p.wallet_balance) || 0) + amt;
-      await db.from('service_providers').update({ wallet_balance: newBal, recharge_rejection_count: 0 }).eq('phone', phone);
-      await db.from('wallet_recharge_requests').update({ status: 'مقبول' }).eq('id', reqId);
-      alert('تم اعتماد التحويل وشحن الرصيد بنجاح!');
-      loadAllData();
+  async function loadVouchersTable() {
+    const { data: vList } = await db.from('medical_vouchers').select('*').order('id', { ascending: false });
+    const tbody = document.getElementById('vouchersBody');
+    if (!tbody) return;
+    if (!vList || vList.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6">لا توجد كوبونات مسجلة.</td></tr>';
+      return;
     }
+    let html = '';
+    vList.forEach(v => {
+      html += `
+        <tr>
+          <td><b style="color:var(--green);">${v.voucher_code}</b></td>
+          <td><b>${v.partner_name}</b></td>
+          <td>${v.beneficiary_name}</td>
+          <td>${v.beneficiary_phone}</td>
+          <td>${v.discount_desc}</td>
+          <td>${new Date(v.created_at).toLocaleDateString('ar-EG')}</td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
   }
-
-  async function rejectRecharge(reqId, phone) {
-    const { data: p } = await db.from('service_providers').select('*').eq('phone', phone).single();
-    if (!p) return;
-    const rCount = (p.recharge_rejection_count || 0) + 1;
-    if (rCount >= 2) {
-      await db.from('service_providers').update({ status: 'محظور', recharge_rejection_count: rCount }).eq('phone', phone);
-      alert('تم رفض الإيصال للمرة الثانية وحظر حساب المندوب مؤقتاً لمدة 24 ساعة!');
-    } else {
-      await db.from('service_providers').update({ recharge_rejection_count: rCount }).eq('phone', phone);
-      alert('تم رفض الإيصال. مطلوب منه إعادة رفع إيصال صحيح.');
-    }
-    await db.from('wallet_recharge_requests').update({ status: 'مرفوض' }).eq('id', reqId);
-    loadAllData();
-  }
-
-  async function unbanProvider(id) {
-    await db.from('service_providers').update({ status: 'معتمد', recharge_rejection_count: 0 }).eq('id', id);
-    alert('تم فك الحظر وتفعيل الحساب بنجاح!');
-    loadAllData();
-  }
-
-  async function banProvider(id) {
-    await db.from('service_providers').update({ status: 'محظور' }).eq('id', id);
-    alert('تم حظر الحساب.');
-    loadAllData();
-  }
-
-  // ==========================================
-  // وظائف منظومة الإشعارات والبث الذكية
-  // ==========================================
 
   async function loadAnnouncementsTable() {
     const { data: list } = await db.from('platform_announcements').select('*').order('id', { ascending: false });
     const tbody = document.getElementById('announcementsTableBody');
     if (!tbody) return;
-
     if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:12px;">لا توجد إشعارات مسجلة مسبقاً.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:12px;">لا توجد إشعارات مسجلة.</td></tr>';
       return;
     }
-
-    const roleLabels = {
-      'all': '🌐 الجميع',
-      'client': '🛒 العملاء',
-      'courier': '🛵 كباتن الدليفري',
-      'services': '⚡ خدمات الغاز والكروت',
-      'ride': '🚗 سيارات داخلية',
-      'technician': '🔧 فنيين معتمدين'
-    };
-
-    const channelLabels = {
-      'both': '📲 شريط + إشعار هاتف',
-      'app': '📱 شريط بالتطبيق',
-      'push': '🔔 إشعار هاتف فقط'
-    };
-
     let html = '';
     list.forEach(item => {
       const isLive = item.is_active;
-      const targetLbl = roleLabels[item.target_role] || item.target_role;
-      const chanLbl = channelLabels[item.channel || 'both'] || '📲 شريط + إشعار هاتف';
-      const timeStr = item.created_at ? new Date(item.created_at).toLocaleString('ar-EG') : 'الآن';
-
       html += `
         <tr>
-          <td style="max-width:250px; font-weight:bold;">${item.message}</td>
-          <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${targetLbl}</span></td>
-          <td><span style="font-size:10.5px; color:#475569;">${chanLbl}</span></td>
-          <td style="font-size:10.5px; color:#64748b;">${timeStr}</td>
+          <td style="max-width:240px; font-weight:bold;">${item.message}</td>
+          <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${item.target_role}</span></td>
+          <td><span style="font-size:10px; color:#475569;">${item.channel}</span></td>
+          <td style="font-size:10px; color:#64748b;">${new Date(item.created_at).toLocaleDateString('ar-EG')}</td>
+          <td><span class="badge ${isLive ? 'badge-done' : 'badge-banned'}">${isLive ? 'معروض 🟢' : 'متوقف ⚪'}</span></td>
           <td>
-            <span class="badge ${isLive ? 'badge-done' : 'badge-banned'}">
-              ${isLive ? 'معروض حالياً 🟢' : 'متوقف ⚪'}
-            </span>
-          </td>
-          <td>
-            <button class="action-btn ${isLive ? 'btn-danger' : 'btn-green'}" onclick="toggleAnnouncementStatus(${item.id}, ${!isLive})">
-              ${isLive ? 'إيقاف ⏸️' : 'تفعيل ▶️'}
-            </button>
-            <button class="action-btn" style="background:#64748b; margin-right:4px;" onclick="deleteAnnouncement(${item.id})">🗑️</button>
+            <button class="action-btn ${isLive ? 'btn-danger' : 'btn-green'}" onclick="toggleAnnouncementStatus(${item.id}, ${!isLive})">${isLive ? 'إيقاف' : 'تفعيل'}</button>
           </td>
         </tr>
       `;
@@ -483,34 +947,18 @@
     const msg = document.getElementById('broadcastMsgInput').value.trim();
     const role = document.getElementById('broadcastTargetRole').value;
     const channel = document.getElementById('broadcastChannel').value;
+    if (!msg) return alert('اكتب نص الإشعار أولاً');
 
-    if (!msg) return alert('يرجى كتابة نص الإشعار أولاً!');
-
-    const { error } = await db.from('platform_announcements').insert([{
-      message: msg,
-      target_role: role,
-      channel: channel,
-      is_active: true,
-      created_at: new Date().toISOString()
+    await db.from('platform_announcements').insert([{
+      message: msg, target_role: role, channel: channel, is_active: true, created_at: new Date().toISOString()
     }]);
-
-    if (error) {
-      alert('خطأ أثناء البث: ' + error.message);
-    } else {
-      alert('🚀 تم بث الإشعار بنجاح للفئة المحددة!');
-      document.getElementById('broadcastMsgInput').value = '';
-      loadAnnouncementsTable();
-    }
+    alert('تم بث الإشعار بنجاح!');
+    document.getElementById('broadcastMsgInput').value = '';
+    loadAnnouncementsTable();
   }
 
   async function toggleAnnouncementStatus(id, newStatus) {
     await db.from('platform_announcements').update({ is_active: newStatus }).eq('id', id);
-    loadAnnouncementsTable();
-  }
-
-  async function deleteAnnouncement(id) {
-    if (!confirm('هل أنت متأكد من حذف هذا الإشعار تماماً؟')) return;
-    await db.from('platform_announcements').delete().eq('id', id);
     loadAnnouncementsTable();
   }
 
@@ -529,7 +977,7 @@
     let updateObj = { is_active: isActive, target_link: link };
     if (file) updateObj.image_url = await fileToBase64(file);
     await db.from('platform_banners').update(updateObj).eq('id', 1);
-    alert(isActive ? 'تم تفعيل البانر الإعلاني بنجاح!' : 'تم إخفاء البانر الإعلاني.');
+    alert(isActive ? 'تم تفعيل البانر بنجاح!' : 'تم إخفاء البانر.');
   }
 </script>
 </body>

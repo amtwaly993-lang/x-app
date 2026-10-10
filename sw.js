@@ -1,6 +1,7 @@
-const CACHE_NAME = 'x-app-v5';
+const CACHE_NAME = 'octa-hub-v6';
 const ASSETS_TO_CACHE = [
   './index.html',
+  './admin.html',
   './manifest.json',
   './sw.js',
   './logo.png'
@@ -27,7 +28,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // للطلبات الرئيسية: جلب من الإنترنت أولاً للتأكد من التحديث، وفي حال عدم وجود شبكة يُفتح الكاش
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => caches.match('./index.html'))
@@ -39,7 +39,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// التعامل مع النقر على إشعار الهاتف الخارجي
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(

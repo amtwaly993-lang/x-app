@@ -3,131 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>X | منصة الخدمات والمشاوير المعتمدة</title>
+  <title>OCTA HUB | أوكتا هَب</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0c1d37">
+  <meta name="theme-color" content="#0B192C">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --navy: #0c1d37;
-      --navy-light: #162c50;
-      --gray: #64748b;
-      --accent: #4a7c6f;
-      --accent-light: #e8f2ef;
-      --bg: #f8fafc;
-      --green: #10b981;
-      --amber: #f59e0b;
-      --danger: #ef4444;
-      --border: #e2e8f0;
-      --card-bg: #ffffff;
+      --navy: #0B192C;
+      --navy-light: #13243C;
+      --navy-card: #182C49;
+      --gold: #C5A059;
+      --gold-hover: #D8B26A;
+      --gold-light: rgba(197, 160, 89, 0.15);
+      --gold-glow: rgba(197, 160, 89, 0.35);
+      --text-white: #FFFFFF;
+      --text-muted: #94A3B8;
+      --text-gold: #E5C37A;
+      --border: rgba(197, 160, 89, 0.28);
+      --border-light: rgba(255, 255, 255, 0.08);
+      --green: #10B981;
+      --danger: #EF4444;
+      --amber: #F59E0B;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); display: flex; justify-content: center; color: var(--navy); min-height: 100vh; }
-    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--navy); display: flex; justify-content: center; color: var(--text-white); min-height: 100vh; overflow-x: hidden; }
+    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--navy); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
 
-    /* الإشعار العائم الراقي */
     .toast-msg {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
-      background: var(--navy); color: #ffffff; padding: 11px 20px; border-radius: 30px; font-size: 11.5px;
-      font-weight: 800; box-shadow: 0 10px 25px rgba(12, 29, 55, 0.3); z-index: 99999;
+      background: var(--navy-light); color: var(--text-white); padding: 12px 22px; border-radius: 30px; font-size: 11.5px;
+      font-weight: 800; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); z-index: 99999;
       transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s; opacity: 0;
-      pointer-events: none; max-width: 90%; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+      pointer-events: none; max-width: 90%; text-align: center; border: 1.5px solid var(--gold);
     }
     .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* شريط البث والإعلانات الموحد */
-    .announcement-bar { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 9px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .announcement-bar { background: linear-gradient(135deg, rgba(197, 160, 89, 0.2) 0%, rgba(19, 36, 60, 0.8) 100%); border: 1px solid var(--gold); color: var(--text-gold); padding: 10px 14px; border-radius: var(--radius-md); font-size: 11.5px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 
-    /* البانر الإعلاني التجاري */
-    .ad-banner-box { width: 100%; border-radius: 14px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid var(--border); display: none; }
+    .ad-banner-box { width: 100%; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); cursor: pointer; border: 1px solid var(--border); display: none; }
     .ad-banner-box img { width: 100%; height: auto; display: block; object-fit: cover; }
 
-    /* البوابة الرئيسية */
-    .portal-screen { padding: 26px 16px; display: flex; flex-direction: column; align-items: center; }
-    .logo-hero-img { max-width: 150px; height: auto; margin-bottom: 12px; }
-    .portal-roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 12px; }
+    .portal-screen { padding: 36px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .brand-stack { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; }
+    .logo-hero-img { width: 84px; height: 84px; border-radius: 22px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 0 25px var(--gold-glow); border: 2px solid var(--gold); }
+    .brand-title-text { font-size: 26px; font-weight: 900; letter-spacing: 1px; color: var(--text-white); }
+    .brand-title-text span { color: var(--gold); }
+    .brand-subtitle-text { font-size: 13px; color: var(--text-gold); font-weight: 700; margin-top: 4px; opacity: 0.95; }
+
+    .portal-roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 10px; }
     .portal-card {
-      background: white; border-radius: 16px; padding: 16px 12px; display: flex; flex-direction: column; align-items: center;
-      border: 1px solid var(--border); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(12,29,55,0.03); transition: transform 0.12s;
+      background: var(--navy-card); border-radius: var(--radius-lg); padding: 18px 14px; display: flex; flex-direction: column; align-items: center;
+      border: 1px solid var(--border); cursor: pointer; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .portal-card:active { transform: scale(0.97); }
-    .portal-card.full-width { grid-column: span 2; display: flex; flex-direction: row; gap: 14px; text-align: right; padding: 15px; align-items: center; }
-    .portal-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-    .portal-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; color: var(--navy); }
-    .portal-desc { font-size: 10px; color: var(--gray); line-height: 1.35; }
+    .portal-card:active { transform: scale(0.97); border-color: var(--gold); }
+    .portal-card.full-width {
+      grid-column: span 2; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+      padding: 22px 16px; border: 1.5px solid var(--gold); background: linear-gradient(145deg, var(--navy-card) 0%, rgba(197, 160, 89, 0.12) 100%);
+      box-shadow: 0 10px 25px var(--gold-glow);
+    }
+    .portal-icon-wrap { width: 50px; height: 50px; border-radius: 14px; background: var(--gold-light); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; flex-shrink: 0; }
+    .portal-icon-wrap svg { width: 26px; height: 26px; stroke: var(--gold); }
+    .portal-title { font-size: 15px; font-weight: 900; color: var(--text-white); margin-bottom: 4px; }
+    .portal-desc { font-size: 11px; color: var(--text-gold); font-weight: 600; line-height: 1.4; text-align: center; }
 
-    /* الشريط العلوي */
-    .inner-header { background: white; padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
-    .header-logo { height: 26px; }
-    .back-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--navy); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .inner-header { background: var(--navy-light); padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+    .header-brand-center { display: flex; flex-direction: column; align-items: center; margin: 0 auto; }
+    .header-brand-logo { width: 34px; height: 34px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--gold); margin-bottom: 2px; }
+    .header-brand-name { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: var(--text-white); }
+    .header-brand-name span { color: var(--gold); }
+    .menu-dots-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--gold); width: 38px; height: 38px; border-radius: 10px; font-size: 18px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
+    .menu-dots-btn:active { background: var(--gold-light); transform: scale(0.95); }
 
-    .content-area { flex: 1; padding: 14px; overflow-y: auto; }
-    .online-indicator-bar { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: 10px; padding: 8px 12px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .content-area { flex: 1; padding: 16px; overflow-y: auto; }
+    .online-indicator-bar { background: rgba(197, 160, 89, 0.08); border: 1px solid var(--border); color: var(--text-white); border-radius: var(--radius-md); padding: 10px 14px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 
-    .address-bar-card { background: white; border: 1px solid var(--border); border-right: 4px solid var(--accent); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
-    .section-title { font-size: 12px; font-weight: 800; color: var(--navy); margin: 16px 0 8px 0; display: flex; justify-content: space-between; align-items: center; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .address-bar-card { background: var(--navy-card); border: 1px solid var(--border); border-right: 4px solid var(--gold); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.25); }
+    .section-title { font-size: 12.5px; font-weight: 900; color: var(--text-white); margin: 18px 0 10px 0; display: flex; justify-content: space-between; align-items: center; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
-    .service-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; cursor: pointer; }
-    .service-card:active { transform: scale(0.97); }
-    .service-card.highlight { border: 1.5px solid var(--accent); background: #fafdfc; }
-    .service-card-title { font-size: 11.5px; font-weight: 800; color: var(--navy); }
-    .service-card-desc { font-size: 9.5px; color: var(--gray); }
+    .service-card { background: var(--navy-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 14px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .service-card:active { transform: scale(0.96); border-color: var(--gold); }
+    .service-card.highlight { border: 1.5px solid var(--border); background: linear-gradient(145deg, var(--navy-card) 0%, rgba(197, 160, 89, 0.08) 100%); }
+    .service-icon-box { width: 38px; height: 38px; border-radius: 10px; background: var(--gold-light); display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+    .service-icon-box svg { width: 22px; height: 22px; stroke: var(--gold); }
+    .service-card-title { font-size: 12px; font-weight: 800; color: var(--text-white); }
+    .service-card-desc { font-size: 9.5px; color: var(--text-muted); font-weight: 600; }
 
-    /* كروت الخصومات الطبية داخل المودال */
-    .medical-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .medical-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.15s; }
     .medical-card:active { transform: scale(0.98); }
-    .medical-discount-tag { background: #fee2e2; color: #b91c1c; padding: 3px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 900; }
+    .medical-discount-tag { background: var(--gold-light); color: var(--text-gold); border: 1px solid var(--gold); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 900; }
 
-    /* أزرار التصفية في مودال الخصومات */
-    .med-filter-btn { flex: 1; padding: 7px 4px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid var(--border); background: #f8fafc; color: var(--navy); cursor: pointer; text-align: center; }
-    .med-filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .med-filter-btn { flex: 1; padding: 8px 4px; border-radius: 10px; font-size: 11.5px; font-weight: 700; border: 1px solid var(--border-light); background: rgba(255,255,255,0.04); color: var(--text-muted); cursor: pointer; text-align: center; }
+    .med-filter-btn.active { background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 900; }
 
-    /* كروت المتابعة والطلبات النشطة */
-    .active-order-box { background: #ffffff; border: 2px solid var(--accent); border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(74,124,111,0.08); }
-    .order-bill-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 11.5px; }
+    .active-order-box { background: var(--navy-card); border: 2px solid var(--gold); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; box-shadow: 0 0 25px var(--gold-glow); }
+    .order-bill-box { background: rgba(11, 25, 44, 0.6); border: 1px dashed var(--border); border-radius: 12px; padding: 12px; margin-top: 10px; font-size: 12px; }
 
-    /* كروت المندوب */
-    .order-feed-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(12,29,55,0.04); }
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
-    .badge-new { background: #e0f2fe; color: #0369a1; }
-    .badge-active { background: #dcfce7; color: #15803d; }
-    .badge-urgent { background: #fee2e2; color: #b91c1c; }
+    .order-feed-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+    .badge { padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-weight: 800; display: inline-block; }
+    .badge-new { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold); }
+    .badge-active { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
+    .badge-urgent { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
 
-    .eta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; }
-    .btn-eta { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 7px 2px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; text-align: center; color: var(--navy); }
-    .btn-eta:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .eta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .btn-eta { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 8px 2px; border-radius: 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; text-align: center; color: var(--text-white); }
+    .btn-eta:hover, .btn-eta:active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
 
-    .order-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .btn-action-green { background: var(--green); color: white; border: none; padding: 9px; border-radius: 8px; font-size: 11.5px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
-    .btn-action-blue { background: #0284c7; color: white; border: none; padding: 9px; border-radius: 8px; font-size: 11.5px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
+    .order-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .btn-action-green { background: var(--green); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
+    .btn-action-blue { background: #0284c7; color: white; border: none; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 800; text-decoration: none; text-align: center; display: block; }
+    .btn-action-danger { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; font-size: 11.5px; font-weight: 800; cursor: pointer; text-align: center; display: block; }
 
-    .toggle-online-btn { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; }
-    .btn-online { background: #dcfce7; color: #15803d; }
-    .btn-offline { background: #f1f5f9; color: #64748b; }
+    .toggle-online-btn { padding: 7px 16px; border-radius: 20px; font-size: 11.5px; font-weight: 800; border: none; cursor: pointer; }
+    .btn-online { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); }
+    .btn-offline { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-light); }
 
-    /* النوافذ المنبثقة */
-    .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
+    .modal { position: fixed; inset: 0; background: rgba(11, 25, 44, 0.85); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
     .modal.show { display: flex; }
-    .modal-sheet { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px 16px; max-height: 88vh; overflow-y: auto; }
-    .input-row { margin-bottom: 10px; }
-    .input-row label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
-    .input-box { width: 100%; padding: 9px 11px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; }
-    .btn-submit { width: 100%; background: var(--navy); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-top: 8px; }
-    #mapContainer { height: 160px; width: 100%; border-radius: 10px; border: 1px solid #cbd5e1; margin-top: 4px; }
+    .modal-sheet { background: var(--navy-light); width: 100%; max-width: 480px; border-radius: 26px 26px 0 0; padding: 22px 18px; max-height: 88vh; overflow-y: auto; border-top: 2px solid var(--gold); box-shadow: 0 -10px 30px rgba(0,0,0,0.7); }
+    .input-row { margin-bottom: 12px; }
+    .input-row label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 6px; color: var(--text-muted); }
+    .input-box { width: 100%; background: var(--navy-card); border: 1px solid var(--border); color: var(--text-white); padding: 11px 14px; border-radius: 10px; font-size: 12.5px; outline: none; }
+    .input-box:focus { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+    
+    .btn-submit { width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A88438 100%); color: var(--navy); border: none; padding: 13px; border-radius: 12px; font-size: 13px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px var(--gold-glow); transition: 0.2s; }
+    .btn-submit:active { transform: scale(0.98); }
+    #mapContainer { height: 160px; width: 100%; border-radius: 12px; border: 1px solid var(--border); margin-top: 6px; }
 
-    /* كروت السجلات */
-    .receipt-card { background: white; border: 1px solid #cbd5e1; border-radius: 14px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); font-size: 11.5px; }
-    .receipt-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 6px; margin-bottom: 6px; font-weight: bold; }
-    .receipt-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--gray); }
-    .receipt-total { display: flex; justify-content: space-between; font-weight: 900; font-size: 12.5px; color: var(--navy); border-top: 1px dashed #e2e8f0; padding-top: 6px; margin-top: 4px; }
+    .receipt-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 12px; font-size: 12px; }
+    .receipt-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-light); padding-bottom: 8px; margin-bottom: 8px; font-weight: bold; }
+    .receipt-row { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text-muted); }
+    .receipt-total { display: flex; justify-content: space-between; font-weight: 900; font-size: 13.5px; color: var(--gold); border-top: 1px dashed var(--border-light); padding-top: 8px; margin-top: 6px; }
+
+    .star-item { cursor: pointer; display: inline-block; transition: transform 0.15s, color 0.15s; font-size: 34px; padding: 0 4px; user-select: none; }
+    .star-item:hover, .star-item:active { transform: scale(1.2); }
+    .star-active { color: #f59e0b; }
+    .star-inactive { color: rgba(255,255,255,0.25); }
   </style>
 </head>
 <body>
@@ -136,26 +161,76 @@
   <div id="mainView"></div>
 </div>
 
-<!-- عنصر الإشعار العائم الموحد -->
 <div id="toastNotification" class="toast-msg"></div>
+
+<!-- نافذة التفضيلات والإعدادات (زر 3 نقط ⋮) -->
+<div class="modal" id="preferencesModal">
+  <div class="modal-sheet">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:15px; font-weight:900; color:var(--text-white);" data-i18n="settingsTitle">⚙️ إعدادات وتخصيص OCTA HUB</h3>
+      <span onclick="closeModal('preferencesModal')" style="cursor:pointer; font-size:20px; color:var(--gold);">✕</span>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:14px; background:var(--navy-card); padding:14px; border-radius:var(--radius-lg); margin-bottom:16px; border:1px solid var(--border);">
+      <img src="logo.png" id="prefUserAvatar" style="width:54px; height:54px; border-radius:50%; border:2px solid var(--gold); object-fit:cover;" onerror="this.src='Logo1.png'">
+      <div>
+        <b style="font-size:14px; color:var(--text-white);" id="prefUserName">عميل جديد</b>
+        <div style="font-size:11.5px; color:var(--gold); font-weight:bold; margin-top:2px;" id="prefUserRoleTag">عميل جديد (0 طلبات)</div>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <label data-i18n="changePhoto">تغيير الصورة الشخصية:</label>
+      <input type="file" id="prefAvatarFile" accept="image/*" class="input-box" onchange="uploadPersonalAvatar(event)">
+    </div>
+
+    <div class="input-row">
+      <label data-i18n="appLanguage">لغة التطبيق:</label>
+      <select class="input-box" id="prefLangSelect" onchange="changeLanguage(this.value)">
+        <option value="ar">العربية (الافتراضية)</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div class="input-row">
+      <label data-i18n="notifSound">صوت الإشعارات:</label>
+      <div style="display:flex; gap:8px;">
+        <select class="input-box" id="prefSoundSelect" style="flex:1;">
+          <option value="golden">رنين ذهبي ناعم 🔔</option>
+          <option value="digital">تنبيه رقمي سريع ⚡</option>
+          <option value="marimba">جرس ثلاثي مرح 🎵</option>
+        </select>
+        <button class="btn-submit" onclick="testSelectedSound()" style="width:auto; padding:0 16px; margin:0; border-radius:10px;" data-i18n="testSound">تجربة 🔔</button>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:var(--radius-lg); margin-top:16px; text-align:center; border:1px solid var(--border-light);">
+      <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;" data-i18n="contactTitle">قنوات التواصل المباشر مع إدارة المنصة:</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <a href="https://wa.me/201021572161" target="_blank" class="btn-action-green" data-i18n="whatsappSupport">💬 واتساب الإدارة</a>
+        <a href="tel:01021572161" class="btn-action-blue" data-i18n="callSupport">📞 اتصال مباشر</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- 1. نافذة ضبط العنوان للعميل -->
 <div class="modal" id="addressModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">📍 عنوان التوصيل ورقم الهاتف</h3>
-      <span onclick="closeModal('addressModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;" data-i18n="addressModalTitle">📍 عنوان التوصيل ورقم الهاتف</h3>
+      <span onclick="closeModal('addressModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div class="input-row">
-      <label>اسم العميل الكريم:</label>
+      <label data-i18n="clientNameLabel">اسم العميل:</label>
       <input type="text" id="inputClientName" class="input-box" placeholder="مثال: عمرو محمد">
     </div>
     <div class="input-row">
-      <label>رقم تليفون التواصل (أساسي):</label>
+      <label data-i18n="clientPhoneLabel">رقم تليفون التواصل (أساسي):</label>
       <input type="tel" id="inputPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
     </div>
     <div class="input-row">
-      <label>الكمبوند / المنطقة:</label>
+      <label data-i18n="compoundLabel">الكمبوند / المنطقة:</label>
       <select id="inputCompound" class="input-box">
         <option value="كمبوند سكن مصر الداون تاون">كمبوند سكن مصر الداون تاون</option>
         <option value="كمبوند حورس">كمبوند حورس</option>
@@ -172,25 +247,25 @@
     </div>
     <div class="input-row">
       <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-        <div><label>العمارة</label><input type="text" id="inputBuilding" class="input-box" placeholder="14"></div>
-        <div><label>الدور</label><input type="text" id="inputFloor" class="input-box" placeholder="3"></div>
-        <div><label>الشقة</label><input type="text" id="inputApartment" class="input-box" placeholder="8"></div>
+        <div><label data-i18n="bldLabel">العمارة</label><input type="text" id="inputBuilding" class="input-box" placeholder="14"></div>
+        <div><label data-i18n="floorLabel">الدور</label><input type="text" id="inputFloor" class="input-box" placeholder="3"></div>
+        <div><label data-i18n="aptLabel">الشقة</label><input type="text" id="inputApartment" class="input-box" placeholder="8"></div>
       </div>
     </div>
     <div class="input-row">
-      <label>حدد موقعك بدقة على الخريطة:</label>
+      <label data-i18n="mapLabel">حدد موقعك بدقة على الخريطة:</label>
       <div id="mapContainer"></div>
     </div>
-    <button class="btn-submit" onclick="saveAddressData()">حفظ دائم للعنوان ✓</button>
+    <button class="btn-submit" onclick="saveAddressData()" data-i18n="saveAddressBtn">حفظ دائم للعنوان ✓</button>
   </div>
 </div>
 
 <!-- 2. نافذة طلب المشتريات والدليفري -->
 <div class="modal" id="orderModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 id="modalTitle" style="font-size:13.5px; font-weight:800;">تفاصيل الطلب</h3>
-      <span onclick="closeModal('orderModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 id="modalTitle" style="font-size:14px; font-weight:800;">تفاصيل الطلب</h3>
+      <span onclick="closeModal('orderModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div id="modalBody"></div>
     <div class="input-row" style="margin-top:8px;">
@@ -207,16 +282,16 @@
         <span>🚨 مشوار مستعجل (أولوية انطلاق قصوى للمناديب)</span>
       </label>
     </div>
-    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:10px; margin-bottom:10px;">
-      <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:800; color:#166534;">
+    <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800; color:var(--text-white);">
         <span>قيمة مشوار التوصيل:</span>
-        <span id="calculatedDeliveryFee">25 ج</span>
+        <span id="calculatedDeliveryFee" style="color:var(--gold);">25 ج</span>
       </div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-top:2px;">
-        <span>تأمين المشوار وضمان الخدمة:</span>
-        <span>1 ج</span>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-top:4px;">
+        <span>تأمين وتشغيل الخدمة:</span>
+        <span id="calculatedInsuranceFee">1 ج</span>
       </div>
-      <div id="transferFeeRow" style="display:none; justify-content:space-between; font-size:11px; color:#b45309; margin-top:2px;">
+      <div id="transferFeeRow" style="display:none; justify-content:space-between; font-size:11px; color:var(--amber); margin-top:4px;">
         <span>رسوم تحويل (إنستاباي / محفظة):</span>
         <span id="calculatedTransferFee">5 ج</span>
       </div>
@@ -228,40 +303,39 @@
 <!-- 3. نافذة دليل الخصومات الطبية الشامل -->
 <div class="modal" id="medicalDirectoryModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--navy);">🏥 الخصومات الطبية المعتمدة</h3>
-      <span onclick="closeModal('medicalDirectoryModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">🏥 الخصومات الطبية المعتمدة</h3>
+      <span onclick="closeModal('medicalDirectoryModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
-    <!-- تصفية سريعة داخل النافذة -->
-    <div style="display:flex; gap:6px; margin-bottom:12px;">
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
       <button class="med-filter-btn active" id="medFilterAll" onclick="filterMedPartners('all')">الكل (5)</button>
-      <button class="med-filter-btn" id="medFilterClinics" onclick="filterMedPartners('clinics')">🏥 عيادات ومعامل</button>
-      <button class="med-filter-btn" id="medFilterPharmacies" onclick="filterMedPartners('pharmacies')">💊 صيدليات</button>
+      <button class="med-filter-btn" id="medFilterClinics" onclick="filterMedPartners('clinics')">عيادات ومعامل</button>
+      <button class="med-filter-btn" id="medFilterPharmacies" onclick="filterMedPartners('pharmacies')">صيدليات</button>
     </div>
 
     <div id="medicalPartnersListContainer" style="max-height:55vh; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
 
-    <button class="btn-submit" style="background:#f1f5f9; color:var(--navy); border:1px solid #cbd5e1; margin-top:12px;" onclick="closeModal('medicalDirectoryModal'); openVouchersHistory();">📋 عرض سجل كوبوناتي الطبية</button>
+    <button class="btn-submit" style="background:var(--navy-card); color:var(--text-gold); border:1px solid var(--border); margin-top:14px;" onclick="closeModal('medicalDirectoryModal'); openVouchersHistory();">📋 عرض سجل كوبوناتي الطبية</button>
   </div>
 </div>
 
 <!-- 4. نافذة تفاصيل الشريك الطبي وإصدار كود الخصم -->
 <div class="modal" id="medPartnerModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:900;" id="medModalTitle">الجهة الطبية</h3>
-      <span onclick="closeModal('medPartnerModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:900;" id="medModalTitle">الجهة الطبية</h3>
+      <span onclick="closeModal('medPartnerModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     
-    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px; margin-bottom:12px; text-align:center;">
-      <div style="font-weight:900; font-size:13px; color:#991b1b;" id="medModalDiscount">خصم معتمد</div>
-      <div style="font-size:10px; color:#7f1d1d; margin-top:2px;">معتمد حصرياً لأهالي حدائق أكتوبر عبر منصة X</div>
+    <div style="background:var(--navy-card); border:1px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:14px; text-align:center;">
+      <div style="font-weight:900; font-size:14px; color:var(--text-gold);" id="medModalDiscount">خصم معتمد</div>
+      <div style="font-size:10.5px; color:var(--text-muted); margin-top:3px;">معتمد حصرياً عبر منصة OCTA HUB</div>
     </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
-      <a href="#" id="medCallBtn" style="background:#f1f5f9; color:var(--navy); padding:8px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; text-align:center;">📞 اتصال مباشر</a>
-      <a href="#" id="medWaBtn" target="_blank" style="background:#ecfdf5; color:#065f46; padding:8px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; text-align:center;">💬 استفسار واتساب</a>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px;">
+      <a href="#" id="medCallBtn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">📞 اتصال مباشر</a>
+      <a href="#" id="medWaBtn" target="_blank" style="background:rgba(16,185,129,0.15); border:1px solid var(--green); color:var(--green); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">💬 استفسار واتساب</a>
     </div>
 
     <div class="input-row">
@@ -276,11 +350,11 @@
 
     <button class="btn-submit" onclick="generateMedicalVoucher()">احصل على كود الخصم المعتمد 🏷️</button>
 
-    <div id="voucherResultBox" style="display:none; margin-top:14px; background:#f0fdf4; border:1.5px dashed var(--green); border-radius:12px; padding:12px; text-align:center;">
-      <div style="font-size:11px; color:#15803d; font-weight:bold;">كود الخصم المعتمد الخاص بك:</div>
-      <div style="font-size:24px; font-weight:900; letter-spacing:4px; color:var(--navy); margin:6px 0;" id="generatedVoucherCode">XXXXXXXX</div>
-      <div style="font-size:10px; color:var(--gray); margin-bottom:10px;">صالح للاستخدام خلال 48 ساعة من الآن</div>
-      <a href="#" id="medSendVoucherBtn" target="_blank" style="background:var(--green); color:white; padding:10px; border-radius:8px; text-decoration:none; display:block; font-size:11.5px; font-weight:800;">📲 أبلغ الجهة بالخصم والكود عبر واتساب</a>
+    <div id="voucherResultBox" style="display:none; margin-top:14px; background:var(--navy-card); border:1.5px dashed var(--gold); border-radius:14px; padding:14px; text-align:center;">
+      <div style="font-size:11.5px; color:var(--text-gold); font-weight:bold;">كود الخصم المعتمد الخاص بك:</div>
+      <div style="font-size:26px; font-weight:900; letter-spacing:4px; color:var(--text-white); margin:8px 0;" id="generatedVoucherCode">XXXXXXXX</div>
+      <div style="font-size:10px; color:var(--text-muted); margin-bottom:12px;">صالح للاستخدام خلال 48 ساعة من الآن</div>
+      <a href="#" id="medSendVoucherBtn" target="_blank" style="background:var(--green); color:white; padding:11px; border-radius:10px; text-decoration:none; display:block; font-size:12px; font-weight:800;">📲 أبلغ الجهة بالخصم والكود عبر واتساب</a>
     </div>
   </div>
 </div>
@@ -288,28 +362,28 @@
 <!-- 5. نافذة شحن كروت المرافق -->
 <div class="modal" id="utilityModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">⚡ شحن كروت المرافق عند باب الشقة</h3>
-      <span onclick="closeModal('utilityModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;">⚡ شحن كروت المرافق عند باب الشقة</h3>
+      <span onclick="closeModal('utilityModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
-    <p style="font-size:11px; color:var(--gray); margin-bottom:12px;">يصلك الكابتن بجهاز فوري أو هاتف NFC لشحن كروتك فوراً عند باب المنزل.</p>
+    <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:14px;">يصلك الكابتن بجهاز فوري أو هاتف NFC لشحن كروتك فوراً عند باب المنزل.</p>
 
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
         <input type="checkbox" id="chkElec" onchange="toggleUtilityInput('Elec')"> ⚡ كارت الكهرباء
       </label>
       <div id="boxElec" style="display:none; margin-right:20px;">
         <input type="number" id="amtElec" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
       </div>
 
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
         <input type="checkbox" id="chkGas" onchange="toggleUtilityInput('Gas')"> ⛽ كارت الغاز
       </label>
       <div id="boxGas" style="display:none; margin-right:20px;">
         <input type="number" id="amtGas" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
       </div>
 
-      <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; cursor:pointer;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
         <input type="checkbox" id="chkWater" onchange="toggleUtilityInput('Water')"> 💧 كارت المياه
       </label>
       <div id="boxWater" style="display:none; margin-right:20px;">
@@ -326,15 +400,15 @@
       </select>
     </div>
 
-    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; font-size:11.5px; margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between;"><span>إجمالي مبالغ الشحن:</span><b id="utilTotalAmt">0 ج</b></div>
-      <div style="display:flex; justify-content:space-between;"><span>مصاريف مشوار الحركة:</span><b>25 ج</b></div>
-      <div style="display:flex; justify-content:space-between;"><span>تأمين الطلب والضمان:</span><b>1 ج</b></div>
-      <div style="display:flex; justify-content:space-between; color:#b45309;" id="utilTransferRow"><span>رسوم تحويل:</span><b id="utilTransferVal">0 ج</b></div>
-      <hr style="margin:4px 0; border:none; border-top:1px dashed #cbd5e1;">
-      <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13px; color:var(--navy);">
+    <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; font-size:12px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between;"><span>إجمالي مبالغ الشحن:</span><b id="utilTotalAmt" style="color:var(--text-white);">0 ج</b></div>
+      <div style="display:flex; justify-content:space-between; margin-top:4px;"><span>مصاريف مشوار الحركة:</span><b>25 ج</b></div>
+      <div style="display:flex; justify-content:space-between; margin-top:4px;"><span>تأمين وتشغيل الخدمة:</span><b>1 ج</b></div>
+      <div style="display:flex; justify-content:space-between; color:var(--amber); margin-top:4px;" id="utilTransferRow"><span>رسوم تحويل:</span><b id="utilTransferVal">0 ج</b></div>
+      <hr style="margin:8px 0; border:none; border-top:1px dashed var(--border-light);">
+      <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13.5px; color:var(--text-white);">
         <span>الإجمالي المتوقع:</span>
-        <span id="utilGrandTotal" style="color:var(--green);">26 ج</span>
+        <span id="utilGrandTotal" style="color:var(--gold);">26 ج</span>
       </div>
     </div>
 
@@ -345,34 +419,34 @@
 <!-- 6. نافذة اسطوانة الغاز -->
 <div class="modal" id="gasCylinderModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">⛽ اسطوانة الغاز (الخدمات السريعة)</h3>
-      <span onclick="closeModal('gasCylinderModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;">⛽ اسطوانة الغاز (الخدمات السريعة)</h3>
+      <span onclick="closeModal('gasCylinderModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('تغيير اسطوانة غاز (استبدال)', 320, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+      <div style="border:1.5px solid var(--border); background:var(--navy-card); border-radius:12px; padding:14px; cursor:pointer;" onclick="selectGasType('تغيير اسطوانة غاز (استبدال)', 320, this)" class="gas-opt-card">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;">
           <span>تغيير اسطوانة (استبدال)</span>
-          <span style="color:var(--green);">320 ج</span>
+          <span style="color:var(--gold);">320 ج</span>
         </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">شامل الاسطوانة المعبأة + النقل حتى باب الشقة + التركيب الآمن واختبار التسريب.</p>
+        <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">شامل الاسطوانة المعبأة + النقل حتى باب الشقة + التركيب الآمن واختبار التسريب.</p>
       </div>
 
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('شراء اسطوانة غاز جديدة', 1950, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
+      <div style="border:1.5px solid var(--border); background:var(--navy-card); border-radius:12px; padding:14px; cursor:pointer;" onclick="selectGasType('شراء اسطوانة غاز جديدة', 1950, this)" class="gas-opt-card">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;">
           <span>شراء اسطوانة جديدة</span>
-          <span style="color:var(--green);">1950 ج</span>
+          <span style="color:var(--gold);">1950 ج</span>
         </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">استلام اسطوانة معبأة وجاهزة بالكامل حتى باب المنزل.</p>
+        <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">استلام اسطوانة معبأة وجاهزة بالكامل حتى باب المنزل.</p>
       </div>
 
-      <div style="border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;" onclick="selectGasType('بيع اسطوانة غاز زائدة', 1750, this)" class="gas-opt-card">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12.5px;">
+      <div style="border:1.5px solid var(--border); background:var(--navy-card); border-radius:12px; padding:14px; cursor:pointer;" onclick="selectGasType('بيع اسطوانة غاز زائدة', 1750, this)" class="gas-opt-card">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;">
           <span>بيع اسطوانة غاز زائدة لديك</span>
-          <span style="color:var(--navy);">1750 ج (كاش لك)</span>
+          <span style="color:var(--text-white);">1750 ج (كاش لك)</span>
         </div>
-        <p style="font-size:10px; color:var(--gray); margin-top:3px;">يستلم مقدم الخدمة الاسطوانة من باب شقتك ويسلمك 1750 ج فوراً.</p>
+        <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">يستلم مقدم الخدمة الاسطوانة من باب شقتك ويسلمك 1750 ج فوراً.</p>
       </div>
     </div>
 
@@ -392,9 +466,9 @@
 <!-- 7. نافذة طلب فني معتمد -->
 <div class="modal" id="techModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;" id="techTitle">طلب فني معتمد</h3>
-      <span onclick="closeModal('techModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;" id="techTitle">طلب فني معتمد</h3>
+      <span onclick="closeModal('techModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
     <div class="input-row">
@@ -407,7 +481,7 @@
       <input type="file" id="techIssueImg" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
-    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:10px; margin-bottom:12px; font-size:11px; color:#991b1b; line-height:1.45;">
+    <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:14px; font-size:11.5px; color:var(--text-gold); line-height:1.5;">
       <b>⚠️ إقرار الزيارة والفحص:</b><br>
       أؤكد بأن زيارة الفني للمعاينة والكشف هي بقيمة <b>50 ج (لا تُرد)</b> + <b>1 ج تأمين المشوار</b>. وتكلفة الصيانة أو قطع الغيار يتفق عليها بعد الفحص.
     </div>
@@ -416,46 +490,67 @@
   </div>
 </div>
 
-<!-- 8. نافذة منافسة سرعة التوصيل (15 ثانية) -->
+<!-- 8. نافذة منافسة سرعة التوصيل (3 دقائق = 180 ثانية) -->
 <div class="modal" id="biddingModal">
   <div class="modal-sheet" style="text-align:center;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="font-size:13px; font-weight:900; color:var(--navy);">عروض الكباتن المتاحة ⏱️</h3>
-      <span id="countdownTimer" style="background:var(--danger); color:white; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:bold;">15 ث</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">عروض الكباتن المتاحة ⏱️</h3>
+      <span id="countdownTimer" style="background:var(--gold); color:var(--navy); padding:4px 12px; border-radius:12px; font-size:12px; font-weight:900;">03:00</span>
     </div>
-    <p style="font-size:11px; color:var(--gray); margin-bottom:12px;">اختر الكابتن الأنسب لك حسب وقت الوصول والتقييم:</p>
-    <div id="offersContainer" style="display:flex; flex-direction:column; gap:8px; max-height:50vh; overflow-y:auto;">
-      <div style="padding:20px; font-size:11.5px; color:var(--gray);">جارٍ استقبال عروض الكباتن حولك... 📡</div>
+    <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:14px;">اختر الكابتن الأنسب لك حسب وقت الوصول والتقييم:</p>
+    <div id="offersContainer" style="display:flex; flex-direction:column; gap:10px; max-height:50vh; overflow-y:auto;">
+      <div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك... 📡</div>
     </div>
   </div>
 </div>
 
-<!-- 9. نافذة استفسار العميل بعد العروض الخمسة -->
+<!-- 9. نافذة انتهاء المهلة أو عدم موافقة العميل -->
 <div class="modal" id="retryModal">
   <div class="modal-sheet" style="text-align:center;">
-    <div style="font-size:36px; margin-bottom:6px;">🤔</div>
-    <h3 style="font-size:14px; font-weight:900; margin-bottom:6px;">هل ما زلت تحتاج إلى الطلب؟</h3>
-    <p style="font-size:11.5px; color:var(--gray); margin-bottom:16px;">لم يتم اختيار كابتن للطلب الحالي أو انتهت مهلة العروض.</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-      <button class="btn-submit" style="background:var(--green); margin:0;" onclick="retryOrderSearch()">نعم، أعد البحث 🔄</button>
-      <button class="btn-submit" style="background:#64748b; margin:0;" onclick="cancelOrderSearch()">لا أحتاج الآن ✕</button>
+    <div style="font-size:36px; margin-bottom:8px;">🤔</div>
+    <h3 style="font-size:15px; font-weight:900; margin-bottom:6px;">هل ما زلت تبحث عن عروض من الكباتن؟</h3>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">انتهت مهلة الـ 3 دقائق الحالية. يمكنك قبول تمديد الوقت أو إلغاء البحث.</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <button class="btn-submit" style="margin:0;" onclick="retryOrderSearch()">قبول وتمديد 3 دقائق 🔄</button>
+      <button class="btn-submit" style="background:rgba(255,255,255,0.08); color:var(--text-white); margin:0;" onclick="cancelOrderSearch()">رفض وإنهاء البحث ✕</button>
     </div>
   </div>
 </div>
 
-<!-- 10. نافذة شحن محفظة المندوب -->
+<!-- 10. نافذة تسجيل وإرسال طلب الحظر والشكوى المتبادل -->
+<div class="modal" id="blockUserModal">
+  <div class="modal-sheet">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:900; color:var(--danger);" id="blockModalTitle">🚫 حظر وإبلاغ إدارة المنصة</h3>
+      <span onclick="closeModal('blockUserModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
+    </div>
+    <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">
+      سيتم حظر التعامل مع هذا الطرف فوراً في هذا الطلب وكافة الطلبات المستقبلية، وسيُرسل تقريرك مباشرة للإدارة لمراجعته.
+    </p>
+    <div class="input-row">
+      <label style="color:var(--text-white);">سبب الحظر أو الشكوى بالتفصيل (إلزامي):</label>
+      <textarea id="blockReasonInput" class="input-box" rows="3" placeholder="اكتب سبب الشكوى (مثال: عدم التزام، تأخير شديد، سلوك غير لائق...)"></textarea>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+      <button class="btn-action-danger" onclick="submitBlockAction()">تأكيد الحظر والإبلاغ 🚫</button>
+      <button class="btn-submit" style="margin:0; background:rgba(255,255,255,0.08); color:#fff;" onclick="closeModal('blockUserModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- 11. نافذة شحن محفظة المندوب -->
 <div class="modal" id="walletRechargeModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:900;">شحن رصيد المحفظة 💳</h3>
-      <span onclick="closeModal('walletRechargeModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:900;">شحن رصيد المحفظة 💳</h3>
+      <span onclick="closeModal('walletRechargeModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
-    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; font-size:11px; line-height:1.5;">
-      <div style="font-weight:bold; color:var(--navy); margin-bottom:4px;">بيانات التحويل المعتمدة (Amr Mohamed):</div>
+    <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:14px; font-size:11.5px; line-height:1.5;">
+      <div style="font-weight:bold; color:var(--text-white); margin-bottom:4px;">بيانات التحويل المعتمدة لـ Octa Hub:</div>
       <div>📱 <b>اتصالات كاش:</b> <code>01110807050</code></div>
-      <div>⚡ <b>إنستاباي / بطاقة بنكية:</b> <code>5078086712394258</code></div>
-      <div style="color:var(--amber); font-weight:bold; margin-top:4px;">⏰ مواعيد مراجعة الشحن: من 1:00 بعد منتصف الليل حتى 11:00 مساءً.</div>
+      <div>⚡ <b>إنستاباي:</b> <code>5078086712394258</code></div>
+      <div style="color:var(--text-gold); font-weight:bold; margin-top:4px;">⏰ مواعيد مراجعة الشحن: على مدار اليوم.</div>
     </div>
 
     <div class="input-row">
@@ -480,12 +575,12 @@
   </div>
 </div>
 
-<!-- 11. نافذة تسجيل كابتن جديد -->
+<!-- 12. نافذة تسجيل شريك جديد -->
 <div class="modal" id="providerRegisterModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">تسجيل كابتن جديد وتدقيق الأوراق 🛡️</h3>
-      <span onclick="closeModal('providerRegisterModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;">تسجيل شريك جديد وتدقيق الأوراق 🛡️</h3>
+      <span onclick="closeModal('providerRegisterModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
     <div class="input-row">
@@ -507,15 +602,15 @@
       </select>
     </div>
 
-    <div class="input-row" style="background:#f8fafc; padding:8px; border-radius:8px; border:1px solid var(--border);">
-      <label style="font-weight:bold; color:var(--navy);">بطاقة الرقم القومي (إلزامي):</label>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+    <div class="input-row" style="background:var(--navy-card); padding:10px; border-radius:10px; border:1px solid var(--border);">
+      <label style="font-weight:bold; color:var(--text-white);">بطاقة الرقم القومي (إلزامي):</label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
         <div>
-          <span style="font-size:10px; color:var(--gray);">وجه البطاقة 🪪</span>
+          <span style="font-size:10px; color:var(--text-muted);">وجه البطاقة 🪪</span>
           <input type="file" id="fileIdFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">ظهر البطاقة 🪪</span>
+          <span style="font-size:10px; color:var(--text-muted);">ظهر البطاقة 🪪</span>
           <input type="file" id="fileIdBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
       </div>
@@ -523,102 +618,106 @@
 
     <div class="input-row">
       <label>صورة وسيلة التنقل (المركبة/العجلة):</label>
-      <input type="file" id="fileVehicle" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
+      <input type="file" id="fileVehicle" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
-    <div id="licenseUploadSection" style="background:#f8fafc; padding:8px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px;">
-      <label style="font-weight:bold; color:var(--navy);">تراخيص القيادة والمركبة (للموتوسيكل):</label>
+    <div id="licenseUploadSection" style="background:var(--navy-card); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:12px;">
+      <label style="font-weight:bold; color:var(--text-white);">تراخيص القيادة والمركبة (للموتوسيكل):</label>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة القيادة (وجه)</span>
+          <span style="font-size:10px; color:var(--text-muted);">رخصة القيادة (وجه)</span>
           <input type="file" id="fileLicFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة القيادة (ظهر)</span>
+          <span style="font-size:10px; color:var(--text-muted);">رخصة القيادة (ظهر)</span>
           <input type="file" id="fileLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة المركبة (وجه)</span>
+          <span style="font-size:10px; color:var(--text-muted);">رخصة المركبة (وجه)</span>
           <input type="file" id="fileVehLicFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--gray);">رخصة المركبة (ظهر)</span>
+          <span style="font-size:10px; color:var(--text-muted);">رخصة المركبة (ظهر)</span>
           <input type="file" id="fileVehLicBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
       </div>
     </div>
 
-    <div style="background:#f1f5f9; padding:10px; border-radius:8px; margin-bottom:10px; font-size:11px; text-align:center;">
-      <p style="color:var(--gray); margin-bottom:6px;">يجب الاطلاع على سياسة العمل المعتمدة أولاً للمتابعة:</p>
-      <button type="button" onclick="openPolicyModal()" style="background:var(--navy); color:white; border:none; padding:6px 12px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">📖 قراءة شروط وسياسة المنصة</button>
-      <div id="policyStatusText" style="color:var(--danger); font-weight:bold; margin-top:6px; font-size:10px;">لم يتم تأكيد قراءة السياسة بعد ✖</div>
+    <div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:10px; margin-bottom:12px; font-size:11.5px; text-align:center;">
+      <p style="color:var(--text-muted); margin-bottom:8px;">يجب الاطلاع على وثيقة الشروط المعتمدة أولاً للمتابعة:</p>
+      <button type="button" onclick="openPolicyModal()" style="background:var(--navy-card); border:1px solid var(--border); color:var(--text-white); padding:8px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">📖 قراءة شروط وسياسة المنصة</button>
+      <div id="policyStatusText" style="color:var(--danger); font-weight:bold; margin-top:8px; font-size:10.5px;">لم يتم تأكيد قراءة السياسة بعد ✖</div>
     </div>
 
     <button class="btn-submit" id="btnSubmitProvider" onclick="submitProviderRegistration()">إرسال البيانات للمراجعة والاعتماد 🚀</button>
   </div>
 </div>
 
-<!-- 12. نافذة سياسة المنصة -->
+<!-- 13. نافذة سياسة المنصة -->
 <div class="modal" id="policyModal">
   <div class="modal-sheet">
-    <h3 style="font-size:13.5px; font-weight:900; margin-bottom:10px; color:var(--navy);">📜 وثيقة شروط وسياسة كباتن منصة X</h3>
-    <div style="font-size:11px; color:#334155; line-height:1.6; max-height:55vh; overflow-y:auto; padding-left:4px; margin-bottom:12px;">
+    <h3 style="font-size:14px; font-weight:900; margin-bottom:12px; color:var(--text-white);">📜 وثيقة شروط وسياسة شركاء OCTA HUB</h3>
+    <div style="font-size:11.5px; color:var(--text-muted); line-height:1.6; max-height:55vh; overflow-y:auto; padding-left:4px; margin-bottom:14px;">
       <p>1. <b>الالتزام بأسعار المتاجر:</b> الالتزام التام بأسعار الفواتير الرسمية الصادرة من المحلات دون زيادة شخصية، وتسليم أصل الفاتورة للعميل.</p>
       <p>2. <b>استرجاع المشتريات:</b> التأكد من إمكانية استرجاع أي مشتريات من المحل قبل شرائها في حال تعذر استلام العميل.</p>
       <p>3. <b>الطلبات الناقصة:</b> في حال سقوط أو نسيان أي غرض يتحمل المندوب استكماله على نفقته الخاصة فوراً.</p>
       <p>4. <b>حظر الممنوعات:</b> يحظر تماماً نقل أي مواد غير قانونية أو أدوية جدول بدون وصفة طبية.</p>
       <p>5. <b>حفظ الخصوصية:</b> يحظر تماماً حفظ أرقام العملاء أو التواصل معهم في أمور شخصية.</p>
       <p>6. <b>الأمانة والتحصيل:</b> لا يحق للمندوب طلب أي نقدية مسبقة من العميل قبل تسليم الطلب.</p>
-      <p>7. <b>المسؤولية القضائية:</b> يعلم الكابتن بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة للرجوع القانوني عند أي تجاوز.</p>
+      <p>7. <b>المسؤولية القانونية:</b> يعلم الشريك بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة للرجوع القانوني عند أي تجاوز.</p>
     </div>
-    <button class="btn-submit" onclick="confirmPolicyRead()" style="background:var(--green);">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً ✓</button>
+    <button class="btn-submit" onclick="confirmPolicyRead()">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً ✓</button>
   </div>
 </div>
 
-<!-- 13. نافذة الفاتورة السريعة -->
+<!-- 14. نافذة الفاتورة السريعة -->
 <div class="modal" id="billModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;">إصدار فاتورة سريعة للعميل 🧾</h3>
-      <span onclick="closeModal('billModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;">إصدار فاتورة سريعة للعميل 🧾</h3>
+      <span onclick="closeModal('billModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div class="input-row">
       <label>إجمالي سعر فواتير المشتريات من المتاجر (جنيه):</label>
       <input type="number" id="inputItemsCost" class="input-box" placeholder="مثال: 145" oninput="calculateCourierBillTotal()">
     </div>
-    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:10px; font-size:11.5px; margin-bottom:12px;">
+    <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; font-size:12px; margin-bottom:14px;">
       <div>قيمة المشتريات: <b id="dispItems">0 ج</b></div>
-      <div>مصاريف التوصيل المحددة: <b id="dispDelivery">0 ج</b></div>
-      <div>تأمين المشوار وضمان الجودة: <b>1 ج</b></div>
-      <div id="dispTransferRow">رسوم التحويل: <b id="dispTransfer">0 ج</b></div>
-      <hr style="margin:6px 0; border:none; border-top:1px dashed #cbd5e1;">
-      <div style="font-size:13px; font-weight:900; color:var(--navy);">الإجمالي المطلوب من العميل: <span id="dispTotal" style="color:var(--green);">0 ج</span></div>
+      <div style="margin-top:4px;">مصاريف التوصيل المحددة: <b id="dispDelivery">0 ج</b></div>
+      <div style="margin-top:4px;">تأمين وتشغيل الخدمة: <b>1 ج</b></div>
+      <div id="dispTransferRow" style="margin-top:4px;">رسوم التحويل: <b id="dispTransfer">0 ج</b></div>
+      <hr style="margin:8px 0; border:none; border-top:1px dashed var(--border-light);">
+      <div style="font-size:13.5px; font-weight:900; color:var(--text-white);">الإجمالي المطلوب من العميل: <span id="dispTotal" style="color:var(--gold);">0 ج</span></div>
     </div>
     <button class="btn-submit" onclick="sendBillToClient()">إرسال الفاتورة لشاشة العميل والتحرك ⚡</button>
   </div>
 </div>
 
-<!-- 14. نافذة التقييم التبادلي -->
+<!-- 15. نافذة التقييم التبادلي الديناميكي التفاعلي (Toggle Stars) -->
 <div class="modal" id="ratingModal">
   <div class="modal-sheet" style="text-align:center;">
     <h3 style="font-size:14px; font-weight:900; margin-bottom:6px;" id="ratingModalTitle">تقييم المشوار</h3>
-    <p style="font-size:11.5px; color:var(--gray); margin-bottom:14px;" id="ratingModalSubtitle">كيف كانت التجربة؟</p>
-    <div style="font-size:32px; letter-spacing:8px; cursor:pointer; margin-bottom:14px;" id="starRatingContainer">
-      <span onclick="setStars(1)">⭐</span><span onclick="setStars(2)">⭐</span><span onclick="setStars(3)">⭐</span><span onclick="setStars(4)">⭐</span><span onclick="setStars(5)">⭐</span>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;" id="ratingModalSubtitle">انقر على النجمة لتحديدها، واضغط عليها مجدداً للإلغاء أو التبديل:</p>
+    <div style="letter-spacing:6px; margin-bottom:16px;" id="starRatingContainer">
+      <span class="star-item star-inactive" onclick="toggleStarRate(1)">★</span>
+      <span class="star-item star-inactive" onclick="toggleStarRate(2)">★</span>
+      <span class="star-item star-inactive" onclick="toggleStarRate(3)">★</span>
+      <span class="star-item star-inactive" onclick="toggleStarRate(4)">★</span>
+      <span class="star-item star-inactive" onclick="toggleStarRate(5)">★</span>
     </div>
     <button class="btn-submit" onclick="submitRating()">تأكيد التقييم ✓</button>
   </div>
 </div>
 
-<!-- 15. نافذة سجل الفواتير والمشاوير المؤرخة -->
+<!-- 16. نافذة سجل الفواتير والمشاوير المؤرخة -->
 <div class="modal" id="historyModal">
   <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:13.5px; font-weight:800;" id="historyTitle">السجل المؤرخ 📋</h3>
-      <span onclick="closeModal('historyModal')" style="cursor:pointer; font-size:18px;">✕</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3 style="font-size:14px; font-weight:800;" id="historyTitle">السجل المؤرخ 📋</h3>
+      <span onclick="closeModal('historyModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div id="historyListContainer" style="max-height:65vh; overflow-y:auto;">
-      <div style="text-align:center; padding:20px; font-size:11px; color:var(--gray);">جارٍ تحميل السجل...</div>
+      <div style="text-align:center; padding:24px; font-size:12px; color:var(--text-muted);">جارٍ تحميل السجل...</div>
     </div>
   </div>
 </div>
@@ -626,40 +725,159 @@
 <script>
   const dbClient = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
 
+  const i18n = {
+    ar: {
+      subtitle: "خدمات متكاملة لأجل راحتك",
+      customerRoleTitle: "أنا عميل",
+      customerRoleDesc: "مشتريات / خدمات / خصومات / فنيين",
+      courierRoleTitle: "كابتن دليفري",
+      courierRoleDesc: "استقبال مشاوير الشراء والتوصيل",
+      servicesRoleTitle: "خدمات سريعة",
+      servicesRoleDesc: "اسطوانة غاز وشحن كروت المرافق",
+      rideRoleTitle: "سيارة داخلية",
+      rideRoleDesc: "مشاوير وتوصيل بين الكمبوندات",
+      techRoleTitle: "فني معتمد",
+      techRoleDesc: "سباكة، كهرباء، دش، نجارة وتكييف",
+      settingsTitle: "⚙️ إعدادات وتخصيص OCTA HUB",
+      changePhoto: "تغيير الصورة الشخصية:",
+      appLanguage: "لغة التطبيق:",
+      notifSound: "صوت الإشعارات:",
+      testSound: "تجربة 🔔",
+      contactTitle: "قنوات التواصل المباشر مع إدارة المنصة:",
+      whatsappSupport: "💬 واتساب الإدارة",
+      callSupport: "📞 اتصال مباشر",
+      addressModalTitle: "📍 عنوان التوصيل ورقم الهاتف",
+      clientNameLabel: "اسم العميل:",
+      clientPhoneLabel: "رقم تليفون التواصل (أساسي):",
+      compoundLabel: "الكمبوند / المنطقة:",
+      bldLabel: "العمارة", floorLabel: "الدور", aptLabel: "الشقة",
+      mapLabel: "حدد موقعك بدقة على الخريطة:",
+      saveAddressBtn: "حفظ دائم للعنوان ✓"
+    },
+    en: {
+      subtitle: "Integrated services for your comfort",
+      customerRoleTitle: "I am a Customer",
+      customerRoleDesc: "Groceries / Services / Discounts / Technicians",
+      courierRoleTitle: "Delivery Courier",
+      courierRoleDesc: "Pick up and deliver purchases & orders",
+      servicesRoleTitle: "Quick Services",
+      servicesRoleDesc: "Gas cylinder & utility card recharge",
+      rideRoleTitle: "Internal Ride",
+      rideRoleDesc: "Rides and commute between compounds",
+      techRoleTitle: "Certified Technician",
+      techRoleDesc: "Plumbing, electrical, satellite & carpentry",
+      settingsTitle: "⚙️ OCTA HUB Preferences",
+      changePhoto: "Change profile photo:",
+      appLanguage: "App Language:",
+      notifSound: "Notification Sound:",
+      testSound: "Test 🔔",
+      contactTitle: "Direct contact channels with management:",
+      whatsappSupport: "💬 WhatsApp Support",
+      callSupport: "📞 Direct Call",
+      addressModalTitle: "📍 Delivery Address & Phone",
+      clientNameLabel: "Customer Name:",
+      clientPhoneLabel: "Phone Number (Primary):",
+      compoundLabel: "Compound / Area:",
+      bldLabel: "Bld", floorLabel: "Floor", aptLabel: "Apt",
+      mapLabel: "Pinpoint your location on map:",
+      saveAddressBtn: "Save Address Permanently ✓"
+    }
+  };
+
+  let currentLang = localStorage.getItem('octa_lang') || 'ar';
+
+  function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('octa_lang', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (i18n[lang] && i18n[lang][key]) {
+        el.innerText = i18n[lang][key];
+      }
+    });
+
+    const langSel = document.getElementById('prefLangSelect');
+    if (langSel) langSel.value = lang;
+  }
+
+  function changeLanguage(lang) {
+    applyLanguage(lang);
+    render();
+    showToast(lang === 'ar' ? 'تم تحويل التطبيق للغة العربية' : 'Switched to English successfully');
+  }
+
   function showToast(msg) {
     const t = document.getElementById('toastNotification');
     if (!t) return;
     t.innerText = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2400);
+    setTimeout(() => t.classList.remove('show'), 2600);
   }
 
-  function triggerChime(type = 'soft') {
+  function playOctaSound(soundType) {
     try {
       if (navigator.vibrate) navigator.vibrate(80);
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      if (type === 'stage') {
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
-      } else {
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.12);
+
+      if (soundType === 'golden') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.08);
+          osc.stop(ctx.currentTime + idx * 0.08 + 0.35);
+        });
+      } else if (soundType === 'digital') {
+        [880, 1760].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.09);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.09 + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.09);
+          osc.stop(ctx.currentTime + idx * 0.09 + 0.08);
+        });
+      } else if (soundType === 'marimba') {
+        const notes = [440, 554.37, 659.25];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.06);
+          gain.gain.setValueAtTime(0.14, ctx.currentTime + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.06 + 0.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.06);
+          osc.stop(ctx.currentTime + idx * 0.06 + 0.2);
+        });
       }
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.3);
     } catch(e) {}
   }
 
-  // ================================================================
-  // منظومة إشعارات النظام وتنبيهات الهاتف اللحظية
-  // ================================================================
+  function testSelectedSound() {
+    const sel = document.getElementById('prefSoundSelect').value;
+    localStorage.setItem('octa_sound_pref', sel);
+    playOctaSound(sel);
+    showToast('تم تجربة النغمة وتفعيلها');
+  }
+
+  function triggerChime(type = 'soft') {
+    const saved = localStorage.getItem('octa_sound_pref') || 'golden';
+    playOctaSound(saved);
+  }
 
   function initPushNotifications() {
     if ('Notification' in window && Notification.permission === 'default') {
@@ -690,16 +908,13 @@
     dbClient.channel('realtime_announcements')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'platform_announcements' }, payload => {
         const item = payload.new;
-        if (!item) {
-          loadRoleAnnouncements();
-          return;
-        }
+        if (!item) { loadRoleAnnouncements(); return; }
 
         const isTargeted = (item.target_role === 'all' || item.target_role === activeRole);
         if (isTargeted && item.is_active) {
           triggerChime('stage');
           if (item.channel === 'both' || item.channel === 'push') {
-            triggerSystemPushNotification('منصة X | إشعار عاجل 📢', item.message);
+            triggerSystemPushNotification('OCTA HUB | إشعار عاجل 📢', item.message);
           }
           if (item.channel === 'both' || item.channel === 'app') {
             showToast('📢 ' + item.message);
@@ -727,7 +942,7 @@
       box.innerHTML = `
         <div class="announcement-bar">
           <span>📢 ${list[0].message}</span>
-          <span onclick="this.parentElement.remove()" style="cursor:pointer; font-weight:bold; font-size:13px;">✕</span>
+          <span onclick="this.parentElement.remove()" style="cursor:pointer; font-weight:bold; font-size:14px; color:var(--gold);">✕</span>
         </div>
       `;
     } else {
@@ -735,18 +950,18 @@
     }
   }
 
-  let activeRole = localStorage.getItem('x_active_role') || 'portal';
-  const savedAddress = localStorage.getItem('x_client_address');
+  let activeRole = localStorage.getItem('octa_active_role') || 'portal';
+  const savedAddress = localStorage.getItem('octa_client_address') || localStorage.getItem('x_client_address');
   let clientAddress = savedAddress ? JSON.parse(savedAddress) : {
     name: 'عميل جديد', phone: '', compound: 'كمبوند سكن مصر الداون تاون', building: '', floor: '', apartment: '', lat: 29.950660, lng: 30.972718
   };
-  let courierPhone = localStorage.getItem('x_courier_phone') || '';
+  let courierPhone = localStorage.getItem('octa_courier_phone') || localStorage.getItem('x_courier_phone') || '';
 
   let currentCategory = 'delivery';
   let currentOrderType = '';
   let activeOrderForBill = null;
   let activeOrderIdToRate = null;
-  let currentSelectedRating = 5;
+  let currentSelectedRating = 0;
   let ratingUserType = 'courier';
   let mapInstance = null;
   let markerInstance = null;
@@ -755,6 +970,10 @@
   let activeBiddingOrderId = null;
   let biddingTimerInterval = null;
   let selectedGasItem = null;
+
+  // الحظر المتبادل
+  let targetBlockData = null;
+  let myBlockedPhones = JSON.parse(localStorage.getItem('octa_blocked_phones') || '[]');
 
   const partnersData = {
     'town_clinic': { name: 'تاون كلينك', discount: 'خصم 50% على جميع التخصصات', phone: '01021572161', wa: '201021572161' },
@@ -769,25 +988,78 @@
   initPushNotifications();
   initAnnouncementsRealtime();
   initRealtimeWatcher();
+  loadBlockedUsersList();
   sendHeartbeat();
-  setInterval(sendHeartbeat, 20000); // إرسال النبض الحي كل 20 ثانية
+  setInterval(sendHeartbeat, 20000);
 
   function setRole(r) {
     activeRole = r;
-    localStorage.setItem('x_active_role', r);
+    localStorage.setItem('octa_active_role', r);
     initPushNotifications();
     render();
     window.scrollTo(0,0);
   }
 
-  function resetRole() { activeRole = 'portal'; localStorage.removeItem('x_active_role'); render(); window.scrollTo(0,0); }
+  async function loadBlockedUsersList() {
+    const myPhone = (activeRole === 'client') ? clientAddress.phone : courierPhone;
+    if (!myPhone) return;
+    const { data } = await dbClient.from('user_blocks').select('blocked_phone').eq('blocker_phone', myPhone);
+    if (data) {
+      myBlockedPhones = data.map(b => b.blocked_phone);
+      localStorage.setItem('octa_blocked_phones', JSON.stringify(myBlockedPhones));
+    }
+  }
+
+  async function updateClientOrdersBadge() {
+    const badgeEl = document.getElementById('prefUserRoleTag');
+    if (!badgeEl) return;
+
+    if (!clientAddress.phone) {
+      badgeEl.innerText = (currentLang === 'ar') ? 'عميل جديد (0 طلبات)' : 'New Customer (0 orders)';
+      return;
+    }
+
+    const { count } = await dbClient.from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_phone', clientAddress.phone);
+
+    const c = count || 0;
+    if (c === 0) {
+      badgeEl.innerText = (currentLang === 'ar') ? 'عميل جديد (0 طلبات)' : 'New Customer (0 orders)';
+    } else {
+      badgeEl.innerText = (currentLang === 'ar') ? `عميل نشط (${c} طلبات منجزة)` : `Active Customer (${c} orders)`;
+    }
+  }
+
+  function openPreferencesModal() {
+    const avatar = localStorage.getItem('octa_user_avatar');
+    if (avatar) document.getElementById('prefUserAvatar').src = avatar;
+    document.getElementById('prefUserName').innerText = clientAddress.name || (currentLang === 'ar' ? 'عميل جديد' : 'New Customer');
+    
+    updateClientOrdersBadge();
+    document.getElementById('preferencesModal').classList.add('show');
+  }
+
+  function uploadPersonalAvatar(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('prefUserAvatar').src = evt.target.result;
+        localStorage.setItem('octa_user_avatar', evt.target.result);
+        showToast('✓ تم تحديث الصورة الشخصية بنجاح');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
   async function sendHeartbeat() {
-    let sId = localStorage.getItem('x_session_id');
+    let sId = localStorage.getItem('octa_session_id');
     if (!sId) {
       sId = 'sess_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('x_session_id', sId);
+      localStorage.setItem('octa_session_id', sId);
     }
 
     if (activeRole === 'client') {
@@ -814,6 +1086,7 @@
         triggerChime('soft');
         if (activeRole === 'client') {
           loadClientActiveOrder();
+          updateClientOrdersBadge();
           if (activeBiddingOrderId && payload.new && payload.new.id === activeBiddingOrderId) {
             updateBiddingUI(payload.new);
           }
@@ -827,53 +1100,79 @@
   async function render() {
     const main = document.getElementById('mainView');
 
-    // 1. بوابة اختيار الصفة
     if (activeRole === 'portal') {
       main.innerHTML = `
         <div class="portal-screen">
-          <img src="logo.png" class="logo-hero-img" alt="X" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png';">
-          <h1 style="font-size:21px; font-weight:900; margin-bottom:4px;">منصة X | حدائق أكتوبر</h1>
-          <p style="font-size:12px; color:var(--gray); margin-bottom:18px;">اختر صفتك للدخول المباشر إلى المنظومة</p>
+          <div class="brand-stack">
+            <img src="logo.png" class="logo-hero-img" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+            <div class="brand-title-text">OCTA <span>HUB</span></div>
+            <div class="brand-subtitle-text" data-i18n="subtitle">${i18n[currentLang].subtitle}</div>
+          </div>
 
           <div class="portal-roles-grid">
             <div class="portal-card full-width" onclick="setRole('client')">
-              <div class="portal-icon">🛒</div>
-              <div>
-                <div class="portal-title">أنا عميل</div>
-                <div class="portal-desc">طلب مشتريات، دليفري، كروت، غاز، فنيين وخصومات طبية</div>
+              <div class="portal-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
               </div>
+              <div class="portal-title" data-i18n="customerRoleTitle">${i18n[currentLang].customerRoleTitle}</div>
+              <div class="portal-desc" data-i18n="customerRoleDesc">${i18n[currentLang].customerRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('courier')">
-              <div class="portal-icon">🛵</div>
-              <div class="portal-title">كابتن دليفري</div>
-              <div class="portal-desc">استقبال مشاوير الشراء والمحلات</div>
+              <div class="portal-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+              </div>
+              <div class="portal-title" data-i18n="courierRoleTitle">${i18n[currentLang].courierRoleTitle}</div>
+              <div class="portal-desc" data-i18n="courierRoleDesc">${i18n[currentLang].courierRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('services')">
-              <div class="portal-icon">⚡</div>
-              <div class="portal-title">خدمات سريعة</div>
-              <div class="portal-desc">اسطوانة غاز وشحن كروت المرافق</div>
+              <div class="portal-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <div class="portal-title" data-i18n="servicesRoleTitle">${i18n[currentLang].servicesRoleTitle}</div>
+              <div class="portal-desc" data-i18n="servicesRoleDesc">${i18n[currentLang].servicesRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('ride')">
-              <div class="portal-icon">🚗</div>
-              <div class="portal-title">سيارة داخلية</div>
-              <div class="portal-desc">مشاوير وتوصيل الأفراد بين الكمبوندات</div>
+              <div class="portal-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="7" cy="17" r="2"></circle>
+                  <circle cx="17" cy="17" r="2"></circle>
+                  <path d="M5 17h-2v-4l2-5h12l2 5v4h-2"></path>
+                </svg>
+              </div>
+              <div class="portal-title" data-i18n="rideRoleTitle">${i18n[currentLang].rideRoleTitle}</div>
+              <div class="portal-desc" data-i18n="rideRoleDesc">${i18n[currentLang].rideRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('technician')">
-              <div class="portal-icon">🔧</div>
-              <div class="portal-title">فني معتمد</div>
-              <div class="portal-desc">سباكة، كهرباء، دش، نجارة وتكييف</div>
+              <div class="portal-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+              </div>
+              <div class="portal-title" data-i18n="techRoleTitle">${i18n[currentLang].techRoleTitle}</div>
+              <div class="portal-desc" data-i18n="techRoleDesc">${i18n[currentLang].techRoleDesc}</div>
             </div>
           </div>
         </div>
       `;
+      applyLanguage(currentLang);
       return;
     }
 
-    // 2. واجهة العميل بالتنسيق الشبكي المتناسق
     if (activeRole === 'client') {
       const hasData = clientAddress.phone && clientAddress.building;
       const ninetySecsAgo = new Date(Date.now() - 90 * 1000).toISOString();
@@ -885,122 +1184,168 @@
 
       main.innerHTML = `
         <div class="inner-header">
-          <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:900; font-size:13.5px;">منصة X | حدائق أكتوبر</div>
-          <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
+          <div style="width:38px;"></div>
+          <div class="header-brand-center">
+            <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+            <div class="header-brand-name">OCTA <span>HUB</span></div>
+          </div>
+          <button class="menu-dots-btn" onclick="openPreferencesModal()" title="خيارات وتخصيص">⋮</button>
         </div>
 
         <div class="content-area">
-          <!-- شريط الإعلانات الموحد -->
           <div id="roleAnnouncementBox"></div>
 
-          <!-- مؤشر الكباتن المتصلين فعلياً الآن -->
           <div class="online-indicator-bar">
-            <span>🟢 متاح الآن <b>${count || 0} كباتن متصلين فعلياً</b> لتنفيذ طلبك</span>
-            <small style="color:var(--accent); font-weight:bold;">جاهزون للتوصيل ⚡</small>
+            <span>🟢 متاح الآن <b>${count || 0} كباتن متصلين فعلياً</b></span>
+            <small style="color:var(--text-gold); font-weight:bold;">جاهزون للتوصيل ⚡</small>
           </div>
 
-          <!-- البانر الإعلاني -->
           <div class="ad-banner-box" id="clientAdBanner" onclick="clickBanner()">
             <img id="adBannerImg" src="" alt="إعلان">
           </div>
 
-          <!-- كارت العنوان -->
           <div class="address-bar-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:11px; font-weight:bold;">📍 موقع التسليم ورقمك:</span>
-              <button onclick="openAddressModal()" style="background:var(--navy); color:white; border:none; padding:3px 8px; border-radius:6px; font-size:10px; cursor:pointer;">${hasData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
+              <span style="font-size:11.5px; font-weight:bold; color:var(--text-white);">📍 موقع التسليم ورقمك:</span>
+              <button onclick="openAddressModal()" style="background:var(--gold); color:var(--navy); border:none; padding:4px 10px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">${hasData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
             </div>
             <div style="font-size:11.5px; line-height:1.45;">
-              ${hasData ? `<b>${clientAddress.name}</b> • ${clientAddress.compound} - ع ${clientAddress.building} د ${clientAddress.floor} ش ${clientAddress.apartment}<br><span style="color:var(--accent); font-weight:bold;">📞 ${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:bold;">اضغط لتحديد عنوانك ورقمك للمتابعة</span>'}
+              ${hasData ? `<b>${clientAddress.name}</b> • ${clientAddress.compound} - ع ${clientAddress.building} د ${clientAddress.floor} ش ${clientAddress.apartment}<br><span style="color:var(--text-gold); font-weight:bold;">📞 ${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:bold;">اضغط لتحديد عنوانك ورقمك للمتابعة</span>'}
             </div>
           </div>
 
           <div id="clientActiveOrderContainer"></div>
 
-          <!-- 1. مشاوير ودليفري المشتريات -->
           <div class="section-title">
             <span>🛵 مشاوير ودليفري المشتريات</span>
-            <button onclick="openHistory('client')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button>
+            <button onclick="openHistory('client')" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button>
           </div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار خفيف (1 إلى 2 طلب)', 2)">
-              <div style="font-size:20px;">🛵</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>
               <div class="service-card-title">مشوار خفيف</div>
               <div class="service-card-desc">1-2 طلب (صيدلية، ماركت)</div>
             </div>
             <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار مجمّع (3 طلبات فأكثر)', 5)">
-              <div style="font-size:20px;">🛒</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+              </div>
               <div class="service-card-title">مشوار مجمّع</div>
               <div class="service-card-desc">مشتريات من محلات مختلفة</div>
             </div>
           </div>
 
-          <!-- 2. الخصومات الطبية المعتمدة -->
           <div class="section-title">
             <span>🏥 الخصومات الطبية المعتمدة</span>
-            <button onclick="openVouchersHistory()" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل كوبوناتي</button>
+            <button onclick="openVouchersHistory()" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل كوبوناتي</button>
           </div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openMedicalDirectoryModal('clinics')">
-              <div style="font-size:20px;">🏥</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+              </div>
               <div class="service-card-title">عيادات ومعامل</div>
               <div class="service-card-desc">تاون كلينك • حورس (خصم 50%)</div>
             </div>
             <div class="service-card highlight" onclick="openMedicalDirectoryModal('pharmacies')">
-              <div style="font-size:20px;">💊</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </div>
               <div class="service-card-title">صيدليات معتمدة</div>
               <div class="service-card-desc">روشتة • د. مكرم (خصم 15%)</div>
             </div>
           </div>
 
-          <!-- 3. خدمات سريعة للمنزل -->
           <div class="section-title"><span>⚡ خدمات سريعة للمنزل</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openUtilityModal()">
-              <div style="font-size:20px;">⚡</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+              </div>
               <div class="service-card-title">شحن كروت المرافق</div>
               <div class="service-card-desc">كهرباء • غاز • مياه (عند الباب)</div>
             </div>
             <div class="service-card" onclick="openGasModal()">
-              <div style="font-size:20px;">⛽</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2c2 5 6 9 6 13a6 6 0 0 1-12 0c0-4 4-8 6-13z"></path>
+                </svg>
+              </div>
               <div class="service-card-title">اسطوانة الغاز</div>
               <div class="service-card-desc">تغيير (320ج) • شراء • بيع</div>
             </div>
           </div>
 
-          <!-- 4. سيارة داخلية -->
           <div class="section-title"><span>🚗 سيارة داخلية (توصيل وسكان)</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة بين الكمبوندات')">
-              <div style="font-size:20px;">🚗</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="7" cy="17" r="2"></circle>
+                  <circle cx="17" cy="17" r="2"></circle>
+                  <path d="M5 17h-2v-4l2-5h12l2 5v4h-2"></path>
+                </svg>
+              </div>
               <div class="service-card-title">بين الكمبوندات</div>
               <div class="service-card-desc">سكن مصر، حورس، فاليرا</div>
             </div>
             <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة (الواحات / MSA)')">
-              <div style="font-size:20px;">🚘</div>
+              <div class="service-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </div>
               <div class="service-card-title">طريق الواحات / MSA</div>
               <div class="service-card-desc">مشوار خارجي للنطاق</div>
             </div>
           </div>
 
-          <!-- 5. صيانة منزلية وفنيين معتمدين -->
           <div class="section-title"><span>🔧 صيانة منزلية وفنيين معتمدين (معاينة 50ج)</span></div>
           <div class="grid-4">
-            <div class="service-card" onclick="openTechModal('سباكة منزلية')">🚿<div style="font-weight:700; font-size:10px;">سباك</div></div>
-            <div class="service-card" onclick="openTechModal('كهرباء منزلية')">⚡<div style="font-weight:700; font-size:10px;">كهربائي</div></div>
-            <div class="service-card" onclick="openTechModal('صيانة دش وستالايت')">📡<div style="font-weight:700; font-size:10px;">دش</div></div>
-            <div class="service-card" onclick="openTechModal('نجارة منزلية')">🪚<div style="font-weight:700; font-size:10px;">نجار</div></div>
+            <div class="service-card" onclick="openTechModal('سباكة منزلية')">
+              <div class="service-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8m-4-4h8"></path><path d="M6 10h12v4a6 6 0 0 1-12 0v-4z"></path></svg></div>
+              <div style="font-weight:700; font-size:10px;">سباك</div>
+            </div>
+            <div class="service-card" onclick="openTechModal('كهرباء منزلية')">
+              <div class="service-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+              <div style="font-weight:700; font-size:10px;">كهربائي</div>
+            </div>
+            <div class="service-card" onclick="openTechModal('صيانة دش وستالايت')">
+              <div class="service-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.93 4.93a10 10 0 0 1 14.14 0"></path><path d="M7.76 7.76a6 6 0 0 1 8.48 0"></path><circle cx="12" cy="12" r="2"></circle></svg></div>
+              <div style="font-weight:700; font-size:10px;">دش</div>
+            </div>
+            <div class="service-card" onclick="openTechModal('نجارة منزلية')">
+              <div class="service-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2l4 4-10 10H4v-4L14 2z"></path></svg></div>
+              <div style="font-weight:700; font-size:10px;">نجار</div>
+            </div>
           </div>
         </div>
       `;
       loadClientBanner();
       loadRoleAnnouncements();
       loadClientActiveOrder();
+      applyLanguage(currentLang);
       return;
     }
 
-    // 3. واجهة المندوب ومقدمي الخدمة
     if (['courier', 'services', 'ride', 'technician'].includes(activeRole)) {
       let provData = null;
       if (courierPhone) {
@@ -1011,61 +1356,70 @@
       if (provData && provData.status === 'قيد المراجعة') {
         main.innerHTML = `
           <div class="inner-header">
-            <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-            <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
+            <div style="width:38px;"></div>
+            <div class="header-brand-center">
+              <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+              <div class="header-brand-name">OCTA <span>HUB</span></div>
+            </div>
+            <button class="menu-dots-btn" onclick="openPreferencesModal()">⋮</button>
           </div>
           <div class="status-screen" style="padding:40px 20px; text-align:center;">
             <div style="font-size:46px; margin-bottom:12px;">⏳</div>
-            <h3 style="color:var(--navy); margin-bottom:6px;">أوراقك قيد المراجعة والتدقيق</h3>
-            <p style="font-size:12px; color:var(--gray); line-height:1.5; margin-bottom:16px;">
-              مرحباً يا بطل! تم استلام أوراقك بنجاح وجارٍ مراجعتها وتفعيل حسابك من إدارة المنصة خلال دقائق.
+            <h3 style="color:var(--text-white); margin-bottom:6px;">أوراقك قيد المراجعة والتدقيق</h3>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+              مرحباً بك في أسرة OCTA HUB! تم استلام أوراقك بنجاح وجارٍ مراجعتها واعتماد حسابك خلال دقائق.
             </p>
-            <a href="https://wa.me/201021572161?text=مرحباً،%20قمت%20برفع%20أوراقي%20ككابتن%20جديد%20برقم%20${courierPhone}%20للاعتماد" target="_blank" class="btn-action-green" style="padding:10px 18px; text-decoration:none;">تواصل مع الإدارة عبر واتساب 💬</a>
+            <a href="https://wa.me/201021572161?text=مرحباً،%20قمت%20برفع%20أوراقي%20كشريك%20جديد%20برقم%20${courierPhone}%20للاعتماد" target="_blank" class="btn-action-green" style="padding:10px 18px; text-decoration:none;">تواصل مع الإدارة عبر واتساب 💬</a>
           </div>
         `;
+        applyLanguage(currentLang);
         return;
       }
 
+      const completedCount = provData ? (provData.completed_orders || 0) : 0;
+      const isEligibleForLoan = completedCount >= 50;
+
       main.innerHTML = `
         <div class="inner-header">
-          <img src="logo.png" class="header-logo" alt="X" onerror="this.style.display='none';">
-          <div style="font-weight:900; font-size:13.5px;">لوحة تنفيذ المهام ⚡</div>
-          <button class="back-btn" onclick="resetRole()">تبديل الوضع ⇄</button>
+          <div style="width:38px;"></div>
+          <div class="header-brand-center">
+            <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+            <div class="header-brand-name">OCTA <span>HUB</span></div>
+          </div>
+          <button class="menu-dots-btn" onclick="openPreferencesModal()">⋮</button>
         </div>
 
         <div class="content-area">
-          <!-- شريط الإعلانات والتنبيهات الموحد -->
           <div id="roleAnnouncementBox"></div>
 
-          <div style="background:white; border:1px solid var(--border); padding:14px; border-radius:16px; margin-bottom:14px;">
+          <div style="background:var(--navy-card); border:1px solid var(--border); padding:16px; border-radius:var(--radius-lg); margin-bottom:16px;">
             ${provData ? `
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                  <div style="font-weight:900; font-size:14px;">${provData.name} ${provData.is_verified ? '🛡️' : ''}</div>
-                  <div style="font-size:11px; color:var(--gray);">⭐ ${provData.rating_avg.toFixed(1)} • ${provData.completed_orders} مشوار</div>
-                  <div style="font-size:11.5px; color:var(--green); font-weight:bold; margin-top:2px;">المحفظة: ${provData.wallet_balance} ج</div>
+                  <div style="font-weight:900; font-size:14px; color:var(--text-white);">${provData.name} ${provData.is_verified ? '🛡️' : ''}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">⭐ ${(provData.rating_avg || 5.0).toFixed(1)} • ${completedCount} مشوار ناجح</div>
+                  <div style="font-size:13px; color:var(--gold); font-weight:bold; margin-top:2px;">المحفظة: ${provData.wallet_balance || 0} ج</div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
                   <button class="toggle-online-btn ${provData.is_online ? 'btn-online' : 'btn-offline'}" onclick="toggleProviderOnline(${provData.id}, ${!provData.is_online})">
                     ${provData.is_online ? '🟢 متصل الآن' : '⚪ غير متصل'}
                   </button>
-                  <button onclick="openRechargeModal()" style="background:var(--navy); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">+ شحن المحفظة 💳</button>
+                  <button onclick="openRechargeModal()" style="background:linear-gradient(135deg, var(--gold), #a88438); color:var(--navy); border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">+ شحن المحفظة 💳</button>
                 </div>
               </div>
 
-              <!-- شريط محطة الـ 50 مشوار -->
-              <div style="margin-top:10px; background:#f8fafc; padding:8px; border-radius:8px; font-size:10.5px; border:1px solid var(--border);">
+              <div style="margin-top:12px; background:rgba(0,0,0,0.25); padding:10px; border-radius:10px; font-size:11px; border:1px solid var(--border-light);">
                 <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:4px;">
-                  <span>محطة الاعتماد الرسمي (تاون كلينك):</span>
-                  <span>${provData.completed_orders} / 50 مشوار</span>
+                  <span>ميزة السلفة المؤقتة وشريك النجاح:</span>
+                  <span style="color:${isEligibleForLoan ? 'var(--green)' : 'var(--gold)'};">${completedCount} / 50 مشوار</span>
                 </div>
-                <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
-                  <div style="width:${Math.min((provData.completed_orders/50)*100, 100)}%; height:100%; background:var(--green);"></div>
+                <div style="width:100%; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+                  <div style="width:${Math.min((completedCount/50)*100, 100)}%; height:100%; background:var(--gold);"></div>
                 </div>
               </div>
             ` : `
               <div style="text-align:center;">
-                <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">أنت غير مسجل كشريك حتى الآن</p>
+                <p style="font-size:12px; font-weight:bold; margin-bottom:10px;">أنت غير مسجل كشريك حتى الآن</p>
                 <button class="btn-submit" onclick="openProviderRegisterModal()">تسجيل حساب ورفع الأوراق 🚀</button>
               </div>
             `}
@@ -1074,10 +1428,10 @@
           ${provData ? `
             <div class="section-title">
               <span>الطلبات المتاحة لك لحظياً ⚡</span>
-              <button onclick="openHistory('courier')" style="background:none; border:none; color:var(--accent); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل مشاويري</button>
+              <button onclick="openHistory('courier')" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل مشاويري</button>
             </div>
             <div id="providerOrdersFeed">
-              <div style="text-align:center; padding:20px; color:var(--gray); font-size:11.5px;">جارٍ تحميل المشاوير اللحظية...</div>
+              <div style="text-align:center; padding:24px; color:var(--text-muted); font-size:12px;">جارٍ تحميل المشاوير اللحظية...</div>
             </div>
           ` : ''}
         </div>
@@ -1085,13 +1439,10 @@
 
       loadRoleAnnouncements();
       if (provData) loadProviderOrders();
+      applyLanguage(currentLang);
       return;
     }
   }
-
-  // ================================================================
-  // وظائف البانر
-  // ================================================================
 
   async function loadClientBanner() {
     const { data: b } = await dbClient.from('platform_banners').select('*').eq('id', 1).single();
@@ -1106,10 +1457,6 @@
     const link = document.getElementById('clientAdBanner').dataset.link;
     if (link) window.open(link, '_blank');
   }
-
-  // ================================================================
-  // وظائف الخصومات الطبية والمودال الجديد
-  // ================================================================
 
   function openMedicalDirectoryModal(category = 'all') {
     filterMedPartners(category);
@@ -1135,10 +1482,10 @@
       if (category === 'pharmacies' && !isPharmacy) return;
 
       html += `
-        <div class="medical-card" onclick="closeModal('medicalDirectoryModal'); openMedModal('${k}')" style="box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+        <div class="medical-card" onclick="closeModal('medicalDirectoryModal'); openMedModal('${k}')">
           <div>
-            <b style="font-size:12.5px; color:var(--navy);">${p.name}</b>
-            <div style="font-size:10.5px; color:var(--gray); margin-top:2px;">${isPharmacy ? 'أدوية ومستلزمات طبية وتوصيل' : 'كشوفات وفحوصات وتحاليل معتمدة'}</div>
+            <b style="font-size:13px; color:var(--text-white);">${p.name}</b>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${isPharmacy ? 'أدوية ومستلزمات طبية وتوصيل' : 'كشوفات وفحوصات وتحاليل معتمدة'}</div>
           </div>
           <span class="medical-discount-tag">${p.discount}</span>
         </div>
@@ -1183,7 +1530,7 @@
     }]);
 
     document.getElementById('generatedVoucherCode').innerText = vCode;
-    const waText = encodeURIComponent(`مرحباً، أنا (${name})، رقم الهاتف: (${phone}).\nأرغب في الاستفادة من خصم منصة X بقيمة (${currentSelectedMedPartner.discount}).\nكود الخصم المعتمد الخاص بي هو: [ ${vCode} ].`);
+    const waText = encodeURIComponent(`مرحباً، أنا (${name})، رقم الهاتف: (${phone}).\nأرغب في الاستفادة من خصم منصة OCTA HUB بقيمة (${currentSelectedMedPartner.discount}).\nكود الخصم المعتمد الخاص بي هو: [ ${vCode} ].`);
     document.getElementById('medSendVoucherBtn').href = `https://wa.me/${currentSelectedMedPartner.wa}?text=${waText}`;
     document.getElementById('voucherResultBox').style.display = 'block';
     triggerChime();
@@ -1199,28 +1546,24 @@
 
     const { data: vList } = await dbClient.from('medical_vouchers').select('*').eq('client_phone', clientAddress.phone).order('id', { ascending: false });
     if (!vList || vList.length === 0) {
-      cont.innerHTML = '<div style="text-align:center; padding:24px; font-size:11px; color:var(--gray);">لا توجد كوبونات مصدرة مسبقاً.</div>';
+      cont.innerHTML = '<div style="text-align:center; padding:24px; font-size:11px; color:var(--text-muted);">لا توجد كوبونات مصدرة مسبقاً.</div>';
       return;
     }
     let html = '';
     vList.forEach(v => {
       html += `
-        <div style="background:white; border:1px solid #cbd5e1; border-radius:12px; padding:12px; margin-bottom:8px; font-size:11.5px;">
+        <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:8px; font-size:11.5px;">
           <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:4px;">
             <span>${v.partner_name}</span>
-            <span style="color:var(--green); font-size:13px; font-weight:900;">${v.voucher_code}</span>
+            <span style="color:var(--gold); font-size:13px; font-weight:900;">${v.voucher_code}</span>
           </div>
-          <div style="color:var(--gray); font-size:10.5px;">المستفيد: ${v.beneficiary_name} (${v.beneficiary_phone})</div>
-          <div style="color:#b91c1c; font-size:10.5px; margin-top:2px;">${v.discount_desc}</div>
+          <div style="color:var(--text-muted); font-size:10.5px;">المستفيد: ${v.beneficiary_name} (${v.beneficiary_phone})</div>
+          <div style="color:var(--danger); font-size:10.5px; margin-top:2px;">${v.discount_desc}</div>
         </div>
       `;
     });
     cont.innerHTML = html;
   }
-
-  // ================================================================
-  // وظائف التسعير والتحويل
-  // ================================================================
 
   function calculateTransferFee(amount, method) {
     if (method === 'كاش') return 0.00;
@@ -1238,10 +1581,6 @@
     if (compound === 'ابني بيتك السابعة قطاع ص') return 50.00;
     return 70.00;
   }
-
-  // ================================================================
-  // العميل: العنوان والطلبات
-  // ================================================================
 
   function openAddressModal() {
     document.getElementById('inputClientName').value = clientAddress.name || '';
@@ -1271,7 +1610,7 @@
   }
 
   async function saveAddressData() {
-    const name = document.getElementById('inputClientName').value.trim() || 'عميل';
+    const name = document.getElementById('inputClientName').value.trim() || 'عميل جديد';
     const phone = document.getElementById('inputPhone').value.trim();
     const bld = document.getElementById('inputBuilding').value.trim();
     if (!phone || phone.length < 10) return showToast('⚠️ يرجى إدخال رقم هاتف صحيح!');
@@ -1284,7 +1623,7 @@
     clientAddress.floor = document.getElementById('inputFloor').value.trim() || 'أرضي';
     clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
 
-    localStorage.setItem('x_client_address', JSON.stringify(clientAddress));
+    localStorage.setItem('octa_client_address', JSON.stringify(clientAddress));
     closeModal('addressModal');
     triggerChime('soft');
     showToast('✓ تم حفظ العنوان بنجاح');
@@ -1382,12 +1721,9 @@
       showToast('🚀 تم نشر طلبك للكباتن بنجاح!');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
+      updateClientOrdersBadge();
     }
   }
-
-  // ================================================================
-  // شحن كروت المرافق
-  // ================================================================
 
   function openUtilityModal() {
     if (!clientAddress.phone) return openAddressModal();
@@ -1461,12 +1797,9 @@
       showToast('⚡ تم إرسال طلب الشحن للكباتن');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
+      updateClientOrdersBadge();
     }
   }
-
-  // ================================================================
-  // اسطوانة الغاز
-  // ================================================================
 
   function openGasModal() {
     if (!clientAddress.phone) return openAddressModal();
@@ -1478,7 +1811,7 @@
   function selectGasType(title, price, el) {
     selectedGasItem = { title, price };
     document.querySelectorAll('.gas-opt-card').forEach(c => c.style.borderColor = 'var(--border)');
-    el.style.borderColor = 'var(--green)';
+    el.style.borderColor = 'var(--gold)';
   }
 
   async function submitGasOrder() {
@@ -1512,12 +1845,9 @@
       showToast('⛽ تم إرسال طلب اسطوانة الغاز');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
+      updateClientOrdersBadge();
     }
   }
-
-  // ================================================================
-  // الصيانة المنزلية والفنيين
-  // ================================================================
 
   function openTechModal(craft) {
     if (!clientAddress.phone) return openAddressModal();
@@ -1560,24 +1890,27 @@
       showToast('🔧 تم إرسال الطلب للفنيين المعتمدين');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
+      updateClientOrdersBadge();
     }
   }
 
-  // ================================================================
-  // منافسة سرعة التوصيل (ETA Bidding - 15 ثانية)
-  // ================================================================
-
+  // ==========================================
+  // مهلة العروض (3 دقائق = 180 ثانية)
+  // ==========================================
   function startBiddingCountdown(orderId) {
     activeBiddingOrderId = orderId;
-    let sec = 15;
+    let sec = 180;
     const timerEl = document.getElementById('countdownTimer');
-    document.getElementById('offersContainer').innerHTML = '<div style="padding:20px; font-size:11.5px; color:var(--gray);">جارٍ استقبال عروض الكباتن حولك... 📡</div>';
+    document.getElementById('offersContainer').innerHTML = '<div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك... 📡</div>';
     document.getElementById('biddingModal').classList.add('show');
 
     if (biddingTimerInterval) clearInterval(biddingTimerInterval);
     biddingTimerInterval = setInterval(async () => {
       sec--;
-      if (timerEl) timerEl.innerText = sec + ' ث';
+      const mins = Math.floor(sec / 60).toString().padStart(2, '0');
+      const secs = (sec % 60).toString().padStart(2, '0');
+      if (timerEl) timerEl.innerText = `${mins}:${secs}`;
+
       if (sec <= 0) {
         clearInterval(biddingTimerInterval);
         handleBiddingExpiration(orderId);
@@ -1591,23 +1924,23 @@
 
     let html = '';
     order.offers.forEach((off) => {
+      if (myBlockedPhones.includes(off.courier_phone)) return;
+
       html += `
-        <div style="background:#f8fafc; border:1.5px solid var(--border); border-radius:12px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:var(--navy-card); border:1.5px solid var(--border); border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
           <div style="text-align:right;">
-            <div style="font-weight:900; font-size:12px; color:var(--navy);">${off.name} ${off.is_verified ? '🛡️' : ''}</div>
-            <div style="font-size:10.5px; color:var(--gray);">⭐ ${off.rating} • ${off.vehicle}</div>
-            <div style="font-size:11.5px; color:var(--green); font-weight:bold; margin-top:2px;">خلال: ${off.eta} دقيقة ⚡</div>
+            <div style="font-weight:900; font-size:12.5px; color:var(--text-white);">${off.name} ${off.is_verified ? '🛡️' : ''}</div>
+            <div style="font-size:10.5px; color:var(--text-muted);">⭐ ${off.rating} • ${off.vehicle}</div>
+            <div style="font-size:11.5px; color:var(--gold); font-weight:bold; margin-top:2px;">خلال: ${off.eta} دقيقة ⚡</div>
           </div>
-          <button onclick="clientPickCourier(${order.id}, '${off.courier_phone}')" style="background:var(--navy); color:white; border:none; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">اختيار ⚡</button>
+          <div style="display:flex; gap:6px;">
+            <button onclick="clientPickCourier(${order.id}, '${off.courier_phone}')" style="background:linear-gradient(135deg, var(--gold), #A88438); color:var(--navy); border:none; padding:8px 14px; border-radius:8px; font-size:11.5px; font-weight:900; cursor:pointer;">اختيار ⚡</button>
+            <button onclick="promptBlockUser('${off.courier_phone}', 'courier', ${order.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:6px 8px; border-radius:8px; font-size:10px; cursor:pointer;" title="حظر الكابتن">🚫</button>
+          </div>
         </div>
       `;
     });
-    container.innerHTML = html;
-
-    if (order.offers.length >= 5) {
-      clearInterval(biddingTimerInterval);
-      document.getElementById('countdownTimer').innerText = 'تم اكتمال 5 عروض';
-    }
+    container.innerHTML = html || '<div style="padding:20px; font-size:11.5px; color:var(--text-muted);">لا توجد عروض من كباتن غير محظورين حتى الآن.</div>';
   }
 
   async function clientPickCourier(orderId, cPhone) {
@@ -1625,20 +1958,15 @@
 
   async function handleBiddingExpiration(orderId) {
     closeModal('biddingModal');
-    const { data: ord } = await dbClient.from('orders').select('*').eq('id', orderId).single();
-    if (!ord || ord.status !== 'جديد') return;
-
-    if (ord.offers && ord.offers.length > 0) {
-      const best = ord.offers.sort((a,b) => a.eta - b.eta || b.rating - a.rating)[0];
-      await clientPickCourier(orderId, best.courier_phone);
-    } else {
-      document.getElementById('retryModal').classList.add('show');
-    }
+    document.getElementById('retryModal').classList.add('show');
   }
 
   function retryOrderSearch() {
     closeModal('retryModal');
-    if (activeBiddingOrderId) startBiddingCountdown(activeBiddingOrderId);
+    if (activeBiddingOrderId) {
+      showToast('تم تمديد المهلة لـ 3 دقائق إضافية ⏱️');
+      startBiddingCountdown(activeBiddingOrderId);
+    }
   }
 
   async function cancelOrderSearch() {
@@ -1647,13 +1975,57 @@
       await dbClient.from('orders').update({ status: 'ملغي' }).eq('id', activeBiddingOrderId);
       activeBiddingOrderId = null;
       loadClientActiveOrder();
-      showToast('تم إلغاء البحث عن كابتن');
+      showToast('تم إنهاء البحث وإلغاء الطلب');
     }
   }
 
-  // ================================================================
-  // متابعة طلب العميل النشط
-  // ================================================================
+  // ==========================================
+  // منظومة الحظر المتبادل
+  // ==========================================
+  function promptBlockUser(phone, role, orderId) {
+    targetBlockData = { phone, role, orderId };
+    document.getElementById('blockReasonInput').value = '';
+    document.getElementById('blockModalTitle').innerText = (role === 'courier') ? '🚫 حظر وإبلاغ عن الكابتن' : '🚫 حظر وإبلاغ عن العميل';
+    document.getElementById('blockUserModal').classList.add('show');
+  }
+
+  async function submitBlockAction() {
+    const reason = document.getElementById('blockReasonInput').value.trim();
+    if (!reason) return showToast('⚠️ يرجى كتابة سبب الحظر أو الشكوى بالتفصيل');
+
+    const myPhone = (activeRole === 'client') ? clientAddress.phone : courierPhone;
+    const targetPhone = targetBlockData.phone;
+
+    // حفظ الحظر في قاعدة البيانات
+    await dbClient.from('user_blocks').insert([{
+      blocker_phone: myPhone,
+      blocked_phone: targetPhone,
+      blocker_role: activeRole,
+      blocked_role: targetBlockData.role,
+      reason: reason,
+      order_id: targetBlockData.orderId,
+      status: 'قيد المراجعة',
+      created_at: new Date().toISOString()
+    }]);
+
+    if (!myBlockedPhones.includes(targetPhone)) {
+      myBlockedPhones.push(targetPhone);
+      localStorage.setItem('octa_blocked_phones', JSON.stringify(myBlockedPhones));
+    }
+
+    closeModal('blockUserModal');
+    showToast('🚫 تم الحظر وحجب الطرف بنجاح، وجارٍ مراجعة البلاغ من الإدارة');
+
+    if (activeRole === 'client') {
+      if (activeBiddingOrderId) {
+        const { data: ord } = await dbClient.from('orders').select('*').eq('id', activeBiddingOrderId).single();
+        if (ord) updateBiddingUI(ord);
+      }
+      loadClientActiveOrder();
+    } else {
+      loadProviderOrders();
+    }
+  }
 
   async function loadClientActiveOrder() {
     const container = document.getElementById('clientActiveOrderContainer');
@@ -1684,31 +2056,34 @@
           <span class="badge ${o.status === 'قيد التنفيذ' ? 'badge-active' : 'badge-new'}">
             ${o.status === 'قيد التنفيذ' ? '⚡ ' + o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
           </span>
-          <span style="font-size:11px; font-weight:800; color:var(--gray);">#${o.id}</span>
+          <span style="font-size:11px; font-weight:800; color:var(--text-gold);">#${o.id}</span>
         </div>
 
-        <div style="font-size:12.5px; font-weight:900; color:var(--navy); margin-bottom:4px;">${o.order_type}</div>
-        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">${o.details}</div>
+        <div style="font-size:13px; font-weight:900; color:var(--text-white); margin-bottom:4px;">${o.order_type}</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${o.details}</div>
 
         ${courierInfo ? `
-          <div style="background:#f8fafc; border:1px solid var(--border); padding:8px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-light); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-weight:900; font-size:11.5px;">الكابتن: ${courierInfo.name} ${courierInfo.is_verified ? '🛡️' : ''}</div>
-              <div style="font-size:10.5px; color:var(--gray);">⭐ ${courierInfo.rating_avg.toFixed(1)} • ${courierInfo.completed_orders} مشوار ناجح</div>
+              <div style="font-weight:900; font-size:12px; color:var(--text-white);">الكابتن: ${courierInfo.name} ${courierInfo.is_verified ? '🛡️' : ''}</div>
+              <div style="font-size:11px; color:var(--text-muted);">⭐ ${(courierInfo.rating_avg || 5.0).toFixed(1)} • ${courierInfo.completed_orders || 0} مشوار ناجح</div>
             </div>
-            <a href="tel:${courierInfo.phone}" style="background:var(--navy); color:white; padding:5px 10px; border-radius:6px; font-size:10.5px; text-decoration:none; font-weight:bold;">اتصال 📞</a>
+            <div style="display:flex; gap:6px;">
+              <a href="tel:${courierInfo.phone}" style="background:var(--gold); color:var(--navy); padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:bold;">اتصال 📞</a>
+              <button onclick="promptBlockUser('${courierInfo.phone}', 'courier', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:5px 8px; border-radius:6px; font-size:10px; cursor:pointer;" title="حظر الكابتن">🚫 حظر</button>
+            </div>
           </div>
         ` : ''}
 
         ${o.total_price > 0 ? `
           <div class="order-bill-box">
-            <div style="font-weight:900; color:var(--navy); margin-bottom:4px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>
-            ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
-            <div style="display:flex; justify-content:space-between;"><span>مصاريف التوصيل / المعاينة:</span><b>${o.delivery_fee} ج</b></div>
-            <div style="display:flex; justify-content:space-between;"><span>تأمين الطلب وضمان الجودة:</span><b>1 ج</b></div>
-            ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:#b45309;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
-            <hr style="margin:4px 0; border:none; border-top:1px dashed #cbd5e1;">
-            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:12.5px; color:var(--green);">
+            <div style="font-weight:900; color:var(--text-gold); margin-bottom:6px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>
+            ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>مصاريف التوصيل / المعاينة:</span><b>${o.delivery_fee} ج</b></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>تأمين وتشغيل الخدمة:</span><b>1 ج</b></div>
+            ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--amber); margin-bottom:3px;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
+            <hr style="margin:6px 0; border:none; border-top:1px dashed var(--border-light);">
+            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13.5px; color:var(--gold);">
               <span>الإجمالي المطلوب:</span>
               <span>${o.total_price} ج</span>
             </div>
@@ -1717,10 +2092,6 @@
       </div>
     `;
   }
-
-  // ================================================================
-  // واجهة المندوب وتنفيذ المهام
-  // ================================================================
 
   async function loadProviderOrders() {
     const feed = document.getElementById('providerOrdersFeed');
@@ -1739,12 +2110,14 @@
       .order('id', { ascending: false });
 
     if (!orders || orders.length === 0) {
-      feed.innerHTML = '<div style="text-align:center; padding:24px; color:var(--gray); font-size:11.5px;">لا توجد مشاوير جديدة معلقة حالياً.</div>';
+      feed.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted); font-size:12px;">لا توجد مشاوير جديدة معلقة حالياً.</div>';
       return;
     }
 
     let html = '';
     orders.forEach(o => {
+      if (myBlockedPhones.includes(o.client_phone)) return;
+
       const isMyActive = (o.status === 'قيد التنفيذ' && o.courier_phone === courierPhone);
       if (o.status === 'قيد التنفيذ' && !isMyActive) return;
 
@@ -1752,35 +2125,36 @@
       const cleanPhone = o.client_phone ? (o.client_phone.startsWith('0') ? '2' + o.client_phone : o.client_phone) : '';
 
       html += `
-        <div class="order-feed-card" style="${isMyActive ? 'border: 2px solid var(--green); background: #f0fdf4;' : ''}">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div class="order-feed-card" style="${isMyActive ? 'border: 2px solid var(--gold); background: rgba(197,160,89,0.06);' : ''}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div>
               <span class="badge ${isMyActive ? 'badge-active' : 'badge-new'}">${isMyActive ? 'مشوارك الحالي (' + o.trip_stage + ')' : 'طلب متاح'}</span>
               ${o.is_urgent ? '<span class="badge badge-urgent">🚨 مستعجل</span>' : ''}
             </div>
-            <span style="font-size:11px; font-weight:800; color:var(--green);">${o.category === 'maintenance' ? 'معاينة: 50 ج' : 'توصيل: ' + o.delivery_fee + ' ج'}</span>
+            <span style="font-size:12px; font-weight:800; color:var(--gold);">${o.category === 'maintenance' ? 'معاينة: 50 ج' : 'توصيل: ' + o.delivery_fee + ' ج'}</span>
           </div>
 
-          <div style="font-size:11.5px; margin-bottom:4px; font-weight:bold;">
-            👤 العميل: ${o.client_name}
-            ${!isMyActive ? '<span style="color:var(--gray); font-weight:normal;">(السمعة: ⭐ 5.0)</span>' : ''}
+          <div style="font-size:12px; margin-bottom:4px; font-weight:bold; color:var(--text-white); display:flex; justify-content:space-between; align-items:center;">
+            <span>👤 العميل: ${o.client_name}</span>
+            <button onclick="promptBlockUser('${o.client_phone}', 'client', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:2px 6px; border-radius:6px; font-size:10px; cursor:pointer;">🚫 حظر العميل</button>
           </div>
 
-          <div style="font-size:11.5px; margin-bottom:6px;">📍 ${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
+          <div style="font-size:11.5px; margin-bottom:6px; color:var(--text-muted);">📍 ${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
 
-          <div style="font-size:11px; color:var(--gray); background:white; padding:8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:8px;">
-            🛒 المطلوب: ${o.details}<br>
-            💵 طريقة الدفع: <b>${o.payment_method}</b>
-            ${o.issue_image ? `<div style="margin-top:6px;"><img src="${o.issue_image}" style="width:70px; height:50px; border-radius:6px; object-fit:cover; cursor:pointer;" onclick="window.open('${o.issue_image}')" title="اضغط لتكبير صورة العطل"></div>` : ''}
+          <div style="font-size:11.5px; color:var(--text-muted); background:rgba(0,0,0,0.25); padding:10px; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px;">
+            🛒 المطلوب: <span style="color:var(--text-white);">${o.details}</span><br>
+            💵 طريقة الدفع: <b style="color:var(--text-gold);">${o.payment_method}</b>
+            ${o.issue_image ? `<div style="margin-top:8px;"><img src="${o.issue_image}" style="width:70px; height:50px; border-radius:6px; object-fit:cover; cursor:pointer;" onclick="window.open('${o.issue_image}')" title="اضغط لتكبير صورة العطل"></div>` : ''}
           </div>
 
           ${!isMyActive ? `
             ${hasOffered ? `
-              <div style="background:#e0f2fe; color:#0369a1; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; text-align:center;">
-                ✓ تم إرسال عرض وقتك للعميل (في انتظار اختياره)
+              <div style="background:var(--gold-light); color:var(--text-gold); border:1px solid var(--gold); padding:9px; border-radius:10px; font-size:11.5px; font-weight:bold; text-align:center; display:flex; justify-content:space-between; align-items:center;">
+                <span>✓ تم إرسال عرض وقتك للعميل (مهلة 3 دقائق)</span>
+                <button onclick="reSubmitCourierETA(${o.id})" style="background:var(--navy); color:#fff; border:1px solid var(--gold); padding:3px 8px; border-radius:6px; font-size:10px; cursor:pointer;">تعديل الوقت</button>
               </div>
             ` : `
-              <p style="font-size:10.5px; font-weight:bold; color:var(--navy); margin-bottom:4px;">حدد الوقت المتوقع للتنفيذ والوصول:</p>
+              <p style="font-size:11px; font-weight:bold; color:var(--text-gold); margin-bottom:6px;">حدد الوقت المتوقع للتنفيذ والوصول:</p>
               <div class="eta-grid">
                 <button class="btn-eta" onclick="submitCourierETA(${o.id}, 15)">15 دقيقة ⚡</button>
                 <button class="btn-eta" onclick="submitCourierETA(${o.id}, 20)">20 دقيقة</button>
@@ -1794,19 +2168,29 @@
               <a href="tel:${o.client_phone}" class="btn-action-blue">📞 اتصال فوري</a>
             </div>
 
-            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
-              <button onclick="updateTripStage(${o.id}, 'جاري التحرك 🛒')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">1. جاري التحرك</button>
-              <button onclick="updateTripStage(${o.id}, 'في الطريق إليك 🛵')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">2. في الطريق 🛵</button>
-              <button onclick="updateTripStage(${o.id}, 'وصلت أسفل العمارة 📍')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:6px; border-radius:6px; font-size:9.5px; font-weight:bold;">3. وصلت 📍</button>
+            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
+              <button onclick="updateTripStage(${o.id}, 'جاري التحرك 🛒')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">1. جاري التحرك</button>
+              <button onclick="updateTripStage(${o.id}, 'في الطريق إليك 🛵')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">2. في الطريق</button>
+              <button onclick="updateTripStage(${o.id}, 'وصلت أسفل العمارة 📍')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">3. وصلت 📍</button>
             </div>
 
-            <button class="btn-submit" style="background:#0284c7; margin-top:8px;" onclick="openBillModal(${o.id}, ${o.delivery_fee}, '${o.payment_method}')">إصدار فاتورة الحساب للعميل 🧾</button>
-            <button class="btn-submit" style="background:var(--green); margin-top:6px;" onclick="openRatingPrompt(${o.id}, 'courier')">تم تسليم الطلب واستلام الحساب ✓</button>
+            <button class="btn-submit" style="background:#0284c7; margin-top:10px;" onclick="openBillModal(${o.id}, ${o.delivery_fee}, '${o.payment_method}')">إصدار فاتورة الحساب للعميل 🧾</button>
+            <button class="btn-submit" style="margin-top:8px;" onclick="openRatingPrompt(${o.id}, 'courier')">تم تسليم الطلب واستلام الحساب ✓</button>
           `}
         </div>
       `;
     });
     feed.innerHTML = html;
+  }
+
+  async function reSubmitCourierETA(orderId) {
+    const { data: ord } = await dbClient.from('orders').select('offers').eq('id', orderId).single();
+    if (ord && ord.offers) {
+      const filtered = ord.offers.filter(off => off.courier_phone !== courierPhone);
+      await dbClient.from('orders').update({ offers: filtered }).eq('id', orderId);
+      showToast('يمكنك الآن تحديد وقت جديد وإعادة الإرسال');
+      loadProviderOrders();
+    }
   }
 
   async function submitCourierETA(orderId, etaMins) {
@@ -1819,7 +2203,7 @@
     currOffers.push({
       courier_phone: courierPhone,
       name: prov.name,
-      rating: prov.rating_avg.toFixed(1),
+      rating: (prov.rating_avg || 5.0).toFixed(1),
       vehicle: prov.vehicle_type,
       is_verified: prov.is_verified,
       eta: etaMins,
@@ -1878,10 +2262,6 @@
     loadProviderOrders();
   }
 
-  // ================================================================
-  // شحن رصيد المحفظة
-  // ================================================================
-
   function openRechargeModal() { document.getElementById('walletRechargeModal').classList.add('show'); }
 
   async function submitWalletRecharge() {
@@ -1918,37 +2298,52 @@
     render();
   }
 
-  // ================================================================
-  // التقييم والتسجيل والمستندات
-  // ================================================================
-
+  // ==========================================
+  // نظام التقييم الديناميكي التفاعلي (Toggle Stars)
+  // ==========================================
   function openRatingPrompt(orderId, userType) {
     activeOrderIdToRate = orderId;
     ratingUserType = userType;
-    document.getElementById('ratingModalTitle').innerText = userType === 'courier' ? 'تقييم العميل الكريم' : 'تقييم تجربة المشوار مع الكابتن ⭐';
-    document.getElementById('ratingModalSubtitle').innerText = userType === 'courier' ? 'كيف كان التزام العميل والاستلام؟' : 'كيف كانت سرعة وأمانة الكابتن؟';
+    currentSelectedRating = 5;
+    renderStarRatingUI();
+    document.getElementById('ratingModalTitle').innerText = userType === 'courier' ? 'تقييم العميل' : 'تقييم تجربة المشوار مع الكابتن ⭐';
+    document.getElementById('ratingModalSubtitle').innerText = 'انقر على النجمة لتحديدها، واضغط عليها مجدداً للإلغاء أو التبديل:';
     document.getElementById('ratingModal').classList.add('show');
   }
 
-  function setStars(val) {
-    currentSelectedRating = val;
-    let stars = '';
-    for(let i=1; i<=5; i++) stars += (i <= val) ? '⭐' : '☆';
-    document.getElementById('starRatingContainer').innerHTML = stars;
+  function toggleStarRate(val) {
+    if (currentSelectedRating === val) {
+      currentSelectedRating = 0;
+    } else {
+      currentSelectedRating = val;
+    }
+    renderStarRatingUI();
+  }
+
+  function renderStarRatingUI() {
+    const container = document.getElementById('starRatingContainer');
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      const isFilled = i <= currentSelectedRating;
+      html += `<span class="star-item ${isFilled ? 'star-active' : 'star-inactive'}" onclick="toggleStarRate(${i})">★</span>`;
+    }
+    container.innerHTML = html;
   }
 
   async function submitRating() {
     closeModal('ratingModal');
     triggerChime('soft');
 
+    const finalRate = currentSelectedRating || 5;
+
     if (ratingUserType === 'courier') {
       const { data: set } = await dbClient.from('platform_settings').select('commission_fee').eq('id', 1).single();
-      const fee = set ? Number(set.commission_fee) : 0;
-      const totalDeducted = fee + 1.00;
+      const fee = set ? Number(set.commission_fee) : 2.00;
+      const totalDeducted = fee;
 
       await dbClient.from('orders').update({
         status: 'مكتمل', trip_stage: 'تم التسليم بنجاح', completed_at: new Date().toISOString(),
-        commission_deducted: totalDeducted, courier_rating: currentSelectedRating
+        commission_deducted: totalDeducted, courier_rating: finalRate
       }).eq('id', activeOrderIdToRate);
 
       const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
@@ -1960,8 +2355,9 @@
       showToast('✓ تم إنهاء المشوار وتسجيل التقييم بنجاح');
       render();
     } else {
-      await dbClient.from('orders').update({ client_rating: currentSelectedRating, client_rated: true }).eq('id', activeOrderIdToRate);
-      showToast('⭐ شكراً لتقييمك الكريم! نسعد دائماً بخدمتك');
+      await dbClient.from('orders').update({ client_rating: finalRate, client_rated: true }).eq('id', activeOrderIdToRate);
+      showToast('⭐ شكراً لتقييمك! نسعد دائماً بخدمتك');
+      updateClientOrdersBadge();
       render();
     }
   }
@@ -1992,20 +2388,7 @@
       if (!file) return resolve('');
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxW = 700;
-          const scale = maxW / img.width;
-          canvas.width = img.width > maxW ? maxW : img.width;
-          canvas.height = img.width > maxW ? img.height * scale : img.height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.65));
-        };
-      };
+      reader.onload = (e) => resolve(e.target.result);
     });
   }
 
@@ -2036,14 +2419,14 @@
       name, phone, role: 'مندوب توصيل', vehicle_type: vehicle,
       id_front_img: idFront, id_back_img: idBack, vehicle_img: vehImg,
       license_front_img: licFront, license_back_img: licBack,
-      wallet_balance: 50.00, status: 'قيد المراجعة', is_online: true
+      wallet_balance: 0.00, status: 'قيد المراجعة', is_online: true
     }]);
 
     btn.innerText = 'إرسال البيانات للمراجعة والاعتماد 🚀'; btn.disabled = false;
 
     if (error) showToast("خطأ: " + error.message);
     else {
-      localStorage.setItem('x_courier_phone', phone);
+      localStorage.setItem('octa_courier_phone', phone);
       courierPhone = phone;
       closeModal('providerRegisterModal');
       triggerChime('stage');
@@ -2051,10 +2434,6 @@
       render();
     }
   }
-
-  // ================================================================
-  // سجل الفواتير والمشاوير المؤرخة
-  // ================================================================
 
   async function openHistory(viewerType) {
     const modal = document.getElementById('historyModal');
@@ -2071,7 +2450,7 @@
 
     const { data: orders } = await query;
     if (!orders || orders.length === 0) {
-      list.innerHTML = '<div style="text-align:center; padding:24px; color:var(--gray); font-size:11px;">لا توجد فواتير سابقة حتى الآن.</div>';
+      list.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-muted); font-size:11px;">لا توجد فواتير سابقة حتى الآن.</div>';
       return;
     }
 
@@ -2082,24 +2461,24 @@
         <div class="receipt-card">
           <div class="receipt-header">
             <span>فاتورة طلب #${o.id} - ${o.order_type}</span>
-            <span style="color:var(--gray); font-size:10px;">${dateStr}</span>
+            <span style="color:var(--text-muted); font-size:10px;">${dateStr}</span>
           </div>
 
           ${viewerType === 'client' ? `
-            <div class="receipt-row"><span>الكابتن المنفذ:</span><b>كابتن معتمد منصة X</b></div>
+            <div class="receipt-row"><span>الشريك المنفذ:</span><b>شريك معتمد OCTA HUB</b></div>
           ` : `
             <div class="receipt-row"><span>العميل:</span><b>${o.client_name} (${o.client_address.split('-')[0]})</b></div>
           `}
 
           ${o.items_price > 0 ? `<div class="receipt-row"><span>سعر المشتريات/الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
           <div class="receipt-row"><span>مصاريف التوصيل/المعاينة:</span><b>${o.delivery_fee} ج</b></div>
-          <div class="receipt-row"><span>تأمين الطلب والضمان:</span><b>1 ج</b></div>
-          ${o.transfer_fee > 0 ? `<div class="receipt-row" style="color:#b45309;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
+          <div class="receipt-row"><span>تأمين وتشغيل الخدمة:</span><b>1 ج</b></div>
+          ${o.transfer_fee > 0 ? `<div class="receipt-row" style="color:var(--amber);"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
           <div class="receipt-total">
             <span>إجمالي الحساب المدفوع:</span>
-            <span style="color:var(--green);">${o.total_price || (o.delivery_fee + 1)} ج</span>
+            <span>${o.total_price || (o.delivery_fee + 1)} ج</span>
           </div>
-          ${o.client_rating ? `<div style="margin-top:4px; font-size:10px; color:var(--amber);">تقييم المشوار: ${'⭐'.repeat(o.client_rating)}</div>` : ''}
+          ${o.client_rating ? `<div style="margin-top:6px; font-size:11px; color:var(--gold);">تقييم المشوار: ${'⭐'.repeat(o.client_rating)}</div>` : ''}
         </div>
       `;
     });
