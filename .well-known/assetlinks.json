@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.amtwaly993_lang.twa",
+        "sha256_cert_fingerprints": ["2F:C1:53:3F:FF:2D:03:F4:AE:B8:E6:84:D9:FF:0D:3B:E0:3B:3F:0F:CD:50:71:85:CC:D7:5E:35:7F:F7:42:72"]
+      }
+    }]
