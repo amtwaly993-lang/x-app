@@ -16,6 +16,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- مكتبة Phosphor Icons للأيقونات العصرية -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
     :root {
@@ -40,8 +42,22 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--navy); display: flex; justify-content: center; color: var(--text-white); min-height: 100vh; overflow-x: hidden; }
-    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: var(--navy); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
+    
+    /* تحديث لون الخلفية الأساسية لتصبح متدرجة بشكل فخم */
+    body { background: radial-gradient(circle at top, var(--navy-light) 0%, var(--navy) 100%); display: flex; justify-content: center; color: var(--text-white); min-height: 100vh; overflow-x: hidden; }
+    
+    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: transparent; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.6); z-index: 1; }
+    
+    /* خلفية النقاط المتحركة بشكل مبهر وواضح (Wow-Factor) */
+    .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; background: transparent; }
+    .bg-animation::before, .bg-animation::after { 
+      content: ''; position: absolute; width: 200vw; height: 200vh; top: -50%; left: -50%; 
+      background-image: radial-gradient(rgba(197, 160, 89, 0.45) 1.5px, transparent 1.5px); 
+      background-size: 35px 35px; opacity: 0.6; animation: drift 45s linear infinite; 
+    }
+    .bg-animation::after { background-size: 55px 55px; opacity: 0.35; animation: drift 65s linear infinite reverse; }
+    @keyframes drift { 0% { transform: rotate(0deg) translate(0, 0); } 100% { transform: rotate(360deg) translate(50px, 50px); } }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
     .toast-msg {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -80,13 +96,13 @@
     .portal-title { font-size: 15px; font-weight: 900; color: var(--text-white); margin-bottom: 4px; }
     .portal-desc { font-size: 11px; color: var(--text-gold); font-weight: 600; line-height: 1.4; text-align: center; }
 
-    .inner-header { background: var(--navy-light); padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-    .header-brand-center { display: flex; flex-direction: column; align-items: center; margin: 0 auto; }
-    .header-brand-logo { width: 34px; height: 34px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--gold); margin-bottom: 2px; }
-    .header-brand-name { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: var(--text-white); }
-    .header-brand-name span { color: var(--gold); }
-    .menu-dots-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--gold); width: 38px; height: 38px; border-radius: 10px; font-size: 18px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
-    .menu-dots-btn:active { background: var(--gold-light); transform: scale(0.95); }
+    /* الهيدر العصري بتأثير الزجاج */
+    .inner-header { background: rgba(19, 36, 60, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .header-brand-right { display: flex; align-items: center; }
+    .header-brand-name { font-size: 20px; font-weight: 800; letter-spacing: 1px; color: var(--text-white); }
+    .header-brand-name span { color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); }
+    .menu-dots-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-light); color: var(--text-white); width: 42px; height: 42px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .menu-dots-btn:active { background: var(--gold-light); color: var(--gold); transform: scale(0.92); border-color: var(--gold); }
 
     .content-area { flex: 1; padding: 16px; overflow-y: auto; }
     .online-indicator-bar { background: rgba(197, 160, 89, 0.08); border: 1px solid var(--border); color: var(--text-white); border-radius: var(--radius-md); padding: 10px 14px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -159,22 +175,25 @@
 </head>
 <body>
 
+<div class="bg-animation"></div>
+
 <div class="app-container">
   <div id="mainView"></div>
 </div>
 
 <div id="toastNotification" class="toast-msg"></div>
 
-<!-- نافذة التفضيلات والإعدادات (زر 3 نقط ⋮) -->
+<!-- نافذة التفضيلات والإعدادات (تم التحديث وتوسيط العنوان) -->
 <div class="modal" id="preferencesModal">
-  <div class="modal-sheet">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h3 style="font-size:15px; font-weight:900; color:var(--text-white);" data-i18n="settingsTitle">⚙️ إعدادات وتخصيص OCTA HUB</h3>
-      <span onclick="closeModal('preferencesModal')" style="cursor:pointer; font-size:20px; color:var(--gold);">✕</span>
+  <div class="modal-sheet" style="position:relative;">
+    <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; position:relative;">
+      <h3 style="font-size:15px; font-weight:900; color:var(--text-white);" data-i18n="settingsTitle">إعدادات وتخصيص OCTA HUB</h3>
+      <span onclick="closeModal('preferencesModal')" style="cursor:pointer; font-size:20px; color:var(--gold); position:absolute; right:0;">✕</span>
     </div>
 
     <div style="display:flex; align-items:center; gap:14px; background:var(--navy-card); padding:14px; border-radius:var(--radius-lg); margin-bottom:16px; border:1px solid var(--border);">
-      <img src="logo.png" id="prefUserAvatar" style="width:54px; height:54px; border-radius:50%; border:2px solid var(--gold); object-fit:cover;" onerror="this.src='Logo1.png'">
+      <!-- تم تجميد الصورة بإضافة خصائص منع السحب والتفاعل -->
+      <img src="logo.png" id="prefUserAvatar" style="width:54px; height:54px; border-radius:50%; border:2px solid var(--gold); object-fit:cover; pointer-events:none; user-select:none; -webkit-user-drag:none;" onerror="this.src='Logo1.png'">
       <div>
         <b style="font-size:14px; color:var(--text-white);" id="prefUserName">عميل جديد</b>
         <div style="font-size:11.5px; color:var(--gold); font-weight:bold; margin-top:2px;" id="prefUserRoleTag">عميل جديد (0 طلبات)</div>
@@ -198,21 +217,18 @@
       <label data-i18n="notifSound">صوت الإشعارات:</label>
       <div style="display:flex; gap:8px;">
         <select class="input-box" id="prefSoundSelect" style="flex:1;">
-          <option value="golden">رنين ذهبي ناعم 🔔</option>
-          <option value="digital">تنبيه رقمي سريع ⚡</option>
-          <option value="marimba">جرس ثلاثي مرح 🎵</option>
+          <option value="golden">رنين ذهبي ناعم</option>
+          <option value="digital">تنبيه رقمي سريع</option>
+          <option value="marimba">جرس ثلاثي مرح</option>
         </select>
-        <button class="btn-submit" onclick="testSelectedSound()" style="width:auto; padding:0 16px; margin:0; border-radius:10px;" data-i18n="testSound">تجربة 🔔</button>
+        <button class="btn-submit" onclick="testSelectedSound()" style="width:auto; padding:0 16px; margin:0; border-radius:10px;" data-i18n="testSound">تجربة</button>
       </div>
     </div>
 
-    <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:var(--radius-lg); margin-top:16px; text-align:center; border:1px solid var(--border-light);">
-      <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;" data-i18n="contactTitle">قنوات التواصل المباشر مع إدارة المنصة:</p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <a href="https://wa.me/201021572161" target="_blank" class="btn-action-green" data-i18n="whatsappSupport">💬 واتساب الإدارة</a>
-        <a href="tel:01021572161" class="btn-action-blue" data-i18n="callSupport">📞 اتصال مباشر</a>
-      </div>
-    </div>
+    <!-- تمت إضافة زر السجل المؤرخ بدلاً من قسم التواصل -->
+    <button class="btn-submit" style="background:var(--navy-card); color:var(--text-gold); border:1px solid var(--gold); margin-top:14px;" onclick="closeModal('preferencesModal'); openHistory(activeRole === 'client' ? 'client' : 'courier');">
+      سجل تعاملاتي
+    </button>
   </div>
 </div>
 
@@ -220,7 +236,7 @@
 <div class="modal" id="addressModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;" data-i18n="addressModalTitle">📍 عنوان التوصيل ورقم الهاتف</h3>
+      <h3 style="font-size:14px; font-weight:800;" data-i18n="addressModalTitle">عنوان التوصيل ورقم الهاتف</h3>
       <span onclick="closeModal('addressModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div class="input-row">
@@ -273,15 +289,15 @@
     <div class="input-row" style="margin-top:8px;">
       <label>طريقة دفع الحساب للمندوب:</label>
       <select id="orderPaymentMethod" class="input-box" onchange="calculateClientPrice()">
-        <option value="كاش">كاش عند الاستلام 💵 (رسوم تحويل 0 ج)</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية (فودافون/أورنج/اتصالات/وي) 📱</option>
+        <option value="كاش">كاش عند الاستلام (رسوم تحويل 0 ج)</option>
+        <option value="إنستاباي">إنستاباي InstaPay</option>
+        <option value="محفظة ذكية">محفظة إلكترونية (فودافون/أورنج/اتصالات/وي)</option>
       </select>
     </div>
     <div id="urgentOptionContainer" style="display:none; margin-bottom:10px;">
       <label style="display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--danger); cursor:pointer;">
         <input type="checkbox" id="isUrgentCheck" onchange="calculateClientPrice()">
-        <span>🚨 مشوار مستعجل (أولوية انطلاق قصوى للمناديب)</span>
+        <span>مشوار مستعجل (أولوية انطلاق قصوى للمناديب)</span>
       </label>
     </div>
     <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
@@ -298,7 +314,7 @@
         <span id="calculatedTransferFee">5 ج</span>
       </div>
     </div>
-    <button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب ⚡</button>
+    <button class="btn-submit" id="btnSubmitOrder" onclick="submitFinalOrder()">تأكيد وإرسال للمناديب</button>
   </div>
 </div>
 
@@ -306,7 +322,7 @@
 <div class="modal" id="medicalDirectoryModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">🏥 الخصومات الطبية المعتمدة</h3>
+      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">الخصومات الطبية المعتمدة</h3>
       <span onclick="closeModal('medicalDirectoryModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
@@ -318,7 +334,7 @@
 
     <div id="medicalPartnersListContainer" style="max-height:55vh; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
 
-    <button class="btn-submit" style="background:var(--navy-card); color:var(--text-gold); border:1px solid var(--border); margin-top:14px;" onclick="closeModal('medicalDirectoryModal'); openVouchersHistory();">📋 عرض سجل كوبوناتي الطبية</button>
+    <button class="btn-submit" style="background:var(--navy-card); color:var(--text-gold); border:1px solid var(--border); margin-top:14px;" onclick="closeModal('medicalDirectoryModal'); openVouchersHistory();">عرض سجل كوبوناتي الطبية</button>
   </div>
 </div>
 
@@ -336,8 +352,8 @@
     </div>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px;">
-      <a href="#" id="medCallBtn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">📞 اتصال مباشر</a>
-      <a href="#" id="medWaBtn" target="_blank" style="background:rgba(16,185,129,0.15); border:1px solid var(--green); color:var(--green); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">💬 استفسار واتساب</a>
+      <a href="#" id="medCallBtn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">اتصال مباشر</a>
+      <a href="#" id="medWaBtn" target="_blank" style="background:rgba(16,185,129,0.15); border:1px solid var(--green); color:var(--green); padding:9px; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:bold; text-align:center;">استفسار واتساب</a>
     </div>
 
     <div class="input-row">
@@ -350,13 +366,13 @@
       <input type="tel" id="medBeneficiaryPhone" class="input-box" placeholder="010xxxxxxxx" dir="ltr" style="text-align:right;">
     </div>
 
-    <button class="btn-submit" onclick="generateMedicalVoucher()">احصل على كود الخصم المعتمد 🏷️</button>
+    <button class="btn-submit" onclick="generateMedicalVoucher()">احصل على كود الخصم المعتمد</button>
 
     <div id="voucherResultBox" style="display:none; margin-top:14px; background:var(--navy-card); border:1.5px dashed var(--gold); border-radius:14px; padding:14px; text-align:center;">
       <div style="font-size:11.5px; color:var(--text-gold); font-weight:bold;">كود الخصم المعتمد الخاص بك:</div>
       <div style="font-size:26px; font-weight:900; letter-spacing:4px; color:var(--text-white); margin:8px 0;" id="generatedVoucherCode">XXXXXXXX</div>
       <div style="font-size:10px; color:var(--text-muted); margin-bottom:12px;">صالح للاستخدام خلال 48 ساعة من الآن</div>
-      <a href="#" id="medSendVoucherBtn" target="_blank" style="background:var(--green); color:white; padding:11px; border-radius:10px; text-decoration:none; display:block; font-size:12px; font-weight:800;">📲 أبلغ الجهة بالخصم والكود عبر واتساب</a>
+      <a href="#" id="medSendVoucherBtn" target="_blank" style="background:var(--green); color:white; padding:11px; border-radius:10px; text-decoration:none; display:block; font-size:12px; font-weight:800;">أبلغ الجهة بالخصم والكود عبر واتساب</a>
     </div>
   </div>
 </div>
@@ -365,28 +381,28 @@
 <div class="modal" id="utilityModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;">⚡ شحن كروت المرافق عند باب الشقة</h3>
+      <h3 style="font-size:14px; font-weight:800;">شحن كروت المرافق عند باب الشقة</h3>
       <span onclick="closeModal('utilityModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:14px;">يصلك الكابتن بجهاز فوري أو هاتف NFC لشحن كروتك فوراً عند باب المنزل.</p>
 
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
       <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkElec" onchange="toggleUtilityInput('Elec')"> ⚡ كارت الكهرباء
+        <input type="checkbox" id="chkElec" onchange="toggleUtilityInput('Elec')"> كارت الكهرباء
       </label>
       <div id="boxElec" style="display:none; margin-right:20px;">
         <input type="number" id="amtElec" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
       </div>
 
       <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkGas" onchange="toggleUtilityInput('Gas')"> ⛽ كارت الغاز
+        <input type="checkbox" id="chkGas" onchange="toggleUtilityInput('Gas')"> كارت الغاز
       </label>
       <div id="boxGas" style="display:none; margin-right:20px;">
         <input type="number" id="amtGas" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 100 ج)" oninput="updateUtilityTotal()">
       </div>
 
       <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:bold; cursor:pointer;">
-        <input type="checkbox" id="chkWater" onchange="toggleUtilityInput('Water')"> 💧 كارت المياه
+        <input type="checkbox" id="chkWater" onchange="toggleUtilityInput('Water')"> كارت المياه
       </label>
       <div id="boxWater" style="display:none; margin-right:20px;">
         <input type="number" id="amtWater" class="input-box" placeholder="مبلغ الشحن المطلوب (مثلاً: 50 ج)" oninput="updateUtilityTotal()">
@@ -396,9 +412,9 @@
     <div class="input-row">
       <label>طريقة السداد:</label>
       <select id="utilityPayMethod" class="input-box" onchange="updateUtilityTotal()">
-        <option value="كاش">كاش عند الاستلام 💵 (رسوم تحويل 0 ج)</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية 📱</option>
+        <option value="كاش">كاش عند الاستلام (رسوم تحويل 0 ج)</option>
+        <option value="إنستاباي">إنستاباي InstaPay</option>
+        <option value="محفظة ذكية">محفظة إلكترونية</option>
       </select>
     </div>
 
@@ -414,7 +430,7 @@
       </div>
     </div>
 
-    <button class="btn-submit" onclick="submitUtilityOrder()">طلب كابتن للشحن الآن ⚡</button>
+    <button class="btn-submit" onclick="submitUtilityOrder()">طلب كابتن للشحن الآن</button>
   </div>
 </div>
 
@@ -422,7 +438,7 @@
 <div class="modal" id="gasCylinderModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;">⛽ اسطوانة الغاز (الخدمات السريعة)</h3>
+      <h3 style="font-size:14px; font-weight:800;">اسطوانة الغاز (الخدمات السريعة)</h3>
       <span onclick="closeModal('gasCylinderModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     
@@ -455,13 +471,13 @@
     <div class="input-row">
       <label>طريقة الدفع / الاستلام:</label>
       <select id="gasPayMethod" class="input-box">
-        <option value="كاش">كاش عند الباب 💵</option>
-        <option value="إنستاباي">إنستاباي InstaPay ⚡</option>
-        <option value="محفظة ذكية">محفظة إلكترونية 📱</option>
+        <option value="كاش">كاش عند الباب</option>
+        <option value="إنستاباي">إنستاباي InstaPay</option>
+        <option value="محفظة ذكية">محفظة إلكترونية</option>
       </select>
     </div>
 
-    <button class="btn-submit" onclick="submitGasOrder()">تأكيد وطلب اسطوانة الغاز ⚡</button>
+    <button class="btn-submit" onclick="submitGasOrder()">تأكيد وطلب اسطوانة الغاز</button>
   </div>
 </div>
 
@@ -475,20 +491,20 @@
 
     <div class="input-row">
       <label>اوصف الطلب أو المشكلة الفنية بدقة:</label>
-      <textarea id="techIssueDesc" class="input-box" rows="3" placeholder="مثال: تسريب مياه أسفل الحوض يحتاج تغيير محبس..."></textarea>
+      <textarea id="techIssueDesc" class="input-box" rows="3" placeholder="اكتب التفاصيل هنا..."></textarea>
     </div>
 
     <div class="input-row">
-      <label>إرفاق صورة المشكلة أو العطل 📷 (تظهر للفني لتجهيز العدة):</label>
+      <label>إرفاق صورة المشكلة أو العطل (تظهر للفني لتجهيز العدة):</label>
       <input type="file" id="techIssueImg" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
     <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:14px; font-size:11.5px; color:var(--text-gold); line-height:1.5;">
-      <b>⚠️ إقرار الزيارة والفحص:</b><br>
+      <b>إقرار الزيارة والفحص:</b><br>
       أؤكد بأن زيارة الفني للمعاينة والكشف هي بقيمة <b>50 ج (لا تُرد)</b> + <b>1 ج تأمين المشوار</b>. وتكلفة الصيانة أو قطع الغيار يتفق عليها بعد الفحص.
     </div>
 
-    <button class="btn-submit" id="btnSubmitTech" onclick="submitTechOrder()">تأكيد وإرسال للفنيين المعتمدين 🔧</button>
+    <button class="btn-submit" id="btnSubmitTech" onclick="submitTechOrder()">تأكيد وإرسال للفنيين المعتمدين</button>
   </div>
 </div>
 
@@ -496,12 +512,12 @@
 <div class="modal" id="biddingModal">
   <div class="modal-sheet" style="text-align:center;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">عروض الكباتن المتاحة ⏱️</h3>
+      <h3 style="font-size:14px; font-weight:900; color:var(--text-white);">عروض الكباتن المتاحة</h3>
       <span id="countdownTimer" style="background:var(--gold); color:var(--navy); padding:4px 12px; border-radius:12px; font-size:12px; font-weight:900;">03:00</span>
     </div>
     <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:14px;">اختر الكابتن الأنسب لك حسب وقت الوصول والتقييم:</p>
     <div id="offersContainer" style="display:flex; flex-direction:column; gap:10px; max-height:50vh; overflow-y:auto;">
-      <div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك... 📡</div>
+      <div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك...</div>
     </div>
   </div>
 </div>
@@ -509,12 +525,11 @@
 <!-- 9. نافذة انتهاء المهلة أو عدم موافقة العميل -->
 <div class="modal" id="retryModal">
   <div class="modal-sheet" style="text-align:center;">
-    <div style="font-size:36px; margin-bottom:8px;">🤔</div>
     <h3 style="font-size:15px; font-weight:900; margin-bottom:6px;">هل ما زلت تبحث عن عروض من الكباتن؟</h3>
     <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">انتهت مهلة الـ 3 دقائق الحالية. يمكنك قبول تمديد الوقت أو إلغاء البحث.</p>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <button class="btn-submit" style="margin:0;" onclick="retryOrderSearch()">قبول وتمديد 3 دقائق 🔄</button>
-      <button class="btn-submit" style="background:rgba(255,255,255,0.08); color:var(--text-white); margin:0;" onclick="cancelOrderSearch()">رفض وإنهاء البحث ✕</button>
+      <button class="btn-submit" style="margin:0;" onclick="retryOrderSearch()">قبول وتمديد 3 دقائق</button>
+      <button class="btn-submit" style="background:rgba(255,255,255,0.08); color:var(--text-white); margin:0;" onclick="cancelOrderSearch()">رفض وإنهاء البحث</button>
     </div>
   </div>
 </div>
@@ -523,7 +538,7 @@
 <div class="modal" id="blockUserModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--danger);" id="blockModalTitle">🚫 حظر وإبلاغ إدارة المنصة</h3>
+      <h3 style="font-size:14px; font-weight:900; color:var(--danger);" id="blockModalTitle">حظر وإبلاغ إدارة المنصة</h3>
       <span onclick="closeModal('blockUserModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">
@@ -534,7 +549,7 @@
       <textarea id="blockReasonInput" class="input-box" rows="3" placeholder="اكتب سبب الشكوى (مثال: عدم التزام، تأخير شديد، سلوك غير لائق...)"></textarea>
     </div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
-      <button class="btn-action-danger" onclick="submitBlockAction()">تأكيد الحظر والإبلاغ 🚫</button>
+      <button class="btn-action-danger" onclick="submitBlockAction()">تأكيد الحظر والإبلاغ</button>
       <button class="btn-submit" style="margin:0; background:rgba(255,255,255,0.08); color:#fff;" onclick="closeModal('blockUserModal')">إلغاء</button>
     </div>
   </div>
@@ -544,15 +559,15 @@
 <div class="modal" id="walletRechargeModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:900;">شحن رصيد المحفظة 💳</h3>
+      <h3 style="font-size:14px; font-weight:900;">شحن رصيد المحفظة</h3>
       <span onclick="closeModal('walletRechargeModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
     <div style="background:var(--navy-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:14px; font-size:11.5px; line-height:1.5;">
       <div style="font-weight:bold; color:var(--text-white); margin-bottom:4px;">بيانات التحويل المعتمدة لـ Octa Hub:</div>
-      <div>📱 <b>اتصالات كاش:</b> <code>01110807050</code></div>
-      <div>⚡ <b>إنستاباي:</b> <code>5078086712394258</code></div>
-      <div style="color:var(--text-gold); font-weight:bold; margin-top:4px;">⏰ مواعيد مراجعة الشحن: على مدار اليوم.</div>
+      <div><b>اتصالات كاش:</b> <code>01110807050</code></div>
+      <div><b>إنستاباي:</b> <code>5078086712394258</code></div>
+      <div style="color:var(--text-gold); font-weight:bold; margin-top:4px;">مواعيد مراجعة الشحن: على مدار اليوم.</div>
     </div>
 
     <div class="input-row">
@@ -569,11 +584,11 @@
     </div>
 
     <div class="input-row">
-      <label>صورة أو سكرين شوت إيصال التحويل 📸:</label>
+      <label>صورة أو سكرين شوت إيصال التحويل:</label>
       <input type="file" id="rechargeReceiptFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
     </div>
 
-    <button class="btn-submit" id="btnSubmitRecharge" onclick="submitWalletRecharge()">تأكيد وإرسال الإيصال للإدارة 📤</button>
+    <button class="btn-submit" id="btnSubmitRecharge" onclick="submitWalletRecharge()">تأكيد وإرسال الإيصال للإدارة</button>
   </div>
 </div>
 
@@ -581,7 +596,7 @@
 <div class="modal" id="providerRegisterModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;">تسجيل شريك جديد وتدقيق الأوراق 🛡️</h3>
+      <h3 style="font-size:14px; font-weight:800;">تسجيل شريك جديد وتدقيق الأوراق</h3>
       <span onclick="closeModal('providerRegisterModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
 
@@ -608,11 +623,11 @@
       <label style="font-weight:bold; color:var(--text-white);">بطاقة الرقم القومي (إلزامي):</label>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
         <div>
-          <span style="font-size:10px; color:var(--text-muted);">وجه البطاقة 🪪</span>
+          <span style="font-size:10px; color:var(--text-muted);">وجه البطاقة</span>
           <input type="file" id="fileIdFront" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
         <div>
-          <span style="font-size:10px; color:var(--text-muted);">ظهر البطاقة 🪪</span>
+          <span style="font-size:10px; color:var(--text-muted);">ظهر البطاقة</span>
           <input type="file" id="fileIdBack" accept="image/*" class="input-box" style="padding:4px; font-size:10px;">
         </div>
       </div>
@@ -647,18 +662,18 @@
 
     <div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:10px; margin-bottom:12px; font-size:11.5px; text-align:center;">
       <p style="color:var(--text-muted); margin-bottom:8px;">يجب الاطلاع على وثيقة الشروط المعتمدة أولاً للمتابعة:</p>
-      <button type="button" onclick="openPolicyModal()" style="background:var(--navy-card); border:1px solid var(--border); color:var(--text-white); padding:8px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">📖 قراءة شروط وسياسة المنصة</button>
-      <div id="policyStatusText" style="color:var(--danger); font-weight:bold; margin-top:8px; font-size:10.5px;">لم يتم تأكيد قراءة السياسة بعد ✖</div>
+      <button type="button" onclick="openPolicyModal()" style="background:var(--navy-card); border:1px solid var(--border); color:var(--text-white); padding:8px 14px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">قراءة شروط وسياسة المنصة</button>
+      <div id="policyStatusText" style="color:var(--danger); font-weight:bold; margin-top:8px; font-size:10.5px;">لم يتم تأكيد قراءة السياسة بعد</div>
     </div>
 
-    <button class="btn-submit" id="btnSubmitProvider" onclick="submitProviderRegistration()">إرسال البيانات للمراجعة والاعتماد 🚀</button>
+    <button class="btn-submit" id="btnSubmitProvider" onclick="submitProviderRegistration()">إرسال البيانات للمراجعة والاعتماد</button>
   </div>
 </div>
 
 <!-- 13. نافذة سياسة المنصة -->
 <div class="modal" id="policyModal">
   <div class="modal-sheet">
-    <h3 style="font-size:14px; font-weight:900; margin-bottom:12px; color:var(--text-white);">📜 وثيقة شروط وسياسة شركاء OCTA HUB</h3>
+    <h3 style="font-size:14px; font-weight:900; margin-bottom:12px; color:var(--text-white);">وثيقة شروط وسياسة شركاء OCTA HUB</h3>
     <div style="font-size:11.5px; color:var(--text-muted); line-height:1.6; max-height:55vh; overflow-y:auto; padding-left:4px; margin-bottom:14px;">
       <p>1. <b>الالتزام بأسعار المتاجر:</b> الالتزام التام بأسعار الفواتير الرسمية الصادرة من المحلات دون زيادة شخصية، وتسليم أصل الفاتورة للعميل.</p>
       <p>2. <b>استرجاع المشتريات:</b> التأكد من إمكانية استرجاع أي مشتريات من المحل قبل شرائها في حال تعذر استلام العميل.</p>
@@ -668,7 +683,7 @@
       <p>6. <b>الأمانة والتحصيل:</b> لا يحق للمندوب طلب أي نقدية مسبقة من العميل قبل تسليم الطلب.</p>
       <p>7. <b>المسؤولية القانونية:</b> يعلم الشريك بأن بطاقته ورخصه مسجلة رسمياً لدى المنصة للرجوع القانوني عند أي تجاوز.</p>
     </div>
-    <button class="btn-submit" onclick="confirmPolicyRead()">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً ✓</button>
+    <button class="btn-submit" onclick="confirmPolicyRead()">قرأت كافة التفاصيل والشروط وأوافق عليها تماماً</button>
   </div>
 </div>
 
@@ -676,7 +691,7 @@
 <div class="modal" id="billModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;">إصدار فاتورة سريعة للعميل 🧾</h3>
+      <h3 style="font-size:14px; font-weight:800;">إصدار فاتورة سريعة للعميل</h3>
       <span onclick="closeModal('billModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div class="input-row">
@@ -691,7 +706,7 @@
       <hr style="margin:8px 0; border:none; border-top:1px dashed var(--border-light);">
       <div style="font-size:13.5px; font-weight:900; color:var(--text-white);">الإجمالي المطلوب من العميل: <span id="dispTotal" style="color:var(--gold);">0 ج</span></div>
     </div>
-    <button class="btn-submit" onclick="sendBillToClient()">إرسال الفاتورة لشاشة العميل والتحرك ⚡</button>
+    <button class="btn-submit" onclick="sendBillToClient()">إرسال الفاتورة لشاشة العميل والتحرك</button>
   </div>
 </div>
 
@@ -707,7 +722,7 @@
       <span class="star-item star-inactive" onclick="toggleStarRate(4)">★</span>
       <span class="star-item star-inactive" onclick="toggleStarRate(5)">★</span>
     </div>
-    <button class="btn-submit" onclick="submitRating()">تأكيد التقييم ✓</button>
+    <button class="btn-submit" onclick="submitRating()">تأكيد التقييم</button>
   </div>
 </div>
 
@@ -715,7 +730,7 @@
 <div class="modal" id="historyModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:800;" id="historyTitle">السجل المؤرخ 📋</h3>
+      <h3 style="font-size:14px; font-weight:800;" id="historyTitle">السجل المؤرخ</h3>
       <span onclick="closeModal('historyModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span>
     </div>
     <div id="historyListContainer" style="max-height:65vh; overflow-y:auto;">
@@ -803,15 +818,15 @@
       rideRoleDesc: "مشاوير وتوصيل بين الكمبوندات",
       techRoleTitle: "فني معتمد",
       techRoleDesc: "سباكة، كهرباء، دش، نجارة وتكييف",
-      settingsTitle: "⚙️ إعدادات وتخصيص OCTA HUB",
+      settingsTitle: "إعدادات وتخصيص OCTA HUB",
       changePhoto: "تغيير الصورة الشخصية:",
       appLanguage: "لغة التطبيق:",
       notifSound: "صوت الإشعارات:",
-      testSound: "تجربة 🔔",
+      testSound: "تجربة",
       contactTitle: "قنوات التواصل المباشر مع إدارة المنصة:",
-      whatsappSupport: "💬 واتساب الإدارة",
-      callSupport: "📞 اتصال مباشر",
-      addressModalTitle: "📍 عنوان التوصيل ورقم الهاتف",
+      whatsappSupport: "واتساب الإدارة",
+      callSupport: "اتصال مباشر",
+      addressModalTitle: "عنوان التوصيل ورقم الهاتف",
       clientNameLabel: "اسم العميل:",
       clientPhoneLabel: "رقم تليفون التواصل (أساسي):",
       compoundLabel: "الكمبوند / المنطقة:",
@@ -831,15 +846,15 @@
       rideRoleDesc: "Rides and commute between compounds",
       techRoleTitle: "Certified Technician",
       techRoleDesc: "Plumbing, electrical, satellite & carpentry",
-      settingsTitle: "⚙️ OCTA HUB Preferences",
+      settingsTitle: "OCTA HUB Preferences",
       changePhoto: "Change profile photo:",
       appLanguage: "App Language:",
       notifSound: "Notification Sound:",
-      testSound: "Test 🔔",
+      testSound: "Test",
       contactTitle: "Direct contact channels with management:",
-      whatsappSupport: "💬 WhatsApp Support",
-      callSupport: "📞 Direct Call",
-      addressModalTitle: "📍 Delivery Address & Phone",
+      whatsappSupport: "WhatsApp Support",
+      callSupport: "Direct Call",
+      addressModalTitle: "Delivery Address & Phone",
       clientNameLabel: "Customer Name:",
       clientPhoneLabel: "Phone Number (Primary):",
       compoundLabel: "Compound / Area:",
@@ -979,10 +994,10 @@
         if (isTargeted && item.is_active) {
           triggerChime('stage');
           if (item.channel === 'both' || item.channel === 'push') {
-            triggerSystemPushNotification('OCTA HUB | إشعار عاجل 📢', item.message);
+            triggerSystemPushNotification('OCTA HUB | إشعار عاجل', item.message);
           }
           if (item.channel === 'both' || item.channel === 'app') {
-            showToast('📢 ' + item.message);
+            showToast(item.message);
             loadRoleAnnouncements();
           }
         } else {
@@ -1006,7 +1021,7 @@
     if (list && list.length > 0 && (list[0].channel === 'both' || list[0].channel === 'app')) {
       box.innerHTML = `
         <div class="announcement-bar">
-          <span>📢 ${list[0].message}</span>
+          <span>${list[0].message}</span>
           <span onclick="this.parentElement.remove()" style="cursor:pointer; font-weight:bold; font-size:14px; color:var(--gold);">✕</span>
         </div>
       `;
@@ -1170,8 +1185,7 @@
       main.innerHTML = `
         <div class="portal-screen">
           <div class="brand-stack">
-            <img src="logo.png" class="logo-hero-img" alt="OCTA HUB" onerror="this.src='Logo1.png';">
-            <div class="brand-title-text">OCTA <span>HUB</span></div>
+            <div class="brand-title-text" style="font-size: 34px; margin-top: 20px;">OCTA <span>HUB</span></div>
             <div class="brand-subtitle-text" data-i18n="subtitle">${i18n[currentLang].subtitle}</div>
           </div>
 
@@ -1250,20 +1264,20 @@
 
       main.innerHTML = `
         <div class="inner-header">
-          <div style="width:38px;"></div>
-          <div class="header-brand-center">
-            <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+          <div class="header-brand-right">
             <div class="header-brand-name">OCTA <span>HUB</span></div>
           </div>
-          <button class="menu-dots-btn" onclick="openPreferencesModal()" title="خيارات وتخصيص">⋮</button>
+          <button class="menu-dots-btn" onclick="openPreferencesModal()" title="إعدادات">
+            <i class="ph ph-sliders-horizontal"></i>
+          </button>
         </div>
 
         <div class="content-area">
           <div id="roleAnnouncementBox"></div>
 
           <div class="online-indicator-bar">
-            <span>🟢 متاح الآن <b>${count || 0} كباتن متصلين فعلياً</b></span>
-            <small style="color:var(--text-gold); font-weight:bold;">جاهزون للتوصيل ⚡</small>
+            <span><i class="ph-fill ph-circle-notch" style="color:var(--green); animation: spin 2s linear infinite;"></i> متاح الآن <b>${count || 0} كباتن متصلين فعلياً</b></span>
+            <small style="color:var(--text-gold); font-weight:bold;">جاهزون للتوصيل</small>
           </div>
 
           <div class="ad-banner-box" id="clientAdBanner" onclick="clickBanner()">
@@ -1272,19 +1286,18 @@
 
           <div class="address-bar-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:11.5px; font-weight:bold; color:var(--text-white);">📍 موقع التسليم ورقمك:</span>
-              <button onclick="openAddressModal()" style="background:var(--gold); color:var(--navy); border:none; padding:4px 10px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">${hasData ? 'تعديل ✏️' : 'تحديد العنوان 📍'}</button>
+              <span style="font-size:11.5px; font-weight:bold; color:var(--text-white);">موقع التسليم ورقمك:</span>
+              <button onclick="openAddressModal()" style="background:var(--gold); color:var(--navy); border:none; padding:4px 10px; border-radius:6px; font-size:10.5px; font-weight:bold; cursor:pointer;">${hasData ? 'تعديل' : 'تحديد العنوان'}</button>
             </div>
             <div style="font-size:11.5px; line-height:1.45;">
-              ${hasData ? `<b>${clientAddress.name}</b> • ${clientAddress.compound} - ع ${clientAddress.building} د ${clientAddress.floor} ش ${clientAddress.apartment}<br><span style="color:var(--text-gold); font-weight:bold;">📞 ${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:bold;">اضغط لتحديد عنوانك ورقمك للمتابعة</span>'}
+              ${hasData ? `<b>${clientAddress.name}</b> • ${clientAddress.compound} - ع ${clientAddress.building} د ${clientAddress.floor} ش ${clientAddress.apartment}<br><span style="color:var(--text-gold); font-weight:bold;">${clientAddress.phone}</span>` : '<span style="color:var(--danger); font-weight:bold;">اضغط لتحديد عنوانك ورقمك للمتابعة</span>'}
             </div>
           </div>
 
           <div id="clientActiveOrderContainer"></div>
 
           <div class="section-title">
-            <span>🛵 مشاوير ودليفري المشتريات</span>
-            <button onclick="openHistory('client')" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل فواتيري</button>
+            <span>مشاوير ودليفري المشتريات</span>
           </div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار خفيف (1 إلى 2 طلب)', 2)">
@@ -1312,8 +1325,7 @@
           </div>
 
           <div class="section-title">
-            <span>🏥 الخصومات الطبية المعتمدة</span>
-            <button onclick="openVouchersHistory()" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل كوبوناتي</button>
+            <span>الخصومات الطبية المعتمدة</span>
           </div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openMedicalDirectoryModal('clinics')">
@@ -1337,7 +1349,7 @@
             </div>
           </div>
 
-          <div class="section-title"><span>⚡ خدمات سريعة للمنزل</span></div>
+          <div class="section-title"><span>خدمات سريعة للمنزل</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openUtilityModal()">
               <div class="service-icon-box">
@@ -1360,31 +1372,33 @@
             </div>
           </div>
 
-          <div class="section-title"><span>🚗 سيارة داخلية (توصيل وسكان)</span></div>
+          <div class="section-title"><span>سيارة داخلية (توصيل وسكان)</span></div>
           <div class="grid-2">
-            <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة بين الكمبوندات')">
-              <div class="service-icon-box">
+            <!-- تم تعطيل زر الطلب وإظهار رسالة تفيد بأنه قيد الإعداد -->
+            <div class="service-card" onclick="showToast('قريباً.. جارٍ الاعتماد والتحقق من الكباتن ⏳')">
+              <div class="service-icon-box" style="opacity: 0.5;">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="7" cy="17" r="2"></circle>
                   <circle cx="17" cy="17" r="2"></circle>
                   <path d="M5 17h-2v-4l2-5h12l2 5v4h-2"></path>
                 </svg>
               </div>
-              <div class="service-card-title">بين الكمبوندات</div>
-              <div class="service-card-desc">سكن مصر، حورس، فاليرا</div>
+              <div class="service-card-title" style="opacity: 0.5;">بين الكمبوندات</div>
+              <div class="service-card-desc" style="opacity: 0.5;">سكن مصر، حورس، فاليرا</div>
             </div>
-            <div class="service-card" onclick="openOrderModal('ride', 'مشوار سيارة (الواحات / MSA)')">
-              <div class="service-icon-box">
+            <!-- تم تعطيل زر الطلب وإظهار رسالة تفيد بأنه قيد الإعداد -->
+            <div class="service-card" onclick="showToast('قريباً.. جارٍ الاعتماد والتحقق من الكباتن ⏳')">
+              <div class="service-icon-box" style="opacity: 0.5;">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
               </div>
-              <div class="service-card-title">طريق الواحات / MSA</div>
-              <div class="service-card-desc">مشوار خارجي للنطاق</div>
+              <div class="service-card-title" style="opacity: 0.5;">طريق الواحات / MSA</div>
+              <div class="service-card-desc" style="opacity: 0.5;">مشوار خارجي للنطاق</div>
             </div>
           </div>
 
-          <div class="section-title"><span>🔧 صيانة منزلية وفنيين معتمدين (معاينة 50ج)</span></div>
+          <div class="section-title"><span>صيانة منزلية وفنيين معتمدين (معاينة 50ج)</span></div>
           <div class="grid-4">
             <div class="service-card" onclick="openTechModal('سباكة منزلية')">
               <div class="service-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8m-4-4h8"></path><path d="M6 10h12v4a6 6 0 0 1-12 0v-4z"></path></svg></div>
@@ -1422,20 +1436,19 @@
       if (provData && provData.status === 'قيد المراجعة') {
         main.innerHTML = `
           <div class="inner-header">
-            <div style="width:38px;"></div>
-            <div class="header-brand-center">
-              <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+            <div class="header-brand-right">
               <div class="header-brand-name">OCTA <span>HUB</span></div>
             </div>
-            <button class="menu-dots-btn" onclick="openPreferencesModal()">⋮</button>
+            <button class="menu-dots-btn" onclick="openPreferencesModal()">
+              <i class="ph ph-sliders-horizontal"></i>
+            </button>
           </div>
           <div class="status-screen" style="padding:40px 20px; text-align:center;">
-            <div style="font-size:46px; margin-bottom:12px;">⏳</div>
             <h3 style="color:var(--text-white); margin-bottom:6px;">أوراقك قيد المراجعة والتدقيق</h3>
             <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
               مرحباً بك في أسرة OCTA HUB! تم استلام أوراقك بنجاح وجارٍ مراجعتها واعتماد حسابك خلال دقائق.
             </p>
-            <a href="https://wa.me/201021572161?text=مرحباً،%20قمت%20برفع%20أوراقي%20كشريك%20جديد%20برقم%20${courierPhone}%20للاعتماد" target="_blank" class="btn-action-green" style="padding:10px 18px; text-decoration:none;">تواصل مع الإدارة عبر واتساب 💬</a>
+            <a href="https://wa.me/201021572161?text=مرحباً،%20قمت%20برفع%20أوراقي%20كشريك%20جديد%20برقم%20${courierPhone}%20للاعتماد" target="_blank" class="btn-action-green" style="padding:10px 18px; text-decoration:none;">تواصل مع الإدارة عبر واتساب</a>
           </div>
         `;
         applyLanguage(currentLang);
@@ -1447,12 +1460,12 @@
 
       main.innerHTML = `
         <div class="inner-header">
-          <div style="width:38px;"></div>
-          <div class="header-brand-center">
-            <img src="logo.png" class="header-brand-logo" alt="OCTA HUB" onerror="this.src='Logo1.png';">
+          <div class="header-brand-right">
             <div class="header-brand-name">OCTA <span>HUB</span></div>
           </div>
-          <button class="menu-dots-btn" onclick="openPreferencesModal()">⋮</button>
+          <button class="menu-dots-btn" onclick="openPreferencesModal()">
+            <i class="ph ph-sliders-horizontal"></i>
+          </button>
         </div>
 
         <div class="content-area">
@@ -1462,15 +1475,15 @@
             ${provData ? `
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                  <div style="font-weight:900; font-size:14px; color:var(--text-white);">${provData.name} ${provData.is_verified ? '🛡️' : ''}</div>
+                  <div style="font-weight:900; font-size:14px; color:var(--text-white);">${provData.name}</div>
                   <div style="font-size:11px; color:var(--text-muted);">⭐ ${(provData.rating_avg || 5.0).toFixed(1)} • ${completedCount} مشوار ناجح</div>
                   <div style="font-size:13px; color:var(--gold); font-weight:bold; margin-top:2px;">المحفظة: ${provData.wallet_balance || 0} ج</div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
                   <button class="toggle-online-btn ${provData.is_online ? 'btn-online' : 'btn-offline'}" onclick="toggleProviderOnline(${provData.id}, ${!provData.is_online})">
-                    ${provData.is_online ? '🟢 متصل الآن' : '⚪ غير متصل'}
+                    ${provData.is_online ? 'متصل الآن' : 'غير متصل'}
                   </button>
-                  <button onclick="openRechargeModal()" style="background:linear-gradient(135deg, var(--gold), #a88438); color:var(--navy); border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">+ شحن المحفظة 💳</button>
+                  <button onclick="openRechargeModal()" style="background:linear-gradient(135deg, var(--gold), #a88438); color:var(--navy); border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">+ شحن المحفظة</button>
                 </div>
               </div>
 
@@ -1486,15 +1499,14 @@
             ` : `
               <div style="text-align:center;">
                 <p style="font-size:12px; font-weight:bold; margin-bottom:10px;">أنت غير مسجل كشريك حتى الآن</p>
-                <button class="btn-submit" onclick="openProviderRegisterModal()">تسجيل حساب ورفع الأوراق 🚀</button>
+                <button class="btn-submit" onclick="openProviderRegisterModal()">تسجيل حساب ورفع الأوراق</button>
               </div>
             `}
           </div>
 
           ${provData ? `
             <div class="section-title">
-              <span>الطلبات المتاحة لك لحظياً ⚡</span>
-              <button onclick="openHistory('courier')" style="background:none; border:none; color:var(--text-gold); font-weight:bold; font-size:11px; cursor:pointer;">📋 سجل مشاويري</button>
+              <span>الطلبات المتاحة لك لحظياً</span>
             </div>
             <div id="providerOrdersFeed">
               <div style="text-align:center; padding:24px; color:var(--text-muted); font-size:12px;">جارٍ تحميل المشاوير اللحظية...</div>
@@ -1605,7 +1617,7 @@
 
   async function openVouchersHistory() {
     const modal = document.getElementById('historyModal');
-    document.getElementById('historyTitle').innerText = '📋 سجل كوبوناتي الطبية';
+    document.getElementById('historyTitle').innerText = 'سجل كوبوناتي الطبية';
     const cont = document.getElementById('historyListContainer');
     cont.innerHTML = '<div style="text-align:center; padding:20px; font-size:11px;">جارٍ التحميل...</div>';
     modal.classList.add('show');
@@ -1699,7 +1711,7 @@
 
   function openOrderModal(category, typeName, inputsCount = 1) {
     if (!clientAddress.phone || !clientAddress.building) {
-      showToast('📍 يرجى تحديد عنوانك ورقمك أولاً');
+      showToast('يرجى تحديد عنوانك ورقمك أولاً');
       openAddressModal();
       return;
     }
@@ -1780,12 +1792,12 @@
       offers: []
     }]).select().single();
 
-    btn.innerText = "تأكيد وإرسال للمناديب ⚡"; btn.disabled = false;
+    btn.innerText = "تأكيد وإرسال للمناديب"; btn.disabled = false;
     if (error) showToast("خطأ: " + error.message);
     else {
       triggerChime('stage');
       closeModal('orderModal');
-      showToast('🚀 تم نشر طلبك للكباتن بنجاح!');
+      showToast('تم نشر طلبك للكباتن بنجاح!');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
       updateClientOrdersBadge();
@@ -1861,7 +1873,7 @@
     if (!error) {
       closeModal('utilityModal');
       triggerChime('stage');
-      showToast('⚡ تم إرسال طلب الشحن للكباتن');
+      showToast('تم إرسال طلب الشحن للكباتن');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
       updateClientOrdersBadge();
@@ -1909,16 +1921,30 @@
     if (!error) {
       closeModal('gasCylinderModal');
       triggerChime('stage');
-      showToast('⛽ تم إرسال طلب اسطوانة الغاز');
+      showToast('تم إرسال طلب اسطوانة الغاز');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
       updateClientOrdersBadge();
     }
   }
 
+  // --- تحديث دالة نافذة الفنيين لتعرض نصوص إرشادية ديناميكية ---
   function openTechModal(craft) {
     if (!clientAddress.phone) return openAddressModal();
     document.getElementById('techTitle').innerText = 'طلب فني ' + craft;
+    
+    let placeholderText = 'اكتب التفاصيل بدقة هنا...';
+    if (craft === 'كهرباء منزلية') {
+      placeholderText = 'مثال: تغيير لوحة مفاتيح، تصليح شورت كهرباء، تركيب نجف...';
+    } else if (craft === 'سباكة منزلية') {
+      placeholderText = 'مثال: تسريب مياه أسفل الحوض، تغيير محبس، تركيب طقم خلاطات...';
+    } else if (craft === 'صيانة دش وستالايت') {
+      placeholderText = 'مثال: ضبط إشارة، تركيب شاشة، صيانة أو برمجة ريسيفر...';
+    } else if (craft === 'نجارة منزلية') {
+      placeholderText = 'مثال: تصليح باب خشب، فك وتركيب غرف نوم، تركيب كوالين...';
+    }
+    
+    document.getElementById('techIssueDesc').placeholder = placeholderText;
     document.getElementById('techIssueDesc').value = '';
     document.getElementById('techIssueImg').value = '';
     document.getElementById('techModal').classList.add('show');
@@ -1954,12 +1980,12 @@
       offers: []
     }]).select().single();
 
-    btn.innerText = 'تأكيد وإرسال للفنيين المعتمدين 🔧'; btn.disabled = false;
+    btn.innerText = 'تأكيد وإرسال للفنيين المعتمدين'; btn.disabled = false;
 
     if (!error) {
       closeModal('techModal');
       triggerChime('stage');
-      showToast('🔧 تم إرسال الطلب للفنيين المعتمدين');
+      showToast('تم إرسال الطلب للفنيين المعتمدين');
       startBiddingCountdown(data.id);
       loadClientActiveOrder();
       updateClientOrdersBadge();
@@ -1973,7 +1999,7 @@
     activeBiddingOrderId = orderId;
     let sec = 180;
     const timerEl = document.getElementById('countdownTimer');
-    document.getElementById('offersContainer').innerHTML = '<div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك... 📡</div>';
+    document.getElementById('offersContainer').innerHTML = '<div style="padding:24px; font-size:12px; color:var(--text-muted);">جارٍ استقبال عروض الكباتن حولك...</div>';
     document.getElementById('biddingModal').classList.add('show');
 
     if (biddingTimerInterval) clearInterval(biddingTimerInterval);
@@ -2001,13 +2027,13 @@
       html += `
         <div style="background:var(--navy-card); border:1.5px solid var(--border); border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
           <div style="text-align:right;">
-            <div style="font-weight:900; font-size:12.5px; color:var(--text-white);">${off.name} ${off.is_verified ? '🛡️' : ''}</div>
+            <div style="font-weight:900; font-size:12.5px; color:var(--text-white);">${off.name}</div>
             <div style="font-size:10.5px; color:var(--text-muted);">⭐ ${off.rating} • ${off.vehicle}</div>
-            <div style="font-size:11.5px; color:var(--gold); font-weight:bold; margin-top:2px;">خلال: ${off.eta} دقيقة ⚡</div>
+            <div style="font-size:11.5px; color:var(--gold); font-weight:bold; margin-top:2px;">خلال: ${off.eta} دقيقة</div>
           </div>
           <div style="display:flex; gap:6px;">
-            <button onclick="clientPickCourier(${order.id}, '${off.courier_phone}')" style="background:linear-gradient(135deg, var(--gold), #A88438); color:var(--navy); border:none; padding:8px 14px; border-radius:8px; font-size:11.5px; font-weight:900; cursor:pointer;">اختيار ⚡</button>
-            <button onclick="promptBlockUser('${off.courier_phone}', 'courier', ${order.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:6px 8px; border-radius:8px; font-size:10px; cursor:pointer;" title="حظر الكابتن">🚫</button>
+            <button onclick="clientPickCourier(${order.id}, '${off.courier_phone}')" style="background:linear-gradient(135deg, var(--gold), #A88438); color:var(--navy); border:none; padding:8px 14px; border-radius:8px; font-size:11.5px; font-weight:900; cursor:pointer;">اختيار</button>
+            <button onclick="promptBlockUser('${off.courier_phone}', 'courier', ${order.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:6px 8px; border-radius:8px; font-size:10px; cursor:pointer;" title="حظر الكابتن">حظر</button>
           </div>
         </div>
       `;
@@ -2024,7 +2050,7 @@
     }).eq('id', orderId);
 
     triggerChime('stage');
-    showToast('✓ تم اختيار الكابتن وبدأ التحرك إليك فوراً');
+    showToast('تم اختيار الكابتن وبدأ التحرك إليك فوراً');
     loadClientActiveOrder();
   }
 
@@ -2036,7 +2062,7 @@
   function retryOrderSearch() {
     closeModal('retryModal');
     if (activeBiddingOrderId) {
-      showToast('تم تمديد المهلة لـ 3 دقائق إضافية ⏱️');
+      showToast('تم تمديد المهلة لـ 3 دقائق إضافية');
       startBiddingCountdown(activeBiddingOrderId);
     }
   }
@@ -2057,7 +2083,7 @@
   function promptBlockUser(phone, role, orderId) {
     targetBlockData = { phone, role, orderId };
     document.getElementById('blockReasonInput').value = '';
-    document.getElementById('blockModalTitle').innerText = (role === 'courier') ? '🚫 حظر وإبلاغ عن الكابتن' : '🚫 حظر وإبلاغ عن العميل';
+    document.getElementById('blockModalTitle').innerText = (role === 'courier') ? 'حظر وإبلاغ عن الكابتن' : 'حظر وإبلاغ عن العميل';
     document.getElementById('blockUserModal').classList.add('show');
   }
 
@@ -2086,7 +2112,7 @@
     }
 
     closeModal('blockUserModal');
-    showToast('🚫 تم الحظر وحجب الطرف بنجاح، وجارٍ مراجعة البلاغ من الإدارة');
+    showToast('تم الحظر وحجب الطرف بنجاح، وجارٍ مراجعة البلاغ من الإدارة');
 
     if (activeRole === 'client') {
       if (activeBiddingOrderId) {
@@ -2126,7 +2152,7 @@
       <div class="active-order-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <span class="badge ${o.status === 'قيد التنفيذ' ? 'badge-active' : 'badge-new'}">
-            ${o.status === 'قيد التنفيذ' ? '⚡ ' + o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
+            ${o.status === 'قيد التنفيذ' ? o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
           </span>
           <span style="font-size:11px; font-weight:800; color:var(--text-gold);">#${o.id}</span>
         </div>
@@ -2137,19 +2163,19 @@
         ${courierInfo ? `
           <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-light); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-weight:900; font-size:12px; color:var(--text-white);">الكابتن: ${courierInfo.name} ${courierInfo.is_verified ? '🛡️' : ''}</div>
+              <div style="font-weight:900; font-size:12px; color:var(--text-white);">الكابتن: ${courierInfo.name}</div>
               <div style="font-size:11px; color:var(--text-muted);">⭐ ${(courierInfo.rating_avg || 5.0).toFixed(1)} • ${courierInfo.completed_orders || 0} مشوار ناجح</div>
             </div>
             <div style="display:flex; gap:6px;">
-              <a href="tel:${courierInfo.phone}" style="background:var(--gold); color:var(--navy); padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:bold;">اتصال 📞</a>
-              <button onclick="promptBlockUser('${courierInfo.phone}', 'courier', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:5px 8px; border-radius:6px; font-size:10px; cursor:pointer;" title="حظر الكابتن">🚫 حظر</button>
+              <a href="tel:${courierInfo.phone}" style="background:var(--gold); color:var(--navy); padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:bold;">اتصال</a>
+              <button onclick="promptBlockUser('${courierInfo.phone}', 'courier', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:5px 8px; border-radius:6px; font-size:10px; cursor:pointer;" title="حظر الكابتن">حظر</button>
             </div>
           </div>
         ` : ''}
 
         ${o.total_price > 0 ? `
           <div class="order-bill-box">
-            <div style="font-weight:900; color:var(--text-gold); margin-bottom:6px;">🧾 تفاصيل الحساب للدفع (${o.payment_method}):</div>
+            <div style="font-weight:900; color:var(--text-gold); margin-bottom:6px;">تفاصيل الحساب للدفع (${o.payment_method}):</div>
             ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>سعر المشتريات / الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
             <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>مصاريف التوصيل / المعاينة:</span><b>${o.delivery_fee} ج</b></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>تأمين وتشغيل الخدمة:</span><b>1 ج</b></div>
@@ -2201,34 +2227,34 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div>
               <span class="badge ${isMyActive ? 'badge-active' : 'badge-new'}">${isMyActive ? 'مشوارك الحالي (' + o.trip_stage + ')' : 'طلب متاح'}</span>
-              ${o.is_urgent ? '<span class="badge badge-urgent">🚨 مستعجل</span>' : ''}
+              ${o.is_urgent ? '<span class="badge badge-urgent">مستعجل</span>' : ''}
             </div>
             <span style="font-size:12px; font-weight:800; color:var(--gold);">${o.category === 'maintenance' ? 'معاينة: 50 ج' : 'توصيل: ' + o.delivery_fee + ' ج'}</span>
           </div>
 
           <div style="font-size:12px; margin-bottom:4px; font-weight:bold; color:var(--text-white); display:flex; justify-content:space-between; align-items:center;">
-            <span>👤 العميل: ${o.client_name}</span>
-            <button onclick="promptBlockUser('${o.client_phone}', 'client', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:2px 6px; border-radius:6px; font-size:10px; cursor:pointer;">🚫 حظر العميل</button>
+            <span>العميل: ${o.client_name}</span>
+            <button onclick="promptBlockUser('${o.client_phone}', 'client', ${o.id})" style="background:none; border:1px solid rgba(239,68,68,0.4); color:var(--danger); padding:2px 6px; border-radius:6px; font-size:10px; cursor:pointer;">حظر العميل</button>
           </div>
 
-          <div style="font-size:11.5px; margin-bottom:6px; color:var(--text-muted);">📍 ${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
+          <div style="font-size:11.5px; margin-bottom:6px; color:var(--text-muted);">${isMyActive ? o.client_address : o.client_address.split('-')[0]}</div>
 
           <div style="font-size:11.5px; color:var(--text-muted); background:rgba(0,0,0,0.25); padding:10px; border-radius:10px; border:1px solid var(--border-light); margin-bottom:10px;">
-            🛒 المطلوب: <span style="color:var(--text-white);">${o.details}</span><br>
-            💵 طريقة الدفع: <b style="color:var(--text-gold);">${o.payment_method}</b>
+            المطلوب: <span style="color:var(--text-white);">${o.details}</span><br>
+            طريقة الدفع: <b style="color:var(--text-gold);">${o.payment_method}</b>
             ${o.issue_image ? `<div style="margin-top:8px;"><img src="${o.issue_image}" style="width:70px; height:50px; border-radius:6px; object-fit:cover; cursor:pointer;" onclick="window.open('${o.issue_image}')" title="اضغط لتكبير صورة العطل"></div>` : ''}
           </div>
 
           ${!isMyActive ? `
             ${hasOffered ? `
               <div style="background:var(--gold-light); color:var(--text-gold); border:1px solid var(--gold); padding:9px; border-radius:10px; font-size:11.5px; font-weight:bold; text-align:center; display:flex; justify-content:space-between; align-items:center;">
-                <span>✓ تم إرسال عرض وقتك للعميل (مهلة 3 دقائق)</span>
+                <span>تم إرسال عرض وقتك للعميل (مهلة 3 دقائق)</span>
                 <button onclick="reSubmitCourierETA(${o.id})" style="background:var(--navy); color:#fff; border:1px solid var(--gold); padding:3px 8px; border-radius:6px; font-size:10px; cursor:pointer;">تعديل الوقت</button>
               </div>
             ` : `
               <p style="font-size:11px; font-weight:bold; color:var(--text-gold); margin-bottom:6px;">حدد الوقت المتوقع للتنفيذ والوصول:</p>
               <div class="eta-grid">
-                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 15)">15 دقيقة ⚡</button>
+                <button class="btn-eta" onclick="submitCourierETA(${o.id}, 15)">15 دقيقة</button>
                 <button class="btn-eta" onclick="submitCourierETA(${o.id}, 20)">20 دقيقة</button>
                 <button class="btn-eta" onclick="submitCourierETA(${o.id}, 30)">30 دقيقة</button>
                 <button class="btn-eta" onclick="submitCourierETA(${o.id}, 45)">45 دقيقة</button>
@@ -2236,18 +2262,18 @@
             `}
           ` : `
             <div class="order-actions-grid">
-              <a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-action-green">💬 واتساب العميل</a>
-              <a href="tel:${o.client_phone}" class="btn-action-blue">📞 اتصال فوري</a>
+              <a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-action-green">واتساب العميل</a>
+              <a href="tel:${o.client_phone}" class="btn-action-blue">اتصال فوري</a>
             </div>
 
             <div style="margin-top:10px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-              <button onclick="updateTripStage(${o.id}, 'جاري التحرك 🛒')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">1. جاري التحرك</button>
-              <button onclick="updateTripStage(${o.id}, 'في الطريق إليك 🛵')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">2. في الطريق</button>
-              <button onclick="updateTripStage(${o.id}, 'وصلت أسفل العمارة 📍')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">3. وصلت 📍</button>
+              <button onclick="updateTripStage(${o.id}, 'جاري التحرك')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">1. جاري التحرك</button>
+              <button onclick="updateTripStage(${o.id}, 'في الطريق إليك')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">2. في الطريق</button>
+              <button onclick="updateTripStage(${o.id}, 'وصلت أسفل العمارة')" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-white); padding:8px 4px; border-radius:8px; font-size:10px; font-weight:bold;">3. وصلت</button>
             </div>
 
-            <button class="btn-submit" style="background:#0284c7; margin-top:10px;" onclick="openBillModal(${o.id}, ${o.delivery_fee}, '${o.payment_method}')">إصدار فاتورة الحساب للعميل 🧾</button>
-            <button class="btn-submit" style="margin-top:8px;" onclick="openRatingPrompt(${o.id}, 'courier')">تم تسليم الطلب واستلام الحساب ✓</button>
+            <button class="btn-submit" style="background:#0284c7; margin-top:10px;" onclick="openBillModal(${o.id}, ${o.delivery_fee}, '${o.payment_method}')">إصدار فاتورة الحساب للعميل</button>
+            <button class="btn-submit" style="margin-top:8px;" onclick="openRatingPrompt(${o.id}, 'courier')">تم تسليم الطلب واستلام الحساب</button>
           `}
         </div>
       `;
@@ -2284,14 +2310,14 @@
 
     await dbClient.from('orders').update({ offers: currOffers }).eq('id', orderId);
     triggerChime('soft');
-    showToast(`✓ تم إرسال عرضك (${etaMins} دقيقة) للعميل`);
+    showToast(`تم إرسال عرضك (${etaMins} دقيقة) للعميل`);
     loadProviderOrders();
   }
 
   async function updateTripStage(id, stage) {
     await dbClient.from('orders').update({ trip_stage: stage }).eq('id', id);
     triggerChime('stage');
-    showToast('✓ تم تحديث المرحلة: ' + stage);
+    showToast('تم تحديث المرحلة: ' + stage);
     loadProviderOrders();
   }
 
@@ -2330,7 +2356,7 @@
 
     closeModal('billModal');
     triggerChime('stage');
-    showToast('🧾 تم إرسال الفاتورة لشاشة العميل بنجاح');
+    showToast('تم إرسال الفاتورة لشاشة العميل بنجاح');
     loadProviderOrders();
   }
 
@@ -2355,18 +2381,18 @@
       status: 'معلق'
     }]);
 
-    btn.innerText = 'تأكيد وإرسال الإيصال للإدارة 📤'; btn.disabled = false;
+    btn.innerText = 'تأكيد وإرسال الإيصال للإدارة'; btn.disabled = false;
 
     if (!error) {
       closeModal('walletRechargeModal');
       triggerChime();
-      showToast('✓ تم إرسال إثبات الشحن بنجاح وهو قيد المراجعة');
+      showToast('تم إرسال إثبات الشحن بنجاح وهو قيد المراجعة');
     }
   }
 
   async function toggleProviderOnline(id, newStatus) {
     await dbClient.from('service_providers').update({ is_online: newStatus }).eq('id', id);
-    showToast(newStatus ? '🟢 تم تفعيل وضع الاستقبال' : '⚪ تم إيقاف استقبال المشاوير');
+    showToast(newStatus ? 'تم تفعيل وضع الاستقبال' : 'تم إيقاف استقبال المشاوير');
     render();
   }
 
@@ -2378,7 +2404,7 @@
     ratingUserType = userType;
     currentSelectedRating = 5;
     renderStarRatingUI();
-    document.getElementById('ratingModalTitle').innerText = userType === 'courier' ? 'تقييم العميل' : 'تقييم تجربة المشوار مع الكابتن ⭐';
+    document.getElementById('ratingModalTitle').innerText = userType === 'courier' ? 'تقييم العميل' : 'تقييم تجربة المشوار مع الكابتن';
     document.getElementById('ratingModalSubtitle').innerText = 'انقر على النجمة لتحديدها، واضغط عليها مجدداً للإلغاء أو التبديل:';
     document.getElementById('ratingModal').classList.add('show');
   }
@@ -2424,11 +2450,11 @@
         const newCount = (prov.completed_orders || 0) + 1;
         await dbClient.from('service_providers').update({ wallet_balance: newBal, completed_orders: newCount }).eq('phone', courierPhone);
       }
-      showToast('✓ تم إنهاء المشوار وتسجيل التقييم بنجاح');
+      showToast('تم إنهاء المشوار وتسجيل التقييم بنجاح');
       render();
     } else {
       await dbClient.from('orders').update({ client_rating: finalRate, client_rated: true }).eq('id', activeOrderIdToRate);
-      showToast('⭐ شكراً لتقييمك! نسعد دائماً بخدمتك');
+      showToast('شكراً لتقييمك! نسعد دائماً بخدمتك');
       updateClientOrdersBadge();
       render();
     }
@@ -2436,7 +2462,7 @@
 
   function openProviderRegisterModal() {
     hasAgreedPolicy = false;
-    document.getElementById('policyStatusText').innerText = 'لم يتم تأكيد قراءة السياسة بعد ✖';
+    document.getElementById('policyStatusText').innerText = 'لم يتم تأكيد قراءة السياسة بعد';
     document.getElementById('policyStatusText').style.color = 'var(--danger)';
     document.getElementById('providerRegisterModal').classList.add('show');
     toggleVehicleInputs();
@@ -2450,7 +2476,7 @@
   function openPolicyModal() { document.getElementById('policyModal').classList.add('show'); }
   function confirmPolicyRead() {
     hasAgreedPolicy = true;
-    document.getElementById('policyStatusText').innerText = 'تمت قراءة الشروط والموافقة عليها بنجاح ✓';
+    document.getElementById('policyStatusText').innerText = 'تمت قراءة الشروط والموافقة عليها بنجاح';
     document.getElementById('policyStatusText').style.color = 'var(--green)';
     closeModal('policyModal');
   }
@@ -2486,7 +2512,7 @@
       wallet_balance: 0.00, status: 'قيد المراجعة', is_online: true
     }]);
 
-    btn.innerText = 'إرسال البيانات للمراجعة والاعتماد 🚀'; btn.disabled = false;
+    btn.innerText = 'إرسال البيانات للمراجعة والاعتماد'; btn.disabled = false;
 
     if (error) showToast("خطأ: " + error.message);
     else {
@@ -2495,7 +2521,7 @@
       syncOneSignalUserTags();
       closeModal('providerRegisterModal');
       triggerChime('stage');
-      showToast('🛡️ تم إرسال أوراقك بنجاح وجارٍ مراجعتها');
+      showToast('تم إرسال أوراقك بنجاح وجارٍ مراجعتها');
       render();
     }
   }
@@ -2505,7 +2531,7 @@
     const title = document.getElementById('historyTitle');
     const list = document.getElementById('historyListContainer');
 
-    title.innerText = viewerType === 'client' ? '📋 سجل فواتيري السابقة' : '📋 سجل مشاويري المكتملة';
+    title.innerText = viewerType === 'client' ? 'سجل فواتيري السابقة' : 'سجل مشاويري المكتملة';
     list.innerHTML = '<div style="text-align:center; padding:20px; font-size:11px;">جارٍ تحميل الفواتير...</div>';
     modal.classList.add('show');
 
@@ -2543,7 +2569,7 @@
             <span>إجمالي الحساب المدفوع:</span>
             <span>${o.total_price || (o.delivery_fee + 1)} ج</span>
           </div>
-          ${o.client_rating ? `<div style="margin-top:6px; font-size:11px; color:var(--gold);">تقييم المشوار: ${'⭐'.repeat(o.client_rating)}</div>` : ''}
+          ${o.client_rating ? `<div style="margin-top:6px; font-size:11px; color:var(--gold);">تقييم المشوار: ${'★'.repeat(o.client_rating)}</div>` : ''}
         </div>
       `;
     });
