@@ -8,6 +8,8 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0B192C">
 
+  <!-- مكتبة OneSignal الرسمية لإشعارات الخلفية -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -441,7 +443,7 @@
         <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">استلام اسطوانة معبأة وجاهزة بالكامل حتى باب المنزل.</p>
       </div>
 
-      <div style="border:1.5px solid var(--border); background:var(--navy-card); border-radius:12px; padding:14px; cursor:pointer;" onclick="selectGasType('بيع اسطوانة غاز زائدة', 1750, this)" class="gas-opt-card">
+      <div style="border:1.5px solid var(--border); background:var(--navy-card); border-radius:12px; padding:12px; margin-bottom:14px; cursor:pointer;" onclick="selectGasType('بيع اسطوانة غاز زائدة', 1750, this)" class="gas-opt-card">
         <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;">
           <span>بيع اسطوانة غاز زائدة لديك</span>
           <span style="color:var(--text-white);">1750 ج (كاش لك)</span>
@@ -486,7 +488,7 @@
       أؤكد بأن زيارة الفني للمعاينة والكشف هي بقيمة <b>50 ج (لا تُرد)</b> + <b>1 ج تأمين المشوار</b>. وتكلفة الصيانة أو قطع الغيار يتفق عليها بعد الفحص.
     </div>
 
-    <button class="btn-submit" onclick="submitTechOrder()">تأكيد وإرسال للفنيين المعتمدين 🔧</button>
+    <button class="btn-submit" id="btnSubmitTech" onclick="submitTechOrder()">تأكيد وإرسال للفنيين المعتمدين 🔧</button>
   </div>
 </div>
 
@@ -724,6 +726,69 @@
 
 <script>
   const dbClient = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
+
+  // ==========================================
+  // محرك ضغط الصور والرفع السحابي لـ Storage
+  // ==========================================
+  async function uploadCompressedImage(file, folder = 'docs') {
+    if (!file) return '';
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let w = img.width, h = img.height;
+          if (w > h && w > maxDim) { h *= maxDim / w; w = maxDim; }
+          else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          canvas.toBlob(async (blob) => {
+            if (!blob) return resolve('');
+            const fileName = `${folder}/${Date.now()}_${Math.random().toString(36).substr(2, 6)}.jpg`;
+            const { error } = await dbClient.storage.from('octa-docs').upload(fileName, blob, { contentType: 'image/jpeg' });
+            if (error) { resolve(''); } 
+            else {
+              const { data } = dbClient.storage.from('octa-docs').getPublicUrl(fileName);
+              resolve(data ? data.publicUrl : '');
+            }
+          }, 'image/jpeg', 0.72);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ==========================================
+  // تهيئة إشعارات الخلفية السحابية (OneSignal Web Push)
+  // ==========================================
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "80701e68-609a-4ef8-9bbe-d8ea938cf597",
+      notifyButton: { enable: false }
+    });
+    syncOneSignalUserTags();
+  });
+
+  async function syncOneSignalUserTags() {
+    try {
+      if (window.OneSignal) {
+        const role = activeRole || 'portal';
+        const phone = (role === 'client') ? clientAddress.phone : courierPhone;
+        await window.OneSignal.User.addTags({
+          user_role: role,
+          user_phone: phone || 'unknown'
+        });
+        if (phone && phone.length > 9) {
+          await window.OneSignal.login(phone);
+        }
+      }
+    } catch (e) {}
+  }
 
   const i18n = {
     ar: {
@@ -996,6 +1061,7 @@
     activeRole = r;
     localStorage.setItem('octa_active_role', r);
     initPushNotifications();
+    syncOneSignalUserTags();
     render();
     window.scrollTo(0,0);
   }
@@ -1624,6 +1690,7 @@
     clientAddress.apartment = document.getElementById('inputApartment').value.trim() || '1';
 
     localStorage.setItem('octa_client_address', JSON.stringify(clientAddress));
+    syncOneSignalUserTags();
     closeModal('addressModal');
     triggerChime('soft');
     showToast('✓ تم حفظ العنوان بنجاح');
@@ -1862,8 +1929,11 @@
     const desc = document.getElementById('techIssueDesc').value.trim();
     if (!desc) return showToast('⚠️ يرجى كتابة وصف المشكلة الفنية');
 
+    const btn = document.getElementById('btnSubmitTech');
+    btn.innerText = 'جارٍ رفع الطلب...'; btn.disabled = true;
+
     const imgFile = document.getElementById('techIssueImg').files[0];
-    const base64Img = await fileToBase64(imgFile);
+    const uploadedUrl = await uploadCompressedImage(imgFile, 'tech');
     const fullAddr = `${clientAddress.compound} - عمارة ${clientAddress.building} دور ${clientAddress.floor} شقة ${clientAddress.apartment}`;
 
     const { data, error } = await dbClient.from('orders').insert([{
@@ -1873,7 +1943,7 @@
       client_phone: clientAddress.phone,
       client_address: fullAddr,
       details: desc,
-      issue_image: base64Img,
+      issue_image: uploadedUrl,
       inspection_fee: 50.00,
       insurance_fee: 1.00,
       delivery_fee: 50.00,
@@ -1883,6 +1953,8 @@
       trip_stage: 'قيد الانتظار',
       offers: []
     }]).select().single();
+
+    btn.innerText = 'تأكيد وإرسال للفنيين المعتمدين 🔧'; btn.disabled = false;
 
     if (!error) {
       closeModal('techModal');
@@ -2270,16 +2342,16 @@
     if (amt <= 0 || !file) return showToast('⚠️ يرجى إدخال المبلغ وإرفاق صورة الإيصال');
 
     const btn = document.getElementById('btnSubmitRecharge');
-    btn.innerText = 'جارٍ الإرسال...'; btn.disabled = true;
+    btn.innerText = 'جارٍ رفع الإيصال...'; btn.disabled = true;
 
-    const b64 = await fileToBase64(file);
+    const receiptUrl = await uploadCompressedImage(file, 'recharges');
     const method = document.getElementById('rechargeMethod').value;
 
     const { error } = await dbClient.from('wallet_recharge_requests').insert([{
       provider_phone: courierPhone,
       amount: amt,
       method: method,
-      receipt_img: b64,
+      receipt_img: receiptUrl,
       status: 'معلق'
     }]);
 
@@ -2383,15 +2455,6 @@
     closeModal('policyModal');
   }
 
-  function fileToBase64(file) {
-    return new Promise((resolve) => {
-      if (!file) return resolve('');
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (e) => resolve(e.target.result);
-    });
-  }
-
   async function submitProviderRegistration() {
     const name = document.getElementById('regName').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
@@ -2401,18 +2464,19 @@
     if (!hasAgreedPolicy) return showToast('⚠️ يرجى قراءة شروط وسياسة المنصة أولاً');
 
     const btn = document.getElementById('btnSubmitProvider');
-    btn.innerText = 'جارٍ معالجة المستندات...'; btn.disabled = true;
+    btn.innerText = 'جارٍ ضغط ورفع المستندات...'; btn.disabled = true;
 
-    const idFront = await fileToBase64(document.getElementById('fileIdFront').files[0]);
-    const idBack = await fileToBase64(document.getElementById('fileIdBack').files[0]);
-    const vehImg = await fileToBase64(document.getElementById('fileVehicle').files[0]);
+    // رفع المستندات إلى Storage Bucket
+    const idFront = await uploadCompressedImage(document.getElementById('fileIdFront').files[0], 'identity');
+    const idBack = await uploadCompressedImage(document.getElementById('fileIdBack').files[0], 'identity');
+    const vehImg = await uploadCompressedImage(document.getElementById('fileVehicle').files[0], 'vehicles');
     
     let licFront = '', licBack = '', vehLicF = '', vehLicB = '';
     if (vehicle === 'موتوسيكل / سكوتر') {
-      licFront = await fileToBase64(document.getElementById('fileLicFront').files[0]);
-      licBack = await fileToBase64(document.getElementById('fileLicBack').files[0]);
-      vehLicF = await fileToBase64(document.getElementById('fileVehLicFront').files[0]);
-      vehLicB = await fileToBase64(document.getElementById('fileVehLicBack').files[0]);
+      licFront = await uploadCompressedImage(document.getElementById('fileLicFront').files[0], 'licenses');
+      licBack = await uploadCompressedImage(document.getElementById('fileLicBack').files[0], 'licenses');
+      vehLicF = await uploadCompressedImage(document.getElementById('fileVehLicFront').files[0], 'licenses');
+      vehLicB = await uploadCompressedImage(document.getElementById('fileVehLicBack').files[0], 'licenses');
     }
 
     const { error } = await dbClient.from('service_providers').insert([{
@@ -2428,6 +2492,7 @@
     else {
       localStorage.setItem('octa_courier_phone', phone);
       courierPhone = phone;
+      syncOneSignalUserTags();
       closeModal('providerRegisterModal');
       triggerChime('stage');
       showToast('🛡️ تم إرسال أوراقك بنجاح وجارٍ مراجعتها');
@@ -2470,7 +2535,7 @@
             <div class="receipt-row"><span>العميل:</span><b>${o.client_name} (${o.client_address.split('-')[0]})</b></div>
           `}
 
-          ${o.items_price > 0 ? `<div class="receipt-row"><span>سعر المشتريات/الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
+         ${o.items_price > 0 ? `<div class="receipt-row"><span>سعر المشتريات/الخدمة:</span><b>${o.items_price} ج</b></div>` : ''}
           <div class="receipt-row"><span>مصاريف التوصيل/المعاينة:</span><b>${o.delivery_fee} ج</b></div>
           <div class="receipt-row"><span>تأمين وتشغيل الخدمة:</span><b>1 ج</b></div>
           ${o.transfer_fee > 0 ? `<div class="receipt-row" style="color:var(--amber);"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}

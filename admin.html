@@ -60,7 +60,6 @@
     .doc-preview-img:hover { transform: scale(1.05); }
     .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
 
-    /* النوافذ المنبثقة */
     .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 14px; }
     .modal.show { display: flex; }
     .modal-box { background: white; width: 100%; max-width: 700px; border-radius: 16px; padding: 22px; max-height: 88vh; overflow-y: auto; }
@@ -89,7 +88,6 @@
   </div>
 
   <div class="header-tools">
-    <!-- تحديد وتعديل العمولة العامة للطلب -->
     <div class="commission-box">
       <span>عمولة المنصة الثابتة لكل طلب:</span>
       <input type="number" id="globalCommissionInput" class="commission-input" value="2.00" step="0.5" min="0">
@@ -103,7 +101,6 @@
 </div>
 
 <div class="container">
-  <!-- الكروت الإحصائية الرئيسية -->
   <div class="stats-grid">
     <div class="stat-card clickable" onclick="openOnlineDriversModal()">
       <div class="stat-lbl"><span>كباتن متصلين فعلياً 🟢</span><span>(تفاصيل 🔍)</span></div>
@@ -136,7 +133,6 @@
     <button class="tab-btn" onclick="showTab('tabBroadcast', this)">إذاعة الإشعارات والبانر 📢</button>
   </div>
 
-  <!-- 1. المناديب والحالة والتحكم بالأوراق والمحفظة -->
   <div id="tabProviders" class="section-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
       <h4 style="font-size:13px; font-weight:800; color:var(--navy);">سجل الشركاء وإدارة الأوراق والاعتماد:</h4>
@@ -150,7 +146,6 @@
     </table>
   </div>
 
-  <!-- 2. طلبات الشحن المعلقة -->
   <div id="tabRecharges" class="section-card" style="display:none;">
     <h4 style="font-size:12.5px; margin-bottom:10px;">طلبات شحن المحافظ والتحويل اللحظي للمراجعة:</h4>
     <table>
@@ -161,7 +156,6 @@
     </table>
   </div>
 
-  <!-- 3. النظام المحاسبي المتكامل -->
   <div id="tabAccounting" class="section-card" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:10px;">
       <div>
@@ -197,7 +191,6 @@
       </div>
     </div>
 
-    <!-- جدول العمليات المحاسبية التفصيلي -->
     <h4 style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:8px;">📋 جدول تفصيل العمليات والأرباح عن المدة المحددة:</h4>
     <table>
       <thead>
@@ -209,7 +202,6 @@
     </table>
   </div>
 
-  <!-- 4. سجل المشاوير الحية -->
   <div id="tabLiveOrders" class="section-card" style="display:none;">
     <h4 style="font-size:12.5px; margin-bottom:10px;">إدارة وتتبع الطلبات الحية في المنظومة:</h4>
     <table>
@@ -220,7 +212,6 @@
     </table>
   </div>
 
-  <!-- 5. سجل الكوبونات الطبية -->
   <div id="tabVouchers" class="section-card" style="display:none;">
     <h4 style="font-size:12.5px; margin-bottom:10px;">أرشيف أكواد الخصم المعتمدة للعيادات والمعامل:</h4>
     <table>
@@ -231,7 +222,6 @@
     </table>
   </div>
 
-  <!-- 6. البث وإدارة الإشعارات والبانر -->
   <div id="tabBroadcast" class="section-card" style="display:none;">
     <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
       <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
@@ -295,8 +285,7 @@
       <span onclick="closeModal('providerDocsModal')" style="cursor:pointer; font-size:20px; color:var(--gold);">✕</span>
     </div>
 
-    <!-- بطاقة محفظة الكابتن المباشرة -->
-    <div style="background:#fef9ee; border:1.5px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <div style="background:#fef9ee; border:1.5px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap:10px;">
       <div>
         <div style="font-size:11px; color:#64748b; font-weight:bold;">رصيد المحفظة الحالي:</div>
         <div style="font-size:20px; font-weight:900; color:var(--navy);" id="modalProvBalance">0.00 ج</div>
@@ -307,16 +296,11 @@
       </div>
     </div>
 
-    <!-- شبكة استعراض المستندات المرفوعة -->
     <h4 style="font-size:13px; font-weight:800; color:var(--navy); margin-bottom:6px;">المستندات والأوراق الرسمية:</h4>
-    <div class="docs-grid" id="modalDocsGrid">
-      <!-- يتم حقن صور البطاقة والرخص ديناميكياً -->
-    </div>
+    <div class="docs-grid" id="modalDocsGrid"></div>
 
     <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-      <div id="modalApprovalStatus">
-        <!-- شارة الحالة الحالية -->
-      </div>
+      <div id="modalApprovalStatus"></div>
       <div style="display:flex; gap:8px;">
         <button class="action-btn btn-green" id="btnApproveProv" onclick="updateProviderStatus('معتمد')">اعتماد وتفعيل الحساب 🟢</button>
         <button class="action-btn btn-danger" id="btnRejectProv" onclick="updateProviderStatus('محظور')">حظر الحساب 🔴</button>
@@ -325,7 +309,7 @@
   </div>
 </div>
 
-<!-- 2. نافذة تصفير البيانات الذكي والمجدول بالتواريخ والصفحات -->
+<!-- 2. نافذة تصفير البيانات الذكي والمجدول -->
 <div class="modal" id="selectiveResetModal">
   <div class="modal-box" style="max-width:480px;">
     <div style="text-align:center; margin-bottom:12px;">
@@ -334,29 +318,26 @@
       <p style="font-size:11.5px; color:#64748b; line-height:1.4;">حدد الصفحة ونطاق التاريخ لحذف البيانات القديمة مع الاحتفاظ بباقي السجلات.</p>
     </div>
 
-    <!-- اختيار الصفحة/القسم -->
     <div style="margin-bottom:12px;">
       <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">اختر الصفحة أو القسم المراد حذفه:</label>
       <select id="resetTargetSection" class="input-box">
-        <option value="orders">📦 سجل المشاوير والطلبات (سجل المشاوير الحية)</option>
+        <option value="orders">📦 سجل المشاوير والطلبات</option>
         <option value="wallet_recharge_requests">💳 طلبات شحن المحافظ فقط</option>
         <option value="medical_vouchers">🏥 أكواد الخصومات الطبية فقط</option>
         <option value="platform_announcements">📢 سجل الإشعارات والبث</option>
       </select>
     </div>
 
-    <!-- اختيار نوع نطاق التاريخ -->
     <div style="margin-bottom:12px;">
       <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">نطاق التصفير والتحديد:</label>
       <select id="resetDateType" class="input-box" onchange="toggleResetDateInputs(this.value)">
-        <option value="month">شهر محدد بالكامل (مثال: شهر 8، 9، 10)</option>
+        <option value="month">شهر محدد بالكامل</option>
         <option value="day">يوم محدد فقط</option>
-        <option value="range">فترة مخصصة (من تاريخ إلى تاريخ)</option>
-        <option value="all">كافة سجلات هذا القسم بالكامل</option>
+        <option value="range">فترة مخصصة</option>
+        <option value="all">كافة سجلات هذا القسم</option>
       </select>
     </div>
 
-    <!-- حقول التاريخ المتغيرة -->
     <div id="resetMonthBox" style="margin-bottom:12px;">
       <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">اختر الشهر والسنة لحذفه كاملاً:</label>
       <input type="month" id="resetMonthInput" class="input-box">
@@ -382,7 +363,7 @@
 
     <div style="margin-bottom:14px;">
       <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px; color:var(--danger);">كلمة مرور الآدمن للتأكيد:</label>
-      <input type="password" id="resetAdminPassConfirm" class="input-box" placeholder="كلمة المرور (admin)" style="text-align:center;">
+      <input type="password" id="resetAdminPassConfirm" class="input-box" placeholder="كلمة المرور" style="text-align:center;">
     </div>
 
     <div style="display:flex; gap:8px;">
@@ -453,8 +434,47 @@
   function openSelectiveResetModal() { document.getElementById('selectiveResetModal').classList.add('show'); }
 
   // ==========================================
-  // تحميل وتحديث عمولة المنصة
+  // إرسال إشعار Web Push عبر OneSignal REST API
   // ==========================================
+  async function sendOneSignalPushNotification(messageText, targetRole = 'all') {
+    const ONE_SIGNAL_APP_ID = "80701e68-609a-4ef8-9bbe-d8ea938cf597";
+    const ONE_SIGNAL_API_KEY = "os_v2_app_qbyb42datjhprg563dvjhdhvs6f47vzguc1unrv5nkccsc6p2xo5z5m42klvs3dkq2mzlubfaqdpj2cwdcoul5ekl3tlydmja3ghsoq";
+
+    let filters = [];
+    if (targetRole !== 'all') {
+      filters = [
+        { field: "tag", key: "user_role", relation: "=", value: targetRole }
+      ];
+    }
+
+    const payload = {
+      app_id: ONE_SIGNAL_APP_ID,
+      contents: { en: messageText, ar: messageText },
+      headings: { en: "OCTA HUB | إشعار عاجل 📢", ar: "OCTA HUB | إشعار عاجل 📢" },
+      url: "https://amtwaly993-lang.github.io/x-app/index.html"
+    };
+
+    if (filters.length > 0) {
+      payload.filters = filters;
+    } else {
+      payload.included_segments = ["Subscribed Users"];
+    }
+
+    try {
+      const res = await fetch("https://onesignal.com/api/v1/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Authorization": `Basic ${ONE_SIGNAL_API_KEY}`
+        },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error("فشل إرسال الإشعار السحابي:", err);
+    }
+  }
+
   async function loadGlobalCommissionSetting() {
     const { data: set } = await db.from('platform_settings').select('commission_fee').eq('id', 1).single();
     if (set && set.commission_fee !== undefined) {
@@ -474,7 +494,6 @@
   async function loadAllData() {
     const twoMinsAgo = new Date(Date.now() - 90 * 1000).toISOString();
 
-    // 1. الكباتن والشركاء
     const { data: provs } = await db.from('service_providers').select('*').order('id', { ascending: false });
     if (provs) {
       cachedProviders = provs;
@@ -515,14 +534,12 @@
       document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7">لا يوجد مناديب مسجلين.</td></tr>';
     }
 
-    // 2. العملاء المتصفحين الآن
     const { data: clients } = await db.from('active_sessions').select('*').eq('role', 'client').gte('last_seen', twoMinsAgo);
     if (clients) {
       cachedActiveClients = clients;
       document.getElementById('activeClientsCount').innerText = clients.length;
     }
 
-    // 3. طلبات الشحن المعلقة
     const { data: recharges } = await db.from('wallet_recharge_requests').select('*').eq('status', 'معلق').order('id', { ascending: false });
     if (recharges) {
       document.getElementById('pendingRechargesCount').innerText = recharges.length;
@@ -551,9 +568,6 @@
     loadVouchersTable();
   }
 
-  // ==========================================
-  // فحص أوراق المندوب وإدارة المحفظة
-  // ==========================================
   function openProviderDocs(provId) {
     const prov = cachedProviders.find(p => p.id === provId);
     if (!prov) return;
@@ -571,7 +585,6 @@
       </span>
     `;
 
-    // تجميع وعرض الصور المرفوعة
     let docsHtml = '';
     const docs = [
       { label: 'بطاقة الرقم القومي (وجه)', img: prov.id_front_img },
@@ -631,9 +644,6 @@
     }
   }
 
-  // ==========================================
-  // نظام التصفير الذكي بالمدد والتواريخ المخصصة
-  // ==========================================
   function toggleResetDateInputs(mode) {
     document.getElementById('resetMonthBox').style.display = (mode === 'month') ? 'block' : 'none';
     document.getElementById('resetDayBox').style.display = (mode === 'day') ? 'block' : 'none';
@@ -652,7 +662,7 @@
     let endDate = null;
 
     if (dateType === 'month') {
-      const ym = document.getElementById('resetMonthInput').value; // e.g. "2026-08"
+      const ym = document.getElementById('resetMonthInput').value;
       if (!ym) return alert('يرجى تحديد الشهر والسنة للحذف');
       const parts = ym.split('-');
       const y = parseInt(parts[0]);
@@ -673,8 +683,7 @@
     }
 
     if (dateType !== 'all') {
-      const dateCol = (table === 'orders') ? 'created_at' : 'created_at';
-      query = query.gte(dateCol, startDate).lte(dateCol, endDate);
+      query = query.gte('created_at', startDate).lte('created_at', endDate);
     } else {
       query = query.neq('id', 0);
     }
@@ -685,16 +694,13 @@
     if (error) {
       alert('خطأ أثناء التصفير: ' + error.message);
     } else {
-      alert('✓ تم تصفير وحذف البيانات المحددة بنجاح، وظلت باقي السجلات آمنة ومسجلة!');
+      alert('✓ تم تصفير وحذف البيانات المحددة بنجاح!');
       closeModal('selectiveResetModal');
       document.getElementById('resetAdminPassConfirm').value = '';
       loadAllData();
     }
   }
 
-  // ==========================================
-  // النظام المحاسبي وتصدير التقارير
-  // ==========================================
   function setAccDateFilter(filter) {
     activeAccFilter = filter;
     loadAccountingData();
@@ -952,7 +958,12 @@
     await db.from('platform_announcements').insert([{
       message: msg, target_role: role, channel: channel, is_active: true, created_at: new Date().toISOString()
     }]);
-    alert('تم بث الإشعار بنجاح!');
+
+    if (channel === 'both' || channel === 'push') {
+      await sendOneSignalPushNotification(msg, role);
+    }
+
+    alert('✓ تم بث الإشعار بنجاح وإرساله للهواتف في الخلفية!');
     document.getElementById('broadcastMsgInput').value = '';
     loadAnnouncementsTable();
   }
