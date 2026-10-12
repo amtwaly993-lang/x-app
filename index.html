@@ -8,7 +8,6 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0B192C">
 
-  <!-- مكتبة OneSignal الرسمية لإشعارات الخلفية -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -16,74 +15,46 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- مكتبة Phosphor Icons للأيقونات العصرية -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
     :root {
-      --navy: #0B192C;
-      --navy-light: #13243C;
-      --navy-card: #182C49;
-      --gold: #C5A059;
-      --gold-hover: #D8B26A;
-      --gold-light: rgba(197, 160, 89, 0.15);
-      --gold-glow: rgba(197, 160, 89, 0.35);
-      --text-white: #FFFFFF;
-      --text-muted: #94A3B8;
-      --text-gold: #E5C37A;
-      --border: rgba(197, 160, 89, 0.28);
-      --border-light: rgba(255, 255, 255, 0.08);
-      --green: #10B981;
-      --danger: #EF4444;
-      --amber: #F59E0B;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
+      --navy: #0B192C; --navy-light: #13243C; --navy-card: #182C49;
+      --gold: #C5A059; --gold-hover: #D8B26A; --gold-light: rgba(197, 160, 89, 0.15); --gold-glow: rgba(197, 160, 89, 0.35);
+      --text-white: #FFFFFF; --text-muted: #94A3B8; --text-gold: #E5C37A;
+      --border: rgba(197, 160, 89, 0.28); --border-light: rgba(255, 255, 255, 0.08);
+      --green: #10B981; --danger: #EF4444; --amber: #F59E0B;
+      --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
     
-    /* خلفية التطبيق المتدرجة والفاخرة */
     body { background: radial-gradient(circle at top, var(--navy-light) 0%, var(--navy) 100%); display: flex; justify-content: center; color: var(--text-white); min-height: 100vh; overflow-x: hidden; }
     
     .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: transparent; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.6); z-index: 1; padding-bottom: 70px; }
     
-    /* خلفية النقاط المتحركة (Wow-Factor) */
     .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; background: transparent; }
-    .bg-animation::before, .bg-animation::after { 
-      content: ''; position: absolute; width: 200vw; height: 200vh; top: -50%; left: -50%; 
-      background-image: radial-gradient(rgba(197, 160, 89, 0.45) 1.5px, transparent 1.5px); 
-      background-size: 35px 35px; opacity: 0.6; animation: drift 45s linear infinite; 
-    }
+    .bg-animation::before, .bg-animation::after { content: ''; position: absolute; width: 200vw; height: 200vh; top: -50%; left: -50%; background-image: radial-gradient(rgba(197, 160, 89, 0.45) 1.5px, transparent 1.5px); background-size: 35px 35px; opacity: 0.6; animation: drift 45s linear infinite; }
     .bg-animation::after { background-size: 55px 55px; opacity: 0.35; animation: drift 65s linear infinite reverse; }
     @keyframes drift { 0% { transform: rotate(0deg) translate(0, 0); } 100% { transform: rotate(360deg) translate(50px, 50px); } }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* شاشة التحميل الترحيبية (Splash Screen) */
     #splashScreen { position: fixed; inset: 0; background: var(--navy); z-index: 999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s ease; }
     .splash-logo { width: 100px; height: 100px; border-radius: 26px; object-fit: cover; box-shadow: 0 0 40px var(--gold-glow); border: 2px solid var(--gold); margin-bottom: 20px; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--gold-glow); } 70% { box-shadow: 0 0 0 20px rgba(197, 160, 89, 0); } 100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); } }
 
-    /* شريط التنقل السفلي الزجاجي (Bottom Nav Bar) */
     .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(19, 36, 60, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--border-light); display: flex; justify-content: space-around; padding: 12px 10px 20px 10px; z-index: 100; border-radius: 24px 24px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
     .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 10.5px; font-weight: 700; gap: 4px; transition: all 0.3s ease; flex: 1; }
     .nav-item i { font-size: 24px; transition: all 0.3s ease; }
     .nav-item.active { color: var(--gold); transform: translateY(-4px); }
     .nav-item.active i { filter: drop-shadow(0 0 8px var(--gold-glow)); }
 
-    /* سلايدر الإعلانات (Carousel) */
     .ad-carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding-bottom: 8px; scrollbar-width: none; }
     .ad-carousel::-webkit-scrollbar { display: none; }
     .ad-banner-box { min-width: 100%; scroll-snap-align: center; border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid var(--border); display: none; position: relative; }
     .ad-banner-box img { width: 100%; height: auto; display: block; object-fit: cover; }
 
-    .toast-msg {
-      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px);
-      background: rgba(19, 36, 60, 0.95); backdrop-filter: blur(10px); color: var(--text-white); padding: 12px 22px; border-radius: 30px; font-size: 11.5px;
-      font-weight: 800; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); z-index: 99999;
-      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s; opacity: 0;
-      pointer-events: none; max-width: 90%; text-align: center; border: 1.5px solid var(--gold);
-    }
+    .toast-msg { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(19, 36, 60, 0.95); backdrop-filter: blur(10px); color: var(--text-white); padding: 12px 22px; border-radius: 30px; font-size: 11.5px; font-weight: 800; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); z-index: 99999; transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s; opacity: 0; pointer-events: none; max-width: 90%; text-align: center; border: 1.5px solid var(--gold); }
     .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     .announcement-bar { background: linear-gradient(135deg, rgba(197, 160, 89, 0.2) 0%, rgba(19, 36, 60, 0.8) 100%); border: 1px solid var(--gold); color: var(--text-gold); padding: 10px 14px; border-radius: var(--radius-md); font-size: 11.5px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -95,22 +66,14 @@
     .brand-subtitle-text { font-size: 13px; color: var(--text-gold); font-weight: 700; margin-top: 4px; opacity: 0.95; }
 
     .portal-roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 10px; }
-    .portal-card {
-      background: rgba(24, 44, 73, 0.6); backdrop-filter: blur(10px); border-radius: var(--radius-lg); padding: 18px 14px; display: flex; flex-direction: column; align-items: center;
-      border: 1px solid var(--border-light); cursor: pointer; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .portal-card { background: rgba(24, 44, 73, 0.6); backdrop-filter: blur(10px); border-radius: var(--radius-lg); padding: 18px 14px; display: flex; flex-direction: column; align-items: center; border: 1px solid var(--border-light); cursor: pointer; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
     .portal-card:active { transform: scale(0.97); border-color: var(--gold); background: rgba(197, 160, 89, 0.1); }
-    .portal-card.full-width {
-      grid-column: span 2; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-      padding: 22px 16px; border: 1.5px solid var(--gold); background: linear-gradient(145deg, rgba(24, 44, 73, 0.8) 0%, rgba(197, 160, 89, 0.15) 100%);
-      box-shadow: 0 10px 25px var(--gold-glow);
-    }
+    .portal-card.full-width { grid-column: span 2; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 22px 16px; border: 1.5px solid var(--gold); background: linear-gradient(145deg, rgba(24, 44, 73, 0.8) 0%, rgba(197, 160, 89, 0.15) 100%); box-shadow: 0 10px 25px var(--gold-glow); }
     .portal-icon-wrap { width: 50px; height: 50px; border-radius: 14px; background: var(--gold-light); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; flex-shrink: 0; }
     .portal-icon-wrap i { font-size: 26px; color: var(--gold); }
     .portal-title { font-size: 15px; font-weight: 800; color: var(--text-white); margin-bottom: 4px; }
     .portal-desc { font-size: 11px; color: var(--text-gold); font-weight: 600; line-height: 1.4; text-align: center; }
 
-    /* الهيدر العصري بتأثير الزجاج */
     .inner-header { background: rgba(19, 36, 60, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
     .header-brand-name { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: var(--text-white); }
     .header-brand-name span { color: var(--gold); text-shadow: 0 0 12px var(--gold-glow); }
@@ -183,7 +146,6 @@
     .star-active { color: #f59e0b; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4)); }
     .star-inactive { color: rgba(255,255,255,0.15); }
 
-    /* تنسيقات صفحة البروفايل العصرية (Tile Buttons) */
     .profile-tile { background: rgba(24, 44, 73, 0.6); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
     .profile-tile:active { transform: scale(0.98); border-color: var(--gold); }
     .profile-tile-left { display: flex; align-items: center; gap: 12px; }
@@ -197,7 +159,6 @@
 
 <div class="bg-animation"></div>
 
-<!-- شاشة التحميل الترحيبية -->
 <div id="splashScreen">
   <img src="logo.png" class="splash-logo" onerror="this.src='Logo1.png';" alt="Logo">
   <div class="brand-title-text" style="font-size: 42px;">OCTA <span>HUB</span></div>
@@ -209,7 +170,7 @@
 
 <div id="toastNotification" class="toast-msg"></div>
 
-<!-- 1. نافذة ضبط العنوان للعميل مع تحديث الخريطة -->
+<!-- 1. نافذة ضبط العنوان -->
 <div class="modal" id="addressModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -249,7 +210,6 @@
     </div>
     <div class="input-row" style="margin-top:16px;">
       <label data-i18n="mapLabel">حدد موقعك بدقة على الخريطة (اسحب أو اضغط):</label>
-      <!-- زر الـ GPS الذكي -->
       <button type="button" id="gpsBtn" onclick="locateMeGPS()" style="width:100%; background:rgba(16,185,129,0.15); color:var(--green); border:1px solid var(--green); padding:10px; border-radius:12px; font-size:12px; font-weight:800; cursor:pointer; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:6px;">
         <i class="ph ph-crosshair"></i> تحديد موقعي الحالي بالـ GPS
       </button>
@@ -299,7 +259,7 @@
   </div>
 </div>
 
-<!-- 3. نافذة دليل الخصومات الطبية الشامل -->
+<!-- 3. نافذة دليل الخصومات الطبية -->
 <div class="modal" id="medicalDirectoryModal">
   <div class="modal-sheet">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -495,7 +455,7 @@
   </div>
 </div>
 
-<!-- 8. نافذة منافسة سرعة التوصيل (3 دقائق = 180 ثانية) -->
+<!-- 8. نافذة منافسة سرعة التوصيل -->
 <div class="modal" id="biddingModal">
   <div class="modal-sheet" style="text-align:center;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -717,7 +677,6 @@
 </div>
 
 <script>
-  // -- تهيئة شاشة التحميل الترحيبية --
   window.addEventListener('load', () => {
     setTimeout(() => {
       const splash = document.getElementById('splashScreen');
@@ -730,9 +689,6 @@
 
   const dbClient = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
 
-  // ==========================================
-  // محرك ضغط الصور والرفع السحابي لـ Storage
-  // ==========================================
   async function uploadCompressedImage(file, folder = 'docs') {
     if (!file) return '';
     return new Promise((resolve) => {
@@ -765,9 +721,6 @@
     });
   }
 
-  // ==========================================
-  // تهيئة إشعارات الخلفية السحابية (OneSignal Web Push)
-  // ==========================================
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
@@ -1039,7 +992,6 @@
   let biddingTimerInterval = null;
   let selectedGasItem = null;
 
-  // الحظر المتبادل
   let targetBlockData = null;
   let myBlockedPhones = JSON.parse(localStorage.getItem('octa_blocked_phones') || '[]');
 
@@ -1060,7 +1012,6 @@
   sendHeartbeat();
   setInterval(sendHeartbeat, 20000);
 
-  // نظام التنقل بالشريط السفلي
   function switchTab(tabId) {
     document.querySelectorAll('.tab-pane').forEach(t => t.style.display = 'none');
     const target = document.getElementById('tab-' + tabId);
@@ -1115,7 +1066,6 @@
     }
   }
 
-  // تم استبدال نافذة الإعدادات ليتم تهيئتها داخل تبويب "حسابي"
   function loadProfileTab() {
     const avatar = localStorage.getItem('octa_user_avatar');
     if (avatar) document.getElementById('prefUserAvatar').src = avatar;
@@ -1125,6 +1075,15 @@
       document.getElementById('prefUserAddress').innerText = clientAddress.building ? `${clientAddress.compound} - عمارة ${clientAddress.building}` : 'لم يتم تحديد العنوان';
       document.getElementById('prefUserPhone').innerText = clientAddress.phone || 'غير مسجل';
       updateClientOrdersBadge();
+
+      // جلب نقاط أوكتا الخاصة بالعميل من قاعدة البيانات
+      if(clientAddress.phone) {
+         dbClient.from('customers').select('octa_points').eq('phone', clientAddress.phone).single().then(({data}) => {
+             const pts = data ? (data.octa_points || 0) : 0;
+             const ptsEl = document.getElementById('prefOctaPoints');
+             if(ptsEl) ptsEl.innerText = pts;
+         });
+      }
     }
   }
 
@@ -1198,41 +1157,31 @@
 
           <div class="portal-roles-grid">
             <div class="portal-card full-width" onclick="setRole('client')">
-              <div class="portal-icon-wrap">
-                <i class="ph ph-shopping-bag"></i>
-              </div>
+              <div class="portal-icon-wrap"><i class="ph ph-shopping-bag"></i></div>
               <div class="portal-title" data-i18n="customerRoleTitle">${i18n[currentLang].customerRoleTitle}</div>
               <div class="portal-desc" data-i18n="customerRoleDesc">${i18n[currentLang].customerRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('courier')">
-              <div class="portal-icon-wrap">
-                <i class="ph ph-moped"></i>
-              </div>
+              <div class="portal-icon-wrap"><i class="ph ph-moped"></i></div>
               <div class="portal-title" data-i18n="courierRoleTitle">${i18n[currentLang].courierRoleTitle}</div>
               <div class="portal-desc" data-i18n="courierRoleDesc">${i18n[currentLang].courierRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('services')">
-              <div class="portal-icon-wrap">
-                <i class="ph ph-lightning"></i>
-              </div>
+              <div class="portal-icon-wrap"><i class="ph ph-lightning"></i></div>
               <div class="portal-title" data-i18n="servicesRoleTitle">${i18n[currentLang].servicesRoleTitle}</div>
               <div class="portal-desc" data-i18n="servicesRoleDesc">${i18n[currentLang].servicesRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('ride')">
-              <div class="portal-icon-wrap">
-                <i class="ph ph-car-profile"></i>
-              </div>
+              <div class="portal-icon-wrap"><i class="ph ph-car-profile"></i></div>
               <div class="portal-title" data-i18n="rideRoleTitle">${i18n[currentLang].rideRoleTitle}</div>
               <div class="portal-desc" data-i18n="rideRoleDesc">${i18n[currentLang].rideRoleDesc}</div>
             </div>
 
             <div class="portal-card" onclick="setRole('technician')">
-              <div class="portal-icon-wrap">
-                <i class="ph ph-wrench"></i>
-              </div>
+              <div class="portal-icon-wrap"><i class="ph ph-wrench"></i></div>
               <div class="portal-title" data-i18n="techRoleTitle">${i18n[currentLang].techRoleTitle}</div>
               <div class="portal-desc" data-i18n="techRoleDesc">${i18n[currentLang].techRoleDesc}</div>
             </div>
@@ -1270,10 +1219,7 @@
             <small style="color:var(--text-gold); font-weight:bold;">جاهزون للتوصيل</small>
           </div>
 
-          <!-- سلايدر الإعلانات الاحترافي -->
-          <div class="ad-carousel" id="clientAdBanner">
-             <!-- سيتم جلب البانرات من قاعدة البيانات -->
-          </div>
+          <div class="ad-carousel" id="clientAdBanner"></div>
 
           <div class="address-bar-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -1287,41 +1233,29 @@
 
           <div id="clientActiveOrderContainer"></div>
 
-          <div class="section-title">
-            <span>مشاوير ودليفري المشتريات</span>
-          </div>
+          <div class="section-title"><span>مشاوير ودليفري المشتريات</span></div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار خفيف (1 إلى 2 طلب)', 2)">
-              <div class="service-icon-box">
-                <i class="ph ph-shopping-bag-open"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-shopping-bag-open"></i></div>
               <div class="service-card-title">مشوار خفيف</div>
               <div class="service-card-desc">1-2 طلب (صيدلية، ماركت)</div>
             </div>
             <div class="service-card highlight" onclick="openOrderModal('delivery', 'مشوار مجمّع (3 طلبات فأكثر)', 5)">
-              <div class="service-icon-box">
-                <i class="ph ph-shopping-cart"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-shopping-cart"></i></div>
               <div class="service-card-title">مشوار مجمّع</div>
               <div class="service-card-desc">مشتريات من محلات مختلفة</div>
             </div>
           </div>
 
-          <div class="section-title">
-            <span>الخصومات الطبية المعتمدة</span>
-          </div>
+          <div class="section-title"><span>الخصومات الطبية المعتمدة</span></div>
           <div class="grid-2">
             <div class="service-card highlight" onclick="openMedicalDirectoryModal('clinics')">
-              <div class="service-icon-box">
-                <i class="ph ph-stethoscope"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-stethoscope"></i></div>
               <div class="service-card-title">عيادات ومعامل</div>
               <div class="service-card-desc">تاون كلينك • حورس (خصم 50%)</div>
             </div>
             <div class="service-card highlight" onclick="openMedicalDirectoryModal('pharmacies')">
-              <div class="service-icon-box">
-                <i class="ph ph-pill"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-pill"></i></div>
               <div class="service-card-title">صيدليات معتمدة</div>
               <div class="service-card-desc">روشتة • د. مكرم (خصم 15%)</div>
             </div>
@@ -1330,16 +1264,12 @@
           <div class="section-title"><span>خدمات سريعة للمنزل</span></div>
           <div class="grid-2">
             <div class="service-card" onclick="openUtilityModal()">
-              <div class="service-icon-box">
-                <i class="ph ph-lightning"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-lightning"></i></div>
               <div class="service-card-title">شحن كروت المرافق</div>
               <div class="service-card-desc">كهرباء • غاز • مياه (عند الباب)</div>
             </div>
             <div class="service-card" onclick="openGasModal()">
-              <div class="service-icon-box">
-                <i class="ph ph-fire"></i>
-              </div>
+              <div class="service-icon-box"><i class="ph ph-fire"></i></div>
               <div class="service-card-title">اسطوانة الغاز</div>
               <div class="service-card-desc">تغيير (320ج) • شراء • بيع</div>
             </div>
@@ -1347,18 +1277,13 @@
 
           <div class="section-title"><span>سيارة داخلية (قريباً)</span></div>
           <div class="grid-2">
-            <!-- تم تعطيل الطلب وإظهار رسالة -->
             <div class="service-card" onclick="showToast('قريباً.. جارٍ الاعتماد والتحقق من الكباتن ⏳')">
-              <div class="service-icon-box" style="opacity: 0.5;">
-                <i class="ph ph-car-profile"></i>
-              </div>
+              <div class="service-icon-box" style="opacity: 0.5;"><i class="ph ph-car-profile"></i></div>
               <div class="service-card-title" style="opacity: 0.5;">بين الكمبوندات</div>
               <div class="service-card-desc" style="opacity: 0.5;">سكن مصر، حورس، فاليرا</div>
             </div>
             <div class="service-card" onclick="showToast('قريباً.. جارٍ الاعتماد والتحقق من الكباتن ⏳')">
-              <div class="service-icon-box" style="opacity: 0.5;">
-                <i class="ph ph-map-pin-line"></i>
-              </div>
+              <div class="service-icon-box" style="opacity: 0.5;"><i class="ph ph-map-pin-line"></i></div>
               <div class="service-card-title" style="opacity: 0.5;">طريق الواحات / MSA</div>
               <div class="service-card-desc" style="opacity: 0.5;">مشوار خارجي للنطاق</div>
             </div>
@@ -1385,7 +1310,7 @@
           </div>
         </div>
 
-        <!-- تبويب السجل (History) بدلاً من النافذة المنبثقة -->
+        <!-- تبويب السجل (History) -->
         <div id="tab-history" class="tab-pane content-area" style="display:none;">
           <h2 style="font-size:18px; font-weight:900; margin-bottom:16px; color:var(--text-white);"><i class="ph ph-receipt"></i> سجل فواتيري السابقة</h2>
           <div id="historyListContainerTab">
@@ -1393,13 +1318,20 @@
           </div>
         </div>
 
-        <!-- تبويب حسابي (Profile) الاحترافي -->
+        <!-- تبويب حسابي (Profile) -->
         <div id="tab-profile" class="tab-pane content-area" style="display:none;">
           <div style="text-align:center; padding:20px 0;">
             <img src="logo.png" id="prefUserAvatar" style="width:90px; height:90px; border-radius:30px; border:3px solid var(--gold); object-fit:cover; pointer-events:none; user-select:none; -webkit-user-drag:none; margin-bottom:12px; box-shadow:0 10px 25px var(--gold-glow);" onerror="this.src='Logo1.png'">
             <h2 id="prefUserName" style="font-size:22px; font-weight:900; color:var(--text-white);">عميل جديد</h2>
             <div id="prefUserPhone" style="font-size:13px; color:var(--text-muted); margin-top:4px; font-weight:bold;">010xxxxxxxx</div>
             <div id="prefUserRoleTag" style="font-size:12px; color:var(--gold); font-weight:900; margin-top:8px; background:var(--gold-light); display:inline-block; padding:4px 12px; border-radius:12px;">عميل جديد (0 طلبات)</div>
+          </div>
+
+          <!-- بطاقة نقاط أوكتا التفاعلية -->
+          <div style="background: linear-gradient(145deg, rgba(24, 44, 73, 0.8) 0%, rgba(197, 160, 89, 0.15) 100%); border: 1px solid var(--gold); border-radius: 16px; padding: 18px; margin-bottom: 16px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+            <div style="font-size: 14px; font-weight: 900; color: var(--text-white); margin-bottom: 6px;"><i class="ph-fill ph-coin" style="color: var(--gold); font-size: 22px; vertical-align: middle;"></i> نقاط أوكتا (Octa Points)</div>
+            <div style="font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 4px; text-shadow: 0 0 15px var(--gold-glow);" id="prefOctaPoints">0</div>
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.6; font-weight: 700;">استمر في تجميع النقاط لفتح مكافآت حصرية قريباً!<br>(تكسب 5 نقاط مع كل طلب مكتمل)</div>
           </div>
 
           <div style="margin-top:10px;">
@@ -1479,9 +1411,6 @@
         main.innerHTML = `
           <div class="inner-header" style="justify-content: center; position: sticky; top: 0; z-index: 50;">
           <div class="header-brand-name" style="text-align: center;">OCTA <span>HUB</span></div>
-          <button class="menu-dots-btn" onclick="openPreferencesModal()" style="position: absolute; left: 16px; opacity:0; pointer-events:none;">
-            <i class="ph ph-sliders-horizontal"></i>
-          </button>
         </div>
 
           <div class="status-screen" style="padding:40px 20px; text-align:center;">
@@ -1505,9 +1434,6 @@
           <div class="header-brand-right">
             <div class="header-brand-name">OCTA <span>HUB</span></div>
           </div>
-          <button class="menu-dots-btn" onclick="openPreferencesModal()" style="opacity:0; pointer-events:none;">
-            <i class="ph ph-sliders-horizontal"></i>
-          </button>
         </div>
 
         <div id="tab-home" class="tab-pane active content-area">
@@ -1620,7 +1546,6 @@
     }
   }
 
-  // --- دالة تحميل السجل المدمجة في التبويب بدلاً من الـ Modal ---
   async function loadHistoryTab(viewerType) {
     const list = document.getElementById('historyListContainerTab');
     if (!list) return;
@@ -1667,7 +1592,6 @@
     list.innerHTML = html;
   }
 
-  // --- دالة تحميل البانرات للسلايدر الاحترافي ---
   async function loadClientBanner() {
     const carousel = document.getElementById('clientAdBanner');
     if (!carousel) return;
@@ -1799,7 +1723,6 @@
     document.getElementById('inputPhone').value = clientAddress.phone || '';
     document.getElementById('addressModal').classList.add('show');
     
-    // تأخير بسيط لضمان فتح النافذة قبل تحديث أبعاد الخريطة
     setTimeout(() => {
       initMap();
       if(mapInstance) {
@@ -1809,7 +1732,6 @@
     }, 300);
   }
 
-  // تحديث الخريطة لتدعم النقر (Click-to-move)
   function initMap() {
     const lat = clientAddress.lat || 29.950660;
     const lng = clientAddress.lng || 30.972718;
@@ -1818,13 +1740,11 @@
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
       markerInstance = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
       
-      // ميزة السحب
       markerInstance.on('dragend', function () {
         const pos = markerInstance.getLatLng();
         clientAddress.lat = pos.lat; clientAddress.lng = pos.lng;
       });
 
-      // ميزة النقر المباشر (مثل طلبات وأوبر)
       mapInstance.on('click', function(e) {
         markerInstance.setLatLng(e.latlng);
         clientAddress.lat = e.latlng.lat;
@@ -1833,7 +1753,6 @@
     }
   }
 
-  // ميزة زر الـ GPS الذكي
   function locateMeGPS() {
     const btn = document.getElementById('gpsBtn');
     btn.innerHTML = '<i class="ph ph-spinner" style="animation:spin 1s linear infinite;"></i> جاري التحديد...';
@@ -2106,7 +2025,6 @@
     }
   }
 
-  // نصوص الفنيين الذكية المتغيرة
   function openTechModal(craft) {
     if (!clientAddress.phone) return openAddressModal();
     document.getElementById('techTitle').innerText = 'طلب فني ' + craft;
@@ -2170,9 +2088,6 @@
     }
   }
 
-  // ==========================================
-  // مهلة العروض (3 دقائق = 180 ثانية)
-  // ==========================================
   function startBiddingCountdown(orderId) {
     activeBiddingOrderId = orderId;
     let sec = 180;
@@ -2223,8 +2138,16 @@
     if (biddingTimerInterval) clearInterval(biddingTimerInterval);
     closeModal('biddingModal');
 
+    // --- التحديث المحاسبي: الخصم التلقائي من الكابتن (6 ج) ---
+    const commissionToDeduct = 6.00;
+    const { data: prov } = await dbClient.from('service_providers').select('wallet_balance').eq('phone', cPhone).single();
+    if(prov) {
+       const newBal = (Number(prov.wallet_balance) || 0) - commissionToDeduct;
+       await dbClient.from('service_providers').update({ wallet_balance: newBal }).eq('phone', cPhone);
+    }
+
     await dbClient.from('orders').update({
-      status: 'قيد التنفيذ', courier_phone: cPhone, trip_stage: 'تم اختيار الكابتن وجارٍ التحرك'
+      status: 'قيد التنفيذ', courier_phone: cPhone, trip_stage: 'تم اختيار الكابتن وجارٍ التحرك', commission_deducted: commissionToDeduct
     }).eq('id', orderId);
 
     triggerChime('stage');
@@ -2255,9 +2178,101 @@
     }
   }
 
-  // ==========================================
-  // منظومة الحظر المتبادل
-  // ==========================================
+  // --- زر الإلغاء الذكي ونظام الاسترداد الآلي ---
+  async function cancelClientOrder(orderId) {
+    if (!confirm('هل أنت متأكد من إلغاء هذا الطلب؟')) return;
+    const { data: o } = await dbClient.from('orders').select('*').eq('id', orderId).single();
+    
+    if (o && o.courier_phone && o.commission_deducted > 0) {
+       const { data: prov } = await dbClient.from('service_providers').select('wallet_balance').eq('phone', o.courier_phone).single();
+       if(prov) {
+          const refundedBal = Number(prov.wallet_balance) + Number(o.commission_deducted);
+          await dbClient.from('service_providers').update({ wallet_balance: refundedBal }).eq('phone', o.courier_phone);
+       }
+    }
+    
+    await dbClient.from('orders').update({ status: 'ملغي', trip_stage: 'ألغاه العميل', commission_deducted: 0 }).eq('id', orderId);
+    triggerChime('soft'); 
+    showToast('✓ تم إلغاء الطلب بنجاح (وتم استرداد العمولة للكابتن)'); 
+    loadClientActiveOrder();
+  }
+
+  async function loadClientActiveOrder() {
+    const container = document.getElementById('clientActiveOrderContainer');
+    if (!container || !clientAddress.phone) return;
+
+    const { data: orders } = await dbClient
+      .from('orders')
+      .select('*')
+      .eq('client_phone', clientAddress.phone)
+      .order('id', { ascending: false })
+      .limit(1);
+
+    if (!orders || orders.length === 0) { container.innerHTML = ''; return; }
+
+    const o = orders[0];
+    if (o.status === 'مكتمل' && !o.client_rated) openRatingPrompt(o.id, 'client');
+    if (o.status === 'مكتمل' || o.status === 'ملغي') { container.innerHTML = ''; return; }
+
+    let courierInfo = null;
+    if (o.courier_phone) {
+      const { data: p } = await dbClient.from('service_providers').select('*').eq('phone', o.courier_phone).single();
+      courierInfo = p;
+    }
+
+    // بناء واجهة زر الإلغاء وحمايته
+    let cancelBtnHtml = '';
+    if (o.status === 'جديد' || (o.status === 'قيد التنفيذ' && o.trip_stage === 'تم اختيار الكابتن وجارٍ التحرك')) {
+      cancelBtnHtml = `<button onclick="cancelClientOrder(${o.id})" style="background:rgba(239, 68, 68, 0.15); color:var(--danger); border:1px solid var(--danger); padding:12px; border-radius:12px; font-size:12.5px; font-weight:900; width:100%; margin-top:14px; display:flex; justify-content:center; align-items:center; gap:6px; cursor:pointer;"><i class="ph ph-x-circle" style="font-size:18px;"></i> إلغاء الطلب</button>`;
+    } else if (o.status === 'قيد التنفيذ') {
+      cancelBtnHtml = `<div style="background:rgba(255,255,255,0.05); border:1px dashed var(--border-light); padding:10px; border-radius:12px; margin-top:14px; font-size:11px; color:var(--text-muted); text-align:center;"><i class="ph ph-shield-warning" style="color:var(--amber); font-size:16px;"></i> لا يمكن الإلغاء تلقائياً، المندوب بدأ في التنفيذ الفعلي. للطوارئ تواصل مع الدعم.</div>`;
+    }
+
+    container.innerHTML = `
+      <div class="active-order-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span class="badge ${o.status === 'قيد التنفيذ' ? 'badge-active' : 'badge-new'}">
+            ${o.status === 'قيد التنفيذ' ? '<i class="ph ph-lightning"></i> ' + o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
+          </span>
+          <span style="font-size:12px; font-weight:900; color:var(--text-gold);">#${o.id}</span>
+        </div>
+
+        <div style="font-size:14px; font-weight:900; color:var(--text-white); margin-bottom:6px;">${o.order_type}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">${o.details}</div>
+
+        ${courierInfo ? `
+          <div style="background:rgba(0,0,0,0.4); border:1px solid var(--border-light); padding:12px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:900; font-size:13px; color:var(--text-white);">الكابتن: ${courierInfo.name}</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">⭐ ${(courierInfo.rating_avg || 5.0).toFixed(1)} • ${courierInfo.completed_orders || 0} مشوار</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <a href="tel:${courierInfo.phone}" style="background:var(--gold); color:var(--navy); padding:6px 12px; border-radius:8px; font-size:11px; text-decoration:none; font-weight:900; text-align:center;"><i class="ph ph-phone"></i> اتصال</a>
+              <button onclick="promptBlockUser('${courierInfo.phone}', 'courier', ${o.id})" style="background:none; border:none; color:var(--danger); font-size:10px; cursor:pointer; text-decoration:underline;">حظر الكابتن</button>
+            </div>
+          </div>
+        ` : ''}
+
+        ${o.total_price > 0 ? `
+          <div class="order-bill-box">
+            <div style="font-weight:900; color:var(--text-gold); margin-bottom:8px;"><i class="ph ph-receipt"></i> تفاصيل الحساب (${o.payment_method}):</div>
+            ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>سعر المشتريات / الخدمة:</span><b style="color:var(--text-white);">${o.items_price} ج</b></div>` : ''}
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>مصاريف التوصيل / المعاينة:</span><b style="color:var(--text-white);">${o.delivery_fee} ج</b></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>تأمين وتشغيل الخدمة:</span><b style="color:var(--text-white);">1 ج</b></div>
+            ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--amber); margin-bottom:4px;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
+            <hr style="margin:8px 0; border:none; border-top:1px dashed var(--border-light);">
+            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:14px; color:var(--gold);">
+              <span>الإجمالي المطلوب:</span>
+              <span>${o.total_price} ج</span>
+            </div>
+          </div>
+        ` : ''}
+
+        ${cancelBtnHtml}
+      </div>
+    `;
+  }
+
   function promptBlockUser(phone, role, orderId) {
     targetBlockData = { phone, role, orderId };
     document.getElementById('blockReasonInput').value = '';
@@ -2300,72 +2315,6 @@
     } else {
       loadProviderOrders();
     }
-  }
-
-  async function loadClientActiveOrder() {
-    const container = document.getElementById('clientActiveOrderContainer');
-    if (!container || !clientAddress.phone) return;
-
-    const { data: orders } = await dbClient
-      .from('orders')
-      .select('*')
-      .eq('client_phone', clientAddress.phone)
-      .order('id', { ascending: false })
-      .limit(1);
-
-    if (!orders || orders.length === 0) { container.innerHTML = ''; return; }
-
-    const o = orders[0];
-    if (o.status === 'مكتمل' && !o.client_rated) openRatingPrompt(o.id, 'client');
-    if (o.status === 'مكتمل' || o.status === 'ملغي') { container.innerHTML = ''; return; }
-
-    let courierInfo = null;
-    if (o.courier_phone) {
-      const { data: p } = await dbClient.from('service_providers').select('*').eq('phone', o.courier_phone).single();
-      courierInfo = p;
-    }
-
-    container.innerHTML = `
-      <div class="active-order-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <span class="badge ${o.status === 'قيد التنفيذ' ? 'badge-active' : 'badge-new'}">
-            ${o.status === 'قيد التنفيذ' ? '<i class="ph ph-lightning"></i> ' + o.trip_stage : 'طلبك قيد استقبال الكباتن...'}
-          </span>
-          <span style="font-size:12px; font-weight:900; color:var(--text-gold);">#${o.id}</span>
-        </div>
-
-        <div style="font-size:14px; font-weight:900; color:var(--text-white); margin-bottom:6px;">${o.order_type}</div>
-        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">${o.details}</div>
-
-        ${courierInfo ? `
-          <div style="background:rgba(0,0,0,0.4); border:1px solid var(--border-light); padding:12px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-weight:900; font-size:13px; color:var(--text-white);">الكابتن: ${courierInfo.name}</div>
-              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">⭐ ${(courierInfo.rating_avg || 5.0).toFixed(1)} • ${courierInfo.completed_orders || 0} مشوار</div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <a href="tel:${courierInfo.phone}" style="background:var(--gold); color:var(--navy); padding:6px 12px; border-radius:8px; font-size:11px; text-decoration:none; font-weight:900; text-align:center;"><i class="ph ph-phone"></i> اتصال</a>
-              <button onclick="promptBlockUser('${courierInfo.phone}', 'courier', ${o.id})" style="background:none; border:none; color:var(--danger); font-size:10px; cursor:pointer; text-decoration:underline;">حظر الكابتن</button>
-            </div>
-          </div>
-        ` : ''}
-
-        ${o.total_price > 0 ? `
-          <div class="order-bill-box">
-            <div style="font-weight:900; color:var(--text-gold); margin-bottom:8px;"><i class="ph ph-receipt"></i> تفاصيل الحساب (${o.payment_method}):</div>
-            ${o.items_price > 0 ? `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>سعر المشتريات / الخدمة:</span><b style="color:var(--text-white);">${o.items_price} ج</b></div>` : ''}
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>مصاريف التوصيل / المعاينة:</span><b style="color:var(--text-white);">${o.delivery_fee} ج</b></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>تأمين وتشغيل الخدمة:</span><b style="color:var(--text-white);">1 ج</b></div>
-            ${o.transfer_fee > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--amber); margin-bottom:4px;"><span>رسوم تحويل:</span><b>${o.transfer_fee} ج</b></div>` : ''}
-            <hr style="margin:8px 0; border:none; border-top:1px dashed var(--border-light);">
-            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:14px; color:var(--gold);">
-              <span>الإجمالي المطلوب:</span>
-              <span>${o.total_price} ج</span>
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
   }
 
   async function loadProviderOrders() {
@@ -2573,9 +2522,6 @@
     render();
   }
 
-  // ==========================================
-  // نظام التقييم الديناميكي التفاعلي (Toggle Stars)
-  // ==========================================
   function openRatingPrompt(orderId, userType) {
     activeOrderIdToRate = orderId;
     ratingUserType = userType;
@@ -2587,11 +2533,7 @@
   }
 
   function toggleStarRate(val) {
-    if (currentSelectedRating === val) {
-      currentSelectedRating = 0;
-    } else {
-      currentSelectedRating = val;
-    }
+    if (currentSelectedRating === val) { currentSelectedRating = 0; } else { currentSelectedRating = val; }
     renderStarRatingUI();
   }
 
@@ -2605,31 +2547,34 @@
     container.innerHTML = html;
   }
 
+  // --- دالة إنهاء المشوار وإضافة النقاط (Octa Points) ---
   async function submitRating() {
     closeModal('ratingModal');
     triggerChime('soft');
-
     const finalRate = currentSelectedRating || 5;
 
     if (ratingUserType === 'courier') {
-      const { data: set } = await dbClient.from('platform_settings').select('commission_fee').eq('id', 1).single();
-      const fee = set ? Number(set.commission_fee) : 2.00;
-      const totalDeducted = fee;
-
       await dbClient.from('orders').update({
-        status: 'مكتمل', trip_stage: 'تم التسليم بنجاح', completed_at: new Date().toISOString(),
-        commission_deducted: totalDeducted, courier_rating: finalRate
+        status: 'مكتمل', trip_stage: 'تم التسليم بنجاح', completed_at: new Date().toISOString(), courier_rating: finalRate
       }).eq('id', activeOrderIdToRate);
 
       const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
       if (prov) {
-        const newBal = (Number(prov.wallet_balance) || 0) - totalDeducted;
         const newCount = (prov.completed_orders || 0) + 1;
-        await dbClient.from('service_providers').update({ wallet_balance: newBal, completed_orders: newCount }).eq('phone', courierPhone);
+        await dbClient.from('service_providers').update({ completed_orders: newCount }).eq('phone', courierPhone);
       }
-      showToast('✓ تم إنهاء المشوار وتسجيل التقييم بنجاح');
+
+      // إضافة نقاط الولاء للعميل (Octa Points)
+      const { data: ord } = await dbClient.from('orders').select('client_phone, client_name').eq('id', activeOrderIdToRate).single();
+      if (ord && ord.client_phone) {
+         const { data: cust } = await dbClient.from('customers').select('octa_points').eq('phone', ord.client_phone).single();
+         const currentPts = cust ? (cust.octa_points || 0) : 0;
+         await dbClient.from('customers').upsert({ phone: ord.client_phone, name: ord.client_name, octa_points: currentPts + 5 });
+      }
+
+      showToast('✓ تم إنهاء المشوار بنجاح، وإضافة نقاط للعميل');
       render();
-    } else {
+   } else {
       await dbClient.from('orders').update({ client_rating: finalRate, client_rated: true }).eq('id', activeOrderIdToRate);
       showToast('⭐ شكراً لتقييمك! نسعد دائماً بخدمتك');
       updateClientOrdersBadge();
@@ -2651,6 +2596,7 @@
   }
 
   function openPolicyModal() { document.getElementById('policyModal').classList.add('show'); }
+  
   function confirmPolicyRead() {
     hasAgreedPolicy = true;
     document.getElementById('policyStatusText').innerText = 'تمت قراءة الشروط والموافقة عليها بنجاح ✓';
@@ -2669,7 +2615,6 @@
     const btn = document.getElementById('btnSubmitProvider');
     btn.innerText = 'جارٍ ضغط ورفع المستندات...'; btn.disabled = true;
 
-    // رفع المستندات إلى Storage Bucket
     const idFront = await uploadCompressedImage(document.getElementById('fileIdFront').files[0], 'identity');
     const idBack = await uploadCompressedImage(document.getElementById('fileIdBack').files[0], 'identity');
     const vehImg = await uploadCompressedImage(document.getElementById('fileVehicle').files[0], 'vehicles');

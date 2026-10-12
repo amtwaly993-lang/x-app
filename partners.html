@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>OCTA HUB | بوابة الشركاء</title>
+  
+  <meta name="theme-color" content="#0B192C">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    :root {
+      --navy: #0B192C; --navy-light: #13243C; --navy-card: #182C49;
+      --gold: #C5A059; --gold-hover: #D8B26A; --gold-glow: rgba(197, 160, 89, 0.35);
+      --text-white: #FFFFFF; --text-muted: #94A3B8; --text-gold: #E5C37A;
+      --border: rgba(197, 160, 89, 0.28); --border-light: rgba(255, 255, 255, 0.08);
+      --green: #10B981; --danger: #EF4444; --amber: #F59E0B;
+      --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { background: radial-gradient(circle at top, var(--navy-light) 0%, var(--navy) 100%); display: flex; justify-content: center; color: var(--text-white); min-height: 100vh; overflow-x: hidden; }
+    
+    .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: transparent; display: flex; flex-direction: column; position: relative; z-index: 1; padding: 20px; }
+
+    /* خلفية متحركة هادئة */
+    .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+    .bg-animation::before { content: ''; position: absolute; width: 200vw; height: 200vh; top: -50%; left: -50%; background-image: radial-gradient(rgba(197, 160, 89, 0.2) 1.5px, transparent 1.5px); background-size: 40px 40px; opacity: 0.5; animation: drift 60s linear infinite; }
+    @keyframes drift { 0% { transform: rotate(0deg) translate(0, 0); } 100% { transform: rotate(360deg) translate(50px, 50px); } }
+
+    /* الهيدر */
+    .header { text-align: center; margin-bottom: 30px; margin-top: 20px; }
+    .header-title { font-size: 32px; font-weight: 900; letter-spacing: 1px; color: var(--text-white); }
+    .header-title span { color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
+    .header-subtitle { font-size: 13px; color: var(--text-gold); font-weight: 700; margin-top: 4px; }
+
+    /* البطاقات والحقول */
+    .card { background: rgba(24, 44, 73, 0.7); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    
+    .input-group { margin-bottom: 16px; text-align: right; }
+    .input-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 8px; color: var(--text-muted); }
+    .input-box { width: 100%; background: rgba(11, 25, 44, 0.8); border: 1px solid var(--border-light); color: var(--text-white); padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; text-align: center; }
+    .input-box:focus { border-color: var(--gold); box-shadow: 0 0 15px var(--gold-glow); }
+
+    .btn-primary { width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A88438 100%); color: var(--navy); border: none; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px var(--gold-glow); transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-success { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; transition: 0.2s; }
+    .btn-success:active { background: var(--green); color: white; }
+
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; transition: 0.2s; }
+    .btn-danger:active { background: var(--danger); color: white; }
+
+    /* الإشعارات */
+    .toast-msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(19, 36, 60, 0.95); backdrop-filter: blur(10px); color: var(--text-white); padding: 12px 24px; border-radius: 30px; font-size: 12px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.7); z-index: 99999; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; border: 1px solid var(--gold); }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* تفاصيل الكود */
+    .voucher-details { display: none; background: rgba(11, 25, 44, 0.6); border: 1px dashed var(--gold); border-radius: 14px; padding: 16px; margin-top: 20px; text-align: right; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; }
+    .detail-label { color: var(--text-muted); font-weight: 700; }
+    .detail-value { color: var(--text-white); font-weight: 900; }
+    .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 900; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+
+    /* شاشات */
+    #loginScreen { display: block; }
+    #dashboardScreen { display: none; }
+    
+    .partner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="bg-animation"></div>
+<div id="toastNotification" class="toast-msg"></div>
+
+<div class="app-container">
+  
+  <div class="header">
+    <div class="header-title">OCTA <span>PARTNERS</span></div>
+    <div class="header-subtitle">بوابة الشركاء والخصومات الطبية</div>
+  </div>
+
+  <!-- شاشة تسجيل الدخول -->
+  <div id="loginScreen" class="card">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <i class="ph ph-shield-check" style="font-size: 48px; color: var(--gold);"></i>
+      <h3 style="font-size: 16px; margin-top: 10px;">تسجيل دخول الشركاء</h3>
+    </div>
+
+    <div class="input-group">
+      <label>اختر الجهة / الشريك:</label>
+      <select id="partnerSelect" class="input-box">
+        <option value="" disabled selected>جارٍ تحميل القائمة...</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>الرقم السري (PIN):</label>
+      <input type="password" id="partnerPin" class="input-box" placeholder="••••••••" style="letter-spacing: 8px; font-size: 18px;">
+    </div>
+
+    <button class="btn-primary" onclick="loginPartner()" id="btnLogin">
+      <i class="ph ph-sign-in"></i> دخول للوحة التحكم
+    </button>
+  </div>
+
+  <!-- شاشة لوحة التحكم والبحث -->
+  <div id="dashboardScreen" class="card">
+    <div class="partner-header">
+      <div>
+        <div style="font-size: 16px; font-weight: 900; color: var(--gold);" id="loggedPartnerName">اسم الجهة</div>
+        <div style="font-size: 11px; color: var(--green);">متصل ومفعل 🟢</div>
+      </div>
+      <button onclick="logoutPartner()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 24px;">
+        <i class="ph ph-sign-out"></i>
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label style="text-align: center; font-size: 14px; color: var(--text-white);">أدخل كود خصم العميل للتحقق:</label>
+      <input type="text" id="searchInput" class="input-box" placeholder="مثال: OCT-982X" style="text-transform: uppercase; letter-spacing: 3px; font-size: 18px; font-weight: 900;">
+    </div>
+
+    <button class="btn-primary" onclick="searchVoucher()" id="btnSearch" style="background: var(--navy-light); border: 1px solid var(--gold); color: var(--gold); box-shadow: none;">
+      <i class="ph ph-magnifying-glass"></i> بحث واستعلام
+    </button>
+
+    <!-- شاشة تفاصيل الكود (تظهر بعد البحث) -->
+    <div id="voucherResult" class="voucher-details">
+      <!-- سيتم تعبئة البيانات من الجافاسكريبت -->
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // تهيئة قاعدة البيانات (نفس مفاتيح التطبيق الأساسي)
+  const dbClient = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
+  
+  let currentPartner = null;
+  let currentVoucherId = null;
+
+  // عند تحميل الصفحة
+  window.addEventListener('load', () => {
+    const savedSession = localStorage.getItem('octa_partner_session');
+    if (savedSession) {
+      currentPartner = JSON.parse(savedSession);
+      showDashboard();
+    } else {
+      loadPartnersList();
+    }
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toastNotification');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // 1. جلب قائمة الشركاء
+  async function loadPartnersList() {
+    const select = document.getElementById('partnerSelect');
+    const { data, error } = await dbClient.from('medical_partners').select('id, name').eq('is_active', true);
+    
+    if (error || !data) {
+      select.innerHTML = '<option value="" disabled selected>خطأ في الاتصال بالسيرفر</option>';
+      return;
+    }
+
+    if (data.length === 0) {
+      select.innerHTML = '<option value="" disabled selected>لا يوجد شركاء مفعلين</option>';
+      return;
+    }
+
+    let options = '<option value="" disabled selected>اضغط لاختيار اسم جهتك...</option>';
+    data.forEach(p => {
+      options += `<option value="${p.name}">${p.name}</option>`;
+    });
+    select.innerHTML = options;
+  }
+
+  // 2. تسجيل الدخول
+  async function loginPartner() {
+    const name = document.getElementById('partnerSelect').value;
+    const pin = document.getElementById('partnerPin').value;
+
+    if (!name) return showToast('⚠️ يرجى اختيار الجهة');
+    if (!pin) return showToast('⚠️ يرجى إدخال الرقم السري');
+
+    const btn = document.getElementById('btnLogin');
+    btn.innerHTML = '<i class="ph ph-spinner" style="animation: spin 1s linear infinite;"></i> جارٍ التحقق...';
+    btn.disabled = true;
+
+    // التحقق من قاعدة البيانات
+    const { data, error } = await dbClient.from('medical_partners')
+      .select('*')
+      .eq('name', name)
+      .eq('pin_code', pin)
+      .eq('is_active', true)
+      .single();
+
+    btn.innerHTML = '<i class="ph ph-sign-in"></i> دخول للوحة التحكم';
+    btn.disabled = false;
+
+    if (error || !data) {
+      return showToast('❌ الرقم السري غير صحيح أو الحساب موقوف');
+    }
+
+    // حفظ الجلسة
+    currentPartner = data;
+    localStorage.setItem('octa_partner_session', JSON.stringify(data));
+    showToast('✅ تم تسجيل الدخول بنجاح');
+    showDashboard();
+  }
+
+  function showDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboardScreen').style.display = 'block';
+    document.getElementById('loggedPartnerName').innerText = currentPartner.name;
+    document.getElementById('searchInput').value = '';
+    document.getElementById('voucherResult').style.display = 'none';
+  }
+
+  function logoutPartner() {
+    localStorage.removeItem('octa_partner_session');
+    currentPartner = null;
+    document.getElementById('dashboardScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('partnerPin').value = '';
+    loadPartnersList();
+  }
+
+  // 3. البحث عن كود الخصم
+  async function searchVoucher() {
+    const code = document.getElementById('searchInput').value.trim().toUpperCase();
+    if (!code) return showToast('⚠️ يرجى كتابة الكود أولاً');
+
+    const btn = document.getElementById('btnSearch');
+    btn.innerHTML = '<i class="ph ph-spinner" style="animation: spin 1s linear infinite;"></i> جارٍ البحث...';
+    btn.disabled = true;
+
+    // البحث عن الكود بشرط أن يكون تابعاً لهذه الجهة فقط
+    const { data, error } = await dbClient.from('medical_vouchers')
+      .select('*')
+      .eq('voucher_code', code)
+      .eq('partner_name', currentPartner.name)
+      .single();
+
+    btn.innerHTML = '<i class="ph ph-magnifying-glass"></i> بحث واستعلام';
+    btn.disabled = false;
+
+    const resBox = document.getElementById('voucherResult');
+
+    if (error || !data) {
+      resBox.style.display = 'block';
+      resBox.innerHTML = `
+        <div style="text-align:center; padding: 10px;">
+          <i class="ph ph-warning-circle" style="font-size:36px; color:var(--danger); margin-bottom:8px;"></i>
+          <div style="color:var(--text-white); font-weight:800;">الكود غير صحيح أو لا يخص هذه الجهة!</div>
+        </div>
+      `;
+      return;
+    }
+
+    currentVoucherId = data.id;
+    
+    // التحقق من حالة الكود
+    let statusHtml = '';
+    let actionButtons = '';
+    
+    // افتراض أن الكود منتهي إذا مر عليه 48 ساعة (يمكن تعديلها حسب رغبتك)
+    const createdAt = new Date(data.created_at);
+    const now = new Date();
+    const diffHours = Math.abs(now - createdAt) / 36e5;
+    
+    let isExpired = diffHours > 48;
+    let actualStatus = data.status || 'نشط';
+    
+    if (actualStatus === 'نشط' && isExpired) {
+      actualStatus = 'منتهي';
+      // تحديث الحالة صامتاً في الداتابيز
+      dbClient.from('medical_vouchers').update({ status: 'منتهي' }).eq('id', data.id).then();
+    }
+
+    if (actualStatus === 'نشط') {
+      statusHtml = '<span class="status-badge" style="background:rgba(16,185,129,0.2); color:var(--green); border:1px solid var(--green);">ساري ومفعل 🟢</span>';
+      actionButtons = `
+        <div class="grid-2">
+          <button class="btn-success" onclick="updateVoucher('مستخدم')"><i class="ph ph-check-circle"></i> تم تقديم الخدمة</button>
+          <button class="btn-danger" onclick="updateVoucher('ملغي')"><i class="ph ph-x-circle"></i> عدم حضور / إلغاء</button>
+        </div>
+      `;
+    } else if (actualStatus === 'مستخدم') {
+      statusHtml = '<span class="status-badge" style="background:rgba(197,160,89,0.2); color:var(--gold); border:1px solid var(--gold);">تم الاستخدام مسبقاً ⚠️</span>';
+    } else {
+      statusHtml = '<span class="status-badge" style="background:rgba(239,68,68,0.2); color:var(--danger); border:1px solid var(--danger);">منتهي / ملغي ❌</span>';
+    }
+
+    const dateStr = createdAt.toLocaleString('ar-EG');
+
+    resBox.innerHTML = `
+      <div class="detail-row">
+        <span class="detail-label">اسم العميل (المستفيد):</span>
+        <span class="detail-value">${data.beneficiary_name}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">رقم الهاتف:</span>
+        <span class="detail-value" dir="ltr">${data.beneficiary_phone}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">نسبة الخصم المستحقة:</span>
+        <span class="detail-value" style="color:var(--gold); font-size:15px;">${data.discount_desc}</span>
+      </div>
+      <div class="detail-row" style="border-top:1px dashed var(--border-light); padding-top:10px;">
+        <span class="detail-label">تاريخ الإصدار:</span>
+        <span class="detail-value" style="font-size:11px; font-weight:normal;">${dateStr}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">حالة الكود:</span>
+        ${statusHtml}
+      </div>
+      ${actionButtons}
+    `;
+    resBox.style.display = 'block';
+    
+    // تشغيل صوت تنبيه ناعم عند ظهور النتيجة
+    if (navigator.vibrate) navigator.vibrate(50);
+  }
+
+  // 4. تحديث حالة الكود (تنفيذ الخدمة أو إلغاء)
+  async function updateVoucher(newStatus) {
+    if (!currentVoucherId) return;
+
+    // رسالة تأكيد لحماية الخطأ غير المقصود
+    const confirmMsg = newStatus === 'مستخدم' ? 'هل أنت متأكد من تنفيذ الخصم وتقديم الخدمة للعميل؟' : 'هل أنت متأكد من إلغاء الكود وعدم حضور العميل؟';
+    if (!confirm(confirmMsg)) return;
+
+    const { error } = await dbClient.from('medical_vouchers')
+      .update({ status: newStatus, used_at: new Date().toISOString() })
+      .eq('id', currentVoucherId);
+
+    if (error) {
+      showToast('❌ حدث خطأ أثناء تحديث الحالة');
+    } else {
+      showToast(newStatus === 'مستخدم' ? '✅ تم تأكيد تقديم الخدمة وتسجيل الخصم' : 'تم إلغاء الكود بنجاح');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('voucherResult').style.display = 'none';
+      currentVoucherId = null;
+    }
+  }
+
+</script>
+</body>
+</html>
