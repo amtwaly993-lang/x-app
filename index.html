@@ -1012,6 +1012,12 @@
   sendHeartbeat();
   setInterval(sendHeartbeat, 20000);
 
+function resetUserRole() {
+  if(confirm('هل تريد العودة لشاشة البداية لتغيير نوع حسابك (عميل / كابتن)؟')) {
+    localStorage.removeItem('octa_active_role'); 
+    window.location.reload();
+  }
+}
   function switchTab(tabId) {
     document.querySelectorAll('.tab-pane').forEach(t => t.style.display = 'none');
     const target = document.getElementById('tab-' + tabId);
@@ -1469,6 +1475,7 @@
                 <i class="ph ph-identification-card" style="font-size:40px; color:var(--gold); margin-bottom:10px;"></i>
                 <p style="font-size:13px; font-weight:800; margin-bottom:14px; color:var(--text-white);">أنت غير مسجل كشريك حتى الآن</p>
                 <button class="btn-submit" onclick="openProviderRegisterModal()">تسجيل حساب ورفع الأوراق 🚀</button>
+<button onclick="resetUserRole()" style="width: 100%; background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid #EF4444; padding: 14px; border-radius: 14px; font-size: 13.5px; font-weight: 900; margin-top: 12px; cursor: pointer; transition: 0.2s;">تغيير نوع الحساب (رجوع للبداية ↩️)</button>
               </div>
             `}
           </div>
