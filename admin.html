@@ -3,111 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة إدارة منصة Octa Hub | التحكم والعمليات الشاملة</title>
+  <title>OCTA HUB | لوحة الإدارة والتحكم الشاملة</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
   <style>
-    :root { 
-      --navy: #0c1d37; 
-      --navy-light: #162c50;
-      --gold: #c5a059;
-      --gold-hover: #b38f4a;
-      --gold-light: rgba(197, 160, 89, 0.15);
-      --green: #10b981; 
-      --danger: #ef4444; 
-      --bg: #f8fafc; 
-      --border: #e2e8f0; 
-      --amber: #f59e0b; 
+    :root {
+      --navy: #0B192C; --navy-light: #13243C; --navy-card: #182C49;
+      --gold: #C5A059; --gold-hover: #D8B26A; --gold-light: rgba(197, 160, 89, 0.15); --gold-glow: rgba(197, 160, 89, 0.35);
+      --text-white: #FFFFFF; --text-muted: #94A3B8; --text-gold: #E5C37A;
+      --border: rgba(197, 160, 89, 0.28); --border-light: rgba(255, 255, 255, 0.08);
+      --green: #10B981; --danger: #EF4444; --amber: #F59E0B;
+      --radius-sm: 8px; --radius-md: 14px; --radius-lg: 20px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; }
-    body { background-color: var(--bg); color: #0f172a; min-height: 100vh; }
 
-    .lock-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-    .lock-box { background: white; padding: 28px 24px; border-radius: 18px; width: 92%; max-width: 340px; text-align: center; border-top: 5px solid var(--gold); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+    body { background: radial-gradient(circle at top, var(--navy-light) 0%, var(--navy) 100%); color: var(--text-white); min-height: 100vh; }
 
-    .admin-header { background: white; border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    /* شاشة الدخول المؤمنة */
+    .lock-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+    .lock-box { background: rgba(24, 44, 73, 0.85); backdrop-filter: blur(12px); border: 1.5px solid var(--gold); padding: 30px 24px; border-radius: var(--radius-lg); width: 92%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; }
+
+    .admin-header { background: rgba(19, 36, 60, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-light); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 100; }
     .header-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .commission-box { background: #fef9ee; border: 1.5px solid var(--gold); padding: 5px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: bold; color: var(--navy); }
-    .commission-input { width: 55px; padding: 4px 6px; border: 1px solid var(--gold); border-radius: 6px; text-align: center; font-weight: 900; color: var(--navy); outline: none; }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 18px 12px; }
+    .container { max-width: 1240px; margin: 0 auto; padding: 20px 14px; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 18px; }
-    .stat-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: relative; }
-    .stat-card.clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 1.5px solid #cbd5e1; }
-    .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(12,29,55,0.08); border-color: var(--gold); }
-    .stat-val { font-size: 22px; font-weight: 900; color: var(--navy); }
-    .stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background: rgba(24, 44, 73, 0.7); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+    .stat-card.clickable { cursor: pointer; transition: 0.2s; border-color: var(--gold); }
+    .stat-card.clickable:hover { transform: translateY(-3px); box-shadow: 0 10px 30px var(--gold-glow); }
+    .stat-val { font-size: 26px; font-weight: 900; color: var(--text-white); }
+    .stat-lbl { font-size: 11.5px; color: var(--text-muted); font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 6px; }
 
-    .tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; }
-    .tab-btn { background: white; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.15s; }
-    .tab-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .tabs { display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { background: rgba(24, 44, 73, 0.5); border: 1px solid var(--border-light); color: var(--text-muted); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+    .tab-btn.active { background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 900; box-shadow: 0 4px 15px var(--gold-glow); }
 
-    .section-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; overflow-x: auto; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12px; }
-    th { background: #f8fafc; padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--navy); font-weight: 800; }
-    td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    .section-card { background: rgba(24, 44, 73, 0.65); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; overflow-x: auto; margin-bottom: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; }
+    .section-card.active { display: block; }
+    
+    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12.5px; min-width: 750px; }
+    th { background: rgba(19, 36, 60, 0.9); padding: 12px 10px; border-bottom: 1px solid var(--border); color: var(--gold); font-weight: 900; }
+    td { padding: 12px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; color: var(--text-white); }
+    tr:hover { background: rgba(255,255,255,0.02); }
 
-    .badge { padding: 3px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 700; display: inline-block; }
-    .badge-done { background: #dcfce7; color: #15803d; }
-    .badge-pending { background: #fef3c7; color: #b45309; }
-    .badge-banned { background: #fee2e2; color: #b91c1c; }
+    .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 900; display: inline-block; }
+    .badge-done { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid var(--amber); }
+    .badge-banned { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
 
-    .action-btn { background: var(--navy); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-    .btn-gold { background: linear-gradient(135deg, var(--gold), #a88438); color: var(--navy); }
-    .btn-green { background: var(--green); }
-    .btn-danger { background: var(--danger); }
-    .doc-preview-img { width: 60px; height: 42px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1; cursor: pointer; transition: 0.15s; }
-    .doc-preview-img:hover { transform: scale(1.05); }
-    .input-box { width: 100%; padding: 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; margin-bottom: 8px; outline: none; }
+    .action-btn { background: var(--navy-light); color: var(--text-white); border: 1px solid var(--border); padding: 7px 14px; border-radius: var(--radius-sm); font-size: 11.5px; font-weight: 800; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+    .action-btn:hover { opacity: 0.9; transform: scale(0.98); border-color: var(--gold); color: var(--gold); }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #A88438); color: var(--navy); border: none; font-weight: 900; box-shadow: 0 4px 15px var(--gold-glow); }
+    .btn-green { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid var(--green); }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+    .btn-wa { background: rgba(37, 211, 102, 0.2); color: #25D366; border: 1px solid #25D366; }
+    
+    .doc-preview-img { width: 65px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+    .doc-preview-img:hover { transform: scale(1.08); border-color: var(--gold); }
+    
+    .input-box { width: 100%; background: rgba(11, 25, 44, 0.8); border: 1px solid var(--border); color: var(--text-white); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 12.5px; margin-bottom: 10px; outline: none; transition: 0.2s; }
+    .input-box:focus { border-color: var(--gold); box-shadow: 0 0 15px var(--gold-glow); }
 
-    .modal { position: fixed; inset: 0; background: rgba(12, 29, 55, 0.65); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 14px; }
+    .modal { position: fixed; inset: 0; background: rgba(11, 25, 44, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100000; padding: 14px; }
     .modal.show { display: flex; }
-    .modal-box { background: white; width: 100%; max-width: 700px; border-radius: 16px; padding: 22px; max-height: 88vh; overflow-y: auto; }
+    .modal-box { background: var(--navy-light); width: 100%; max-width: 720px; border-radius: var(--radius-lg); padding: 24px; max-height: 88vh; overflow-y: auto; border-top: 2px solid var(--gold); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
 
-    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 12px 0; }
-    .doc-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px; text-align: center; }
-    .doc-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #cbd5e1; margin-top: 4px; }
-    .doc-card span { font-size: 10.5px; font-weight: bold; color: var(--navy); }
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 14px 0; }
+    .doc-card { background: rgba(24, 44, 73, 0.6); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 10px; text-align: center; }
+    .doc-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); margin-top: 6px; }
+    .doc-card span { font-size: 11px; font-weight: bold; color: var(--text-gold); }
   </style>
 </head>
 <body>
 
-<!-- شاشة تسجيل الدخول المؤمنة سحابياً -->
+<!-- شاشة تسجيل الدخول المؤمنة مع اختيار المسئولية وطلب الانضمام -->
 <div class="lock-screen" id="lockScreen">
-  <div class="lock-box">
-    <div style="font-size:34px; margin-bottom:6px;">🔐</div>
-    <h3 style="margin-bottom:4px; color:var(--navy); font-size:16px; font-weight:900;">لوحة تحكم OCTA HUB</h3>
-    <p style="font-size:11px; color:#64748b; margin-bottom:14px;">تسجيل الدخول الإداري الآمن عبر Supabase Auth</p>
+  <div class="lock-box" id="loginFormContainer">
+    <div style="font-size:38px; margin-bottom:8px;">🔐</div>
+    <h3 style="margin-bottom:4px; color:var(--text-white); font-size:18px; font-weight:900;">لوحة تحكم OCTA HUB</h3>
+    <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:16px;">تسجيل الدخول الإداري الآمن</p>
     
     <input type="email" id="adminEmail" class="input-box" style="text-align:right;" placeholder="البريد الإلكتروني للإدارة" value="amtwaly993@gmail.com">
     <input type="password" id="adminPassword" class="input-box" style="text-align:right;" placeholder="كلمة المرور المشفرة" onkeydown="if(event.key==='Enter') executeAdminLogin()">
     
-    <button class="action-btn" id="loginSubmitBtn" style="width:100%; padding:10px; justify-content:center; font-size:12px; margin-top:4px;" onclick="executeAdminLogin()">دخول لوحة التحكم ⚡</button>
-    <div id="loginErrorMsg" style="color:var(--danger); font-size:11px; font-weight:bold; margin-top:8px; display:none;"></div>
+    <div style="margin-bottom:12px; text-align:right;">
+      <label style="font-size:11px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">حدد مسؤوليته وصلاحيتك في الجلسة:</label>
+      <select id="adminRoleSelect" class="input-box" style="margin:0;">
+        <option value="مدير عام (Admin)">👑 مدير عام (Admin - تحكم كامل)</option>
+        <option value="مشغل عمليات (Operator)">⚙️ مشغل عمليات (إدارة المشاوير والشحن)</option>
+        <option value="مراجع حسابات (Auditor)">📊 مراجع حسابات (تقارير وأموال)</option>
+      </select>
+    </div>
+
+    <button class="action-btn btn-gold" id="loginSubmitBtn" style="width:100%; padding:12px; justify-content:center; font-size:13.5px; margin-top:4px;" onclick="executeAdminLogin()">دخول لوحة التحكم ⚡</button>
+    <div id="loginErrorMsg" style="color:var(--danger); font-size:11.5px; font-weight:bold; margin-top:10px; display:none;"></div>
+    
+    <div style="margin-top:16px; border-top:1px dashed var(--border-light); padding-top:16px;">
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">لست مسجلاً كإداري؟</p>
+      <button class="action-btn" style="width:100%; justify-content:center;" onclick="toggleAuthForms('register')">طلب انضمام لفريق الإدارة 📝</button>
+    </div>
+  </div>
+
+  <!-- نموذج طلب الانضمام كإداري جديد -->
+  <div class="lock-box" id="registerFormContainer" style="display:none;">
+    <div style="font-size:38px; margin-bottom:8px;">📝</div>
+    <h3 style="margin-bottom:4px; color:var(--text-white); font-size:16px; font-weight:900;">طلب انضمام لفريق الإدارة</h3>
+    <p style="font-size:11px; color:var(--text-muted); margin-bottom:14px;">قم برفع بياناتك لاعتمادها من الإدارة العليا</p>
+
+    <input type="email" id="regAdminEmail" class="input-box" placeholder="البريد الإلكتروني">
+    <input type="password" id="regAdminPassword" class="input-box" placeholder="كلمة المرور المقترحة">
+    
+    <select id="regAdminRole" class="input-box">
+      <option value="مشغل عمليات (Operator)">⚙️ وظيفة: مشغل عمليات</option>
+      <option value="مراجع حسابات (Auditor)">📊 وظيفة: مراجع حسابات</option>
+    </select>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+      <div>
+        <label style="font-size:10px; color:var(--text-muted);">رقم قومي (وجه)</label>
+        <input type="file" id="regAdminIdFront" accept="image/*" class="input-box" style="padding:6px; font-size:10px;">
+      </div>
+      <div>
+        <label style="font-size:10px; color:var(--text-muted);">رقم قومي (ظهر)</label>
+        <input type="file" id="regAdminIdBack" accept="image/*" class="input-box" style="padding:6px; font-size:10px;">
+      </div>
+    </div>
+
+    <button class="action-btn btn-gold" id="registerSubmitBtn" style="width:100%; padding:12px; justify-content:center; font-size:13px;" onclick="submitAdminRequest()">إرسال الطلب للاعتماد 🚀</button>
+    
+    <div style="margin-top:14px; border-top:1px dashed var(--border-light); padding-top:14px;">
+      <button class="action-btn" style="width:100%; justify-content:center; background:transparent; border-color:var(--border-light);" onclick="toggleAuthForms('login')">العودة لتسجيل الدخول 🔙</button>
+    </div>
   </div>
 </div>
 
 <div class="admin-header">
-  <div style="font-weight:900; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:8px;">
+  <div style="font-weight:900; font-size:15px; color:var(--text-white); display:flex; align-items:center; gap:10px;">
     <span>⚡ مركز قيادة وإدارة منصة OCTA HUB</span>
-    <span id="adminSessionBadge" style="background:#f1f5f9; color:#475569; font-size:10px; padding:3px 8px; border-radius:6px; font-weight:bold; border:1px solid #e2e8f0;">مدير النظام</span>
+    <span id="adminSessionBadge" style="background:var(--gold-light); color:var(--gold); font-size:10.5px; padding:4px 10px; border-radius:8px; font-weight:bold; border:1px solid var(--gold);">مدير النظام</span>
   </div>
 
   <div class="header-tools">
-    <div class="commission-box">
-      <span>عمولة المنصة الثابتة لكل طلب:</span>
-      <input type="number" id="globalCommissionInput" class="commission-input" value="2.00" step="0.5" min="0">
-      <span>ج</span>
-      <button class="action-btn btn-gold" style="padding:4px 8px; font-size:10px;" onclick="saveGlobalCommission()">حفظ العمولة 💾</button>
-    </div>
-
     <button class="action-btn" onclick="loadAllData()">تحديث مباشر 🔄</button>
     <button class="action-btn btn-danger" onclick="openSelectiveResetModal()">تصفير البيانات 🗑️</button>
-    <button class="action-btn" style="background:#475569;" onclick="adminSignOut()">تسجيل خروج 🚪</button>
+    <button class="action-btn" style="background:rgba(239, 68, 68, 0.15); color:var(--danger); border-color:var(--danger);" onclick="adminSignOut()">تسجيل خروج 🚪</button>
   </div>
 </div>
 
 <div class="container">
+  <!-- المؤشرات الحية -->
   <div class="stats-grid">
     <div class="stat-card clickable" onclick="openOnlineDriversModal()">
       <div class="stat-lbl"><span>كباتن متصلين فعلياً 🟢</span><span>(تفاصيل 🔍)</span></div>
@@ -115,7 +164,7 @@
     </div>
     <div class="stat-card clickable" onclick="openActiveClientsModal()">
       <div class="stat-lbl"><span>عملاء متصفحين الآن 📱</span><span>(تفاصيل 🔍)</span></div>
-      <div class="stat-val" id="activeClientsCount" style="color:#0284c7;">0</div>
+      <div class="stat-val" id="activeClientsCount" style="color:#38bdf8;">0</div>
     </div>
     <div class="stat-card">
       <div class="stat-lbl"><span>طلبات شحن معلقة ⏳</span></div>
@@ -123,94 +172,102 @@
     </div>
     <div class="stat-card">
       <div class="stat-lbl"><span>إجمالي مبيعات المنفذة (GMV)</span></div>
-      <div class="stat-val" id="kpiGmvVal" style="color:var(--navy);">0 <small style="font-size:12px;">ج</small></div>
+      <div class="stat-val" id="kpiGmvVal" style="color:var(--text-white);">0 <small style="font-size:12px;">ج</small></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-lbl"><span>صافي عمولات Octa Hub 💰</span></div>
+    <div class="stat-card" style="border:1.5px solid var(--gold); background:rgba(197, 160, 89, 0.08);">
+      <div class="stat-lbl"><span style="color:var(--gold);">صافي عمولات Octa Hub 💰</span></div>
       <div class="stat-val" id="kpiCommissionsVal" style="color:var(--gold);">0 <small style="font-size:12px;">ج</small></div>
     </div>
   </div>
 
+  <!-- التبويبات -->
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('tabProviders', this)">المناديب والشركاء 🛵</button>
     <button class="tab-btn" onclick="showTab('tabRecharges', this)">طلبات الشحن المعلقة 💳</button>
     <button class="tab-btn" onclick="showTab('tabAccounting', this)">النظام المحاسبي والمالي 📊</button>
     <button class="tab-btn" onclick="showTab('tabLiveOrders', this)">سجل المشاوير الحية 📦</button>
-    <button class="tab-btn" onclick="showTab('tabVouchers', this)">أكواد الخصومات الطبية 🏥</button>
+    <button class="tab-btn" onclick="showTab('tabPartners', this)">الشركاء الطبيين 🏥</button>
+    <button class="tab-btn" onclick="showTab('tabVouchers', this)">أكواد الخصومات 🧾</button>
     <button class="tab-btn" onclick="showTab('tabBroadcast', this)">إذاعة الإشعارات والبانر 📢</button>
+    <button class="tab-btn" onclick="showTab('tabSettings', this)">إعدادات التسعير ⚙️</button>
+    <button class="tab-btn" onclick="showTab('tabAdminRequests', this)" style="border-color:var(--danger); color:var(--danger);">طلبات الإدارة 🛡️</button>
   </div>
 
-  <div id="tabProviders" class="section-card">
+  <!-- 1. المناديب (مع زر الحذف الشامل للتجارب) -->
+  <div id="tabProviders" class="section-card active">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-      <h4 style="font-size:13px; font-weight:800; color:var(--navy);">سجل الشركاء وإدارة الأوراق والاعتماد:</h4>
-      <span style="font-size:11px; color:#64748b;">اضغط على اسم الكابتن أو زر «فحص الأوراق» لمراجعة المستندات وشحن محفظته.</span>
+      <h4 style="font-size:13.5px; font-weight:900; color:var(--text-white);">سجل الشركاء (الاعتماد - المحفظة - سقف المديونية - الحذف للتجارب):</h4>
+      <span style="font-size:11px; color:var(--text-muted);">يمكنك حذف حسابات التجربة تماماً لتنظيف القاعدة قبل التشغيل الفعلي.</span>
     </div>
     <table>
       <thead>
-        <tr><th>الكابتن والوسيلة</th><th>الهاتف</th><th>الاتصال اللحظي</th><th>المحفظة</th><th>الحالة</th><th>فحص الأوراق والمحفظة</th><th>إجراء</th></tr>
+        <tr><th>الكابتن والوسيلة</th><th>الهاتف</th><th>الاتصال اللحظي</th><th>المحفظة</th><th>الحد الائتماني (سقف المديونية)</th><th>الحالة والورق</th><th>الإجراءات (حظر / حذف)</th></tr>
       </thead>
       <tbody id="providersBody"></tbody>
     </table>
   </div>
 
-  <div id="tabRecharges" class="section-card" style="display:none;">
-    <h4 style="font-size:12.5px; margin-bottom:10px;">طلبات شحن المحافظ والتحويل اللحظي للمراجعة:</h4>
+  <!-- 2. طلبات الشحن الذكية -->
+  <div id="tabRecharges" class="section-card">
+    <h4 style="font-size:13px; margin-bottom:10px; font-weight:900;">طلبات شحن المحافظ المعلقة والمراجعة:</h4>
     <table>
       <thead>
-        <tr><th>المندوب</th><th>المبلغ</th><th>الوسيلة</th><th>إثبات التحويل</th><th>التوقيت</th><th>الإجراء</th></tr>
+        <tr><th>المندوب ورصيده الحالي</th><th>طالب شحن بـ</th><th>الوسيلة</th><th>إثبات التحويل</th><th>التوقيت</th><th>الإجراء</th></tr>
       </thead>
       <tbody id="rechargesBody"></tbody>
     </table>
   </div>
 
-  <div id="tabAccounting" class="section-card" style="display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+  <!-- 3. النظام المحاسبي -->
+  <div id="tabAccounting" class="section-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid var(--border-light); padding-bottom:10px;">
       <div>
-        <h3 style="font-size:14px; font-weight:900; color:var(--navy);">📊 النظام المحاسبي والمالي الموحد (Live Ledger)</h3>
-        <p style="font-size:11px; color:#64748b;">مراجعة الإيرادات، العمولات، ومستحقات المناديب بالفترات والتواريخ</p>
+        <h3 style="font-size:14.5px; font-weight:900; color:var(--text-white);">📊 النظام المحاسبي والمالي الموحد (Live Ledger)</h3>
+        <p style="font-size:11px; color:var(--text-muted);">مراجعة الإيرادات، العمولات، ومستحقات المناديب بالفترات والتواريخ</p>
       </div>
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <span style="font-size:11px; font-weight:bold;">المدة:</span>
-        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('today')">اليوم</button>
-        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('7days')">آخر 7 أيام</button>
-        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('month')">الشهر الحالي</button>
-        <button class="action-btn" style="padding:4px 8px; font-size:10.5px;" onclick="setAccDateFilter('all')">الكل</button>
-        <button class="action-btn btn-green" style="padding:4px 8px; font-size:10.5px;" onclick="exportAccountingCSV()">تصدير Excel / CSV 📥</button>
+        <span style="font-size:11px; font-weight:bold; color:var(--text-muted);">المدة:</span>
+        <button class="action-btn" style="padding:5px 10px; font-size:11px;" onclick="setAccDateFilter('today')">اليوم</button>
+        <button class="action-btn" style="padding:5px 10px; font-size:11px;" onclick="setAccDateFilter('7days')">آخر 7 أيام</button>
+        <button class="action-btn" style="padding:5px 10px; font-size:11px;" onclick="setAccDateFilter('month')">الشهر الحالي</button>
+        <button class="action-btn" style="padding:5px 10px; font-size:11px;" onclick="setAccDateFilter('all')">الكل</button>
+        <button class="action-btn btn-green" style="padding:5px 10px; font-size:11px;" onclick="exportAccountingCSV()">تصدير Excel 📥</button>
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:16px;">
-      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
-        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">إجمالي قيمة الشحنات المنفذة:</span>
-        <div style="font-size:20px; font-weight:900; color:var(--navy); margin-top:4px;" id="accTotalGmv">0.00 ج</div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;">
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); border-radius:10px; padding:14px;">
+        <span style="font-size:11px; color:var(--text-muted); font-weight:bold;">إجمالي قيمة الشحنات المنفذة:</span>
+        <div style="font-size:22px; font-weight:900; color:var(--text-white); margin-top:4px;" id="accTotalGmv">0.00 ج</div>
       </div>
-      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
-        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">عمولات المنصة المحصلة:</span>
-        <div style="font-size:20px; font-weight:900; color:var(--gold); margin-top:4px;" id="accTotalComm">0.00 ج</div>
+      <div style="background:rgba(197, 160, 89, 0.1); border:1px solid var(--gold); border-radius:10px; padding:14px;">
+        <span style="font-size:11px; color:var(--text-gold); font-weight:bold;">عمولات المنصة المحصلة:</span>
+        <div style="font-size:22px; font-weight:900; color:var(--gold); margin-top:4px;" id="accTotalComm">0.00 ج</div>
       </div>
-      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
-        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">صافي أرباح المناديب في المدة:</span>
-        <div style="font-size:20px; font-weight:900; color:var(--green); margin-top:4px;" id="accCourierNet">0.00 ج</div>
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); border-radius:10px; padding:14px;">
+        <span style="font-size:11px; color:var(--text-muted); font-weight:bold;">صافي أرباح المناديب في المدة:</span>
+        <div style="font-size:22px; font-weight:900; color:var(--green); margin-top:4px;" id="accCourierNet">0.00 ج</div>
       </div>
-      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px;">
-        <span style="font-size:10.5px; color:#64748b; font-weight:bold;">إجمالي شحن المحافظ المعتمد:</span>
-        <div style="font-size:20px; font-weight:900; color:#0284c7; margin-top:4px;" id="accTotalRecharges">0.00 ج</div>
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); border-radius:10px; padding:14px;">
+        <span style="font-size:11px; color:var(--text-muted); font-weight:bold;">إجمالي شحن المحافظ المعتمد:</span>
+        <div style="font-size:22px; font-weight:900; color:#38bdf8; margin-top:4px;" id="accTotalRecharges">0.00 ج</div>
       </div>
     </div>
 
-    <h4 style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:8px;">📋 جدول تفصيل العمليات والأرباح عن المدة المحددة:</h4>
+    <h4 style="font-size:13px; font-weight:900; color:var(--text-white); margin-bottom:8px;">📋 جدول تفصيل العمليات والأرباح عن المدة المحددة:</h4>
     <table>
       <thead>
         <tr><th>رقم الطلب</th><th>نوع الخدمة</th><th>المندوب</th><th>قيمة الطلب</th><th>عمولة المنصة</th><th>صافي المندوب</th><th>التاريخ</th></tr>
       </thead>
       <tbody id="accountingTableBody">
-        <tr><td colspan="7" style="text-align:center; padding:14px; color:#64748b;">جارٍ جلب العمليات المالية...</td></tr>
+        <tr><td colspan="7" style="text-align:center; padding:14px; color:var(--text-muted);">جارٍ جلب العمليات المالية...</td></tr>
       </tbody>
     </table>
   </div>
 
-  <div id="tabLiveOrders" class="section-card" style="display:none;">
-    <h4 style="font-size:12.5px; margin-bottom:10px;">إدارة وتتبع الطلبات الحية في المنظومة:</h4>
+  <!-- 4. الطلبات الحية -->
+  <div id="tabLiveOrders" class="section-card">
+    <h4 style="font-size:13px; margin-bottom:10px; font-weight:900;">إدارة وتتبع الطلبات الحية في المنظومة:</h4>
     <table>
       <thead>
         <tr><th>رقم الطلب</th><th>نوع الخدمة</th><th>العميل</th><th>المندوب</th><th>المبلغ</th><th>الحالة</th><th>إجراء</th></tr>
@@ -219,59 +276,64 @@
     </table>
   </div>
 
-  <div id="tabVouchers" class="section-card" style="display:none;">
-    <h4 style="font-size:12.5px; margin-bottom:10px;">أرشيف أكواد الخصم المعتمدة للعيادات والمعامل:</h4>
+  <!-- 5. الشركاء الطبيين -->
+  <div id="tabPartners" class="section-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h4 style="font-size:13.5px; font-weight:900; color:var(--text-white);">بوابة الشركاء الطبيين والتجاريين 🏥</h4>
+      <button class="action-btn btn-gold" onclick="document.getElementById('addPartnerModal').classList.add('show')">➕ إضافة جهة جديدة</button>
+    </div>
     <table>
       <thead>
-        <tr><th>الكود</th><th>الجهة الطبية</th><th>المستفيد</th><th>رقم الهاتف</th><th>نسبة الخصم</th><th>التاريخ</th></tr>
+        <tr><th>اسم الجهة</th><th>الرقم السري (PIN) للدخول</th><th>حالة الحساب</th><th>إجراءات الإرسال والإيقاف</th></tr>
+      </thead>
+      <tbody id="partnersBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 6. أرشيف الكوبونات -->
+  <div id="tabVouchers" class="section-card">
+    <h4 style="font-size:13px; margin-bottom:10px; font-weight:900;">أرشيف أكواد الخصم المعتمدة للجهات:</h4>
+    <table>
+      <thead>
+        <tr><th>الكود</th><th>الجهة الطبية/التجارية</th><th>المستفيد</th><th>رقم الهاتف</th><th>الحالة والاستخدام</th><th>التاريخ</th></tr>
       </thead>
       <tbody id="vouchersBody"></tbody>
     </table>
   </div>
 
-  <div id="tabBroadcast" class="section-card" style="display:none;">
-    <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
-      <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
-        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">📢 إرسال إشعار لحظي مخصص:</h4>
-        <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نص الإشعار:</label>
+  <!-- 7. الإشعارات والبانر العائم -->
+  <div id="tabBroadcast" class="section-card">
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px; margin-bottom:18px;">
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); padding:16px; border-radius:var(--radius-md);">
+        <h4 style="font-size:13px; font-weight:900; margin-bottom:10px; color:var(--text-white);">📢 إرسال إشعار لحظي مخصص:</h4>
         <textarea id="broadcastMsgInput" class="input-box" rows="2" placeholder="اكتب نص الإشعار هنا..."></textarea>
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-          <div>
-            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">الفئة المستهدفة:</label>
-            <select id="broadcastTargetRole" class="input-box">
-              <option value="all">🌐 الجميع (كافة المستخدمين)</option>
-              <option value="client">🛒 العملاء فقط</option>
-              <option value="courier">🛵 كباتن الدليفري فقط</option>
-              <option value="services">⚡ خدمات الغاز والكروت</option>
-              <option value="ride">🚗 سيارات النقل الداخلي</option>
-              <option value="technician">🔧 الفنيين المعتمدين</option>
-            </select>
-          </div>
-          <div>
-            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:4px;">نوع ومكان الظهور:</label>
-            <select id="broadcastChannel" class="input-box">
-              <option value="both">📲 شريط بالتطبيق + إشعار هاتف</option>
-              <option value="app">📱 شريط داخل التطبيق فقط</option>
-              <option value="push">🔔 إشعار نظام على الهاتف فقط</option>
-            </select>
-          </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+          <select id="broadcastTargetRole" class="input-box" style="margin:0;">
+            <option value="all">🌐 الجميع (كافة المستخدمين)</option>
+            <option value="client">🛒 العملاء فقط</option>
+            <option value="courier">🛵 كباتن الدليفري فقط</option>
+          </select>
+          <select id="broadcastChannel" class="input-box" style="margin:0;">
+            <option value="both">📲 شريط بالتطبيق + إشعار هاتف</option>
+            <option value="app">📱 شريط داخل التطبيق فقط</option>
+            <option value="push">🔔 إشعار نظام (Push) فقط</option>
+          </select>
         </div>
-        <button class="action-btn btn-green" style="width:100%; padding:10px; font-size:12px;" onclick="publishBroadcast()">بث الإشعار الآن ⚡</button>
+        <button class="action-btn btn-green" style="width:100%; padding:10px;" onclick="publishBroadcast()">بث الإشعار الآن ⚡</button>
       </div>
 
-      <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:12px;">
-        <h4 style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--navy);">🖼️ إدارة البانر الإعلاني:</h4>
-        <input type="file" id="bannerImgFile" accept="image/*" class="input-box" style="padding:4px; font-size:11px;">
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); padding:16px; border-radius:var(--radius-md);">
+        <h4 style="font-size:13px; font-weight:900; margin-bottom:10px; color:var(--text-white);">🖼️ إدارة البانر العائم والإعلاني (للعملاء):</h4>
+        <input type="file" id="bannerImgFile" accept="image/*" class="input-box" style="padding:6px; font-size:11px;">
         <input type="text" id="bannerLinkInput" class="input-box" placeholder="رابط الواتساب أو الموقع (اختياري)">
-        <div style="display:flex; gap:6px; margin-top:6px;">
-          <button class="action-btn btn-green" style="flex:1;" onclick="saveBanner(true)">حفظ وتفعيل 🟢</button>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          <button class="action-btn btn-green" style="flex:1;" onclick="saveBanner(true)">تفعيل البانر 🟢</button>
           <button class="action-btn btn-danger" style="flex:1;" onclick="saveBanner(false)">إخفاء البانر ⚪</button>
         </div>
       </div>
     </div>
 
-    <h4 style="font-size:12.5px; font-weight:800; margin-bottom:8px; color:var(--navy);">📋 سجل الإشعارات والتحكم:</h4>
+    <h4 style="font-size:13px; font-weight:900; margin-bottom:8px; color:var(--text-white);">📋 سجل الإشعارات والتحكم:</h4>
     <table>
       <thead>
         <tr><th>نص الإشعار</th><th>الفئة</th><th>نوع الظهور</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr>
@@ -279,54 +341,120 @@
       <tbody id="announcementsTableBody"></tbody>
     </table>
   </div>
+
+  <!-- 8. إعدادات التسعير -->
+  <div id="tabSettings" class="section-card">
+    <h4 style="font-size:14px; font-weight:900; color:var(--text-white); margin-bottom:14px;">التسعير الديناميكي للعمولات ⚙️</h4>
+    <div style="background:rgba(11,25,44,0.6); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-light); max-width:500px;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">رسوم المنصة من العميل (تضاف للفاتورة):</label>
+        <input type="number" id="setClientFee" class="input-box" value="1">
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-size:12px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">عمولة المنصة من الكابتن (تخصم من محفظته عند القبول):</label>
+        <input type="number" id="setCourierFee" class="input-box" value="5">
+      </div>
+      <button class="action-btn btn-gold" style="width:100%; padding:11px; font-size:13.5px; justify-content:center;" onclick="savePricingSettings()">حفظ وتطبيق على الطلبات الجديدة 💾</button>
+      <p style="font-size:11px; color:var(--danger); margin-top:10px; text-align:center;">التعديل هنا يُطبق فوراً على أي طلب جديد في النظام.</p>
+    </div>
+  </div>
+
+  <!-- 9. طلبات واعتماد الإدارة -->
+  <div id="tabAdminRequests" class="section-card">
+    <h4 style="font-size:13px; font-weight:900; margin-bottom:10px; color:var(--text-white);">طلبات الانضمام لفريق إدارة المنصة 🛡️</h4>
+    <table>
+      <thead>
+        <tr><th>البريد الإلكتروني</th><th>الصلاحية المطلوبة</th><th>الرقم القومي (وجه)</th><th>الرقم القومي (ظهر)</th><th>التاريخ</th><th>إجراء الاعتماد</th></tr>
+      </thead>
+      <tbody id="adminRequestsBody"></tbody>
+    </table>
+  </div>
+
 </div>
 
-<!-- 1. نافذة فحص أوراق المندوب وإدارة محفظته -->
+<!-- ============================================== -->
+<!-- النوافذ المنبثقة (Modals) الأساسية -->
+<!-- ============================================== -->
+
+<!-- 1. نافذة فحص أوراق المندوب ومحفظته -->
 <div class="modal" id="providerDocsModal">
   <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-light); padding-bottom:10px; margin-bottom:14px;">
       <div>
-        <h3 style="font-size:15px; font-weight:900; color:var(--navy);" id="modalProvName">أوراق الكابتن</h3>
-        <span style="font-size:11.5px; color:#64748b;" id="modalProvMeta">010xxxxxxxxx | دراجة نارية</span>
+        <h3 style="font-size:15px; font-weight:900; color:var(--text-white);" id="modalProvName">أوراق الكابتن</h3>
+        <span style="font-size:11.5px; color:var(--text-muted);" id="modalProvMeta">010xxxxxxxxx | دراجة نارية</span>
       </div>
       <span onclick="closeModal('providerDocsModal')" style="cursor:pointer; font-size:20px; color:var(--gold);">✕</span>
     </div>
 
-    <div style="background:#fef9ee; border:1.5px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <div style="background:rgba(197, 160, 89, 0.1); border:1.5px solid var(--gold); border-radius:var(--radius-sm); padding:14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
       <div>
-        <div style="font-size:11px; color:#64748b; font-weight:bold;">رصيد المحفظة الحالي:</div>
-        <div style="font-size:20px; font-weight:900; color:var(--navy);" id="modalProvBalance">0.00 ج</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:bold;">رصيد المحفظة الحالي:</div>
+        <div style="font-size:22px; font-weight:900; color:var(--text-white);" id="modalProvBalance">0.00 ج</div>
       </div>
       <div style="display:flex; gap:8px; align-items:center;">
         <input type="number" id="quickRechargeAmt" class="input-box" style="width:90px; margin:0;" placeholder="المبلغ (ج)">
-        <button class="action-btn btn-gold" onclick="executeQuickRecharge()">إيداع رصيد ⚡</button>
+        <button class="action-btn btn-gold" onclick="executeQuickRecharge()">إيداع إداري ⚡</button>
       </div>
     </div>
 
-    <h4 style="font-size:13px; font-weight:800; color:var(--navy); margin-bottom:6px;">المستندات والأوراق الرسمية:</h4>
+    <h4 style="font-size:13px; font-weight:900; color:var(--text-white); margin-bottom:6px;">المستندات والأوراق الرسمية:</h4>
     <div class="docs-grid" id="modalDocsGrid"></div>
 
-    <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <div style="border-top:1px solid var(--border-light); padding-top:14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
       <div id="modalApprovalStatus"></div>
       <div style="display:flex; gap:8px;">
-        <button class="action-btn btn-green" id="btnApproveProv" onclick="updateProviderStatus('معتمد')">اعتماد وتفعيل الحساب 🟢</button>
-        <button class="action-btn btn-danger" id="btnRejectProv" onclick="updateProviderStatus('محظور')">حظر الحساب 🔴</button>
+        <button class="action-btn btn-green" onclick="updateProviderStatus('معتمد')">اعتماد وتفعيل 🟢</button>
+        <button class="action-btn btn-danger" onclick="updateProviderStatus('محظور')">حظر الحساب 🔴</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 2. نافذة تصفير البيانات الذكي والمجدول -->
+<!-- 2. نافذة رفض طلب شحن -->
+<div class="modal" id="rejectReasonModal">
+  <div class="modal-box" style="max-width:400px; text-align:center;">
+    <h3 style="margin-bottom:14px; color:var(--danger); font-size:16px; font-weight:900;">تحديد سبب رفض الإيصال ✕</h3>
+    <select id="rejectReasonSelect" class="input-box" style="margin-bottom:16px;">
+      <option value="صورة الإيصال غير واضحة">صورة الإيصال غير واضحة</option>
+      <option value="رقم التحويل أو العملية غير مطابق">رقم التحويل أو العملية غير مطابق</option>
+      <option value="المبلغ المحول غير مطابق للطلب">المبلغ المحول غير مطابق للطلب</option>
+      <option value="تم استخدام هذا الإيصال مسبقاً">تم استخدام هذا الإيصال مسبقاً</option>
+    </select>
+    <div style="display:flex; gap:10px;">
+      <button class="action-btn btn-danger" style="flex:1; justify-content:center; padding:10px;" onclick="confirmRejectRecharge()">تأكيد الرفض 🔴</button>
+      <button class="action-btn" style="background:#64748b; flex:1; justify-content:center; padding:10px;" onclick="closeModal('rejectReasonModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. نافذة إضافة شريك طبي -->
+<div class="modal" id="addPartnerModal">
+  <div class="modal-box" style="max-width:400px; text-align:center;">
+    <h3 style="margin-bottom:14px; font-size:16px; font-weight:900; color:var(--text-white);">إضافة جهة / شريك جديد 🏥</h3>
+    <input type="text" id="newPartnerName" class="input-box" placeholder="اسم الجهة (مثال: معمل ألفا)" style="margin-bottom:12px;">
+    <div style="display:flex; gap:10px; margin-bottom:16px;">
+      <input type="text" id="newPartnerPin" class="input-box" placeholder="الرقم السري" readonly style="letter-spacing:4px; font-weight:900; text-align:center; background:rgba(0,0,0,0.3);">
+      <button class="action-btn btn-gold" onclick="document.getElementById('newPartnerPin').value = Math.floor(1000 + Math.random() * 9000).toString()">توليد رمز</button>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="action-btn btn-gold" style="flex:1; justify-content:center; padding:10px;" onclick="saveNewPartner()">حفظ الشريك</button>
+      <button class="action-btn" style="background:#64748b; flex:1; justify-content:center; padding:10px;" onclick="closeModal('addPartnerModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. نافذة تصفير البيانات الذكي -->
 <div class="modal" id="selectiveResetModal">
   <div class="modal-box" style="max-width:480px;">
     <div style="text-align:center; margin-bottom:12px;">
       <div style="font-size:36px; margin-bottom:4px;">🗑️</div>
       <h3 style="color:var(--danger); font-size:16px; font-weight:900;">تصفير وتنظيف البيانات المجدول</h3>
-      <p style="font-size:11.5px; color:#64748b; line-height:1.4;">حدد الصفحة ونطاق التاريخ لحذف البيانات القديمة مع الاحتفاظ بباقي السجلات.</p>
+      <p style="font-size:11.5px; color:var(--text-muted); line-height:1.4;">حدد الصفحة ونطاق التاريخ لحذف البيانات القديمة مع الاحتفاظ بباقي السجلات.</p>
     </div>
 
     <div style="margin-bottom:12px;">
-      <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">اختر الصفحة أو القسم المراد حذفه:</label>
+      <label style="font-size:11.5px; font-weight:bold; display:block; margin-bottom:4px;">اختر القسم المراد حذفه:</label>
       <select id="resetTargetSection" class="input-box">
         <option value="orders">📦 سجل المشاوير والطلبات</option>
         <option value="wallet_recharge_requests">💳 طلبات شحن المحافظ فقط</option>
@@ -345,26 +473,12 @@
       </select>
     </div>
 
-    <div id="resetMonthBox" style="margin-bottom:12px;">
-      <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">اختر الشهر والسنة لحذفه كاملاً:</label>
-      <input type="month" id="resetMonthInput" class="input-box">
-    </div>
-
-    <div id="resetDayBox" style="display:none; margin-bottom:12px;">
-      <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">اختر اليوم المراد حذفه:</label>
-      <input type="date" id="resetDayInput" class="input-box">
-    </div>
-
+    <div id="resetMonthBox" style="margin-bottom:12px;"><input type="month" id="resetMonthInput" class="input-box"></div>
+    <div id="resetDayBox" style="display:none; margin-bottom:12px;"><input type="date" id="resetDayInput" class="input-box"></div>
     <div id="resetRangeBox" style="display:none; margin-bottom:12px;">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-        <div>
-          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">من تاريخ:</label>
-          <input type="date" id="resetRangeFrom" class="input-box">
-        </div>
-        <div>
-          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">إلى تاريخ:</label>
-          <input type="date" id="resetRangeTo" class="input-box">
-        </div>
+        <input type="date" id="resetRangeFrom" class="input-box">
+        <input type="date" id="resetRangeTo" class="input-box">
       </div>
     </div>
 
@@ -380,37 +494,9 @@
   </div>
 </div>
 
-<!-- نافذة الكباتن المتصلين فعلياً -->
-<div class="modal" id="onlineDriversModal">
-  <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--navy);">🟢 الكباتن المتصلون فعلياً الآن في النطاق</h3>
-      <span onclick="closeModal('onlineDriversModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <table>
-      <thead>
-        <tr><th>الكابتن</th><th>الوسيلة</th><th>الهاتف</th><th>المحفظة</th><th>تواصل</th></tr>
-      </thead>
-      <tbody id="onlineDriversBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- نافذة العملاء المتصفحين الآن -->
-<div class="modal" id="activeClientsModal">
-  <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="font-size:14px; font-weight:900; color:var(--navy);">📱 العملاء المتصفحون للمنصة حالياً</h3>
-      <span onclick="closeModal('activeClientsModal')" style="cursor:pointer; font-size:18px;">✕</span>
-    </div>
-    <table>
-      <thead>
-        <tr><th>اسم العميل</th><th>رقم الهاتف</th><th>المنطقة / الكمبوند</th><th>تواصل</th></tr>
-      </thead>
-      <tbody id="activeClientsBody"></tbody>
-    </table>
-  </div>
-</div>
+<!-- 5. الكباتن المتصلين والعملاء النشطين -->
+<div class="modal" id="onlineDriversModal"><div class="modal-box"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h3 style="font-size:14px; font-weight:900; color:var(--text-white);">🟢 الكباتن المتصلون فعلياً الآن</h3><span onclick="closeModal('onlineDriversModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span></div><table><thead><tr><th>الكابتن</th><th>الوسيلة</th><th>الهاتف</th><th>المحفظة</th><th>تواصل</th></tr></thead><tbody id="onlineDriversBody"></tbody></table></div></div>
+<div class="modal" id="activeClientsModal"><div class="modal-box"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h3 style="font-size:14px; font-weight:900; color:var(--text-white);">📱 العملاء المتصفحون للمنصة حالياً</h3><span onclick="closeModal('activeClientsModal')" style="cursor:pointer; font-size:18px; color:var(--gold);">✕</span></div><table><thead><tr><th>العميل</th><th>رقم الهاتف</th><th>المنطقة</th><th>تواصل</th></tr></thead><tbody id="activeClientsBody"></tbody></table></div></div>
 
 <script>
   const db = supabase.createClient("https://jopymfpdovhtdrfanbig.supabase.co", "sb_publishable_3W6Aq9ivZLH_B0dYFH30pA_8dJic8Bm");
@@ -422,8 +508,10 @@
   let currentInspectedProvider = null;
   let activeAccFilter = 'all';
   let refreshTimer = null;
+  let currentRejectId = null;
+  let currentRejectPhone = null;
 
-  // فحص أمان الدخول عند فتح الصفحة
+  // تهيئة اللوحة
   window.addEventListener('DOMContentLoaded', async () => {
     checkAdminAuth();
   });
@@ -431,15 +519,118 @@
   async function checkAdminAuth() {
     const { data: { session } } = await db.auth.getSession();
     if (session && session.user) {
+      // فحص الاعتماد في جدول الإدارة admin_profiles
+      const { data: profile } = await db.from('admin_profiles').select('status, role').eq('email', session.user.email).single();
+      
+      // استثناء خاص لحساب الآدمن الرئيسي لضمان عدم القفل
+      const isSuperAdmin = (session.user.email === 'amtwaly993@gmail.com');
+
+      if (!isSuperAdmin && profile && profile.status === 'pending') {
+         await db.auth.signOut();
+         alert('حسابك قيد المراجعة ولم يتم اعتماده من الإدارة العليا بعد.');
+         document.getElementById('lockScreen').style.display = 'flex';
+         if (refreshTimer) clearInterval(refreshTimer);
+         return;
+      }
+
       currentAdminSession = session;
       document.getElementById('lockScreen').style.display = 'none';
-      document.getElementById('adminSessionBadge').innerText = session.user.email;
+      
+      const sessionRole = isSuperAdmin ? 'مدير عام (Admin)' : (profile ? profile.role : 'مدير عام (Admin)');
+      document.getElementById('adminSessionBadge').innerText = `${session.user.email} - ${sessionRole}`;
+      
+      loadPricingSettings();
       loadAllData();
-      loadGlobalCommissionSetting();
       if (!refreshTimer) refreshTimer = setInterval(loadAllData, 20000);
     } else {
       document.getElementById('lockScreen').style.display = 'flex';
       if (refreshTimer) clearInterval(refreshTimer);
+    }
+  }
+
+  function toggleAuthForms(type) {
+    if (type === 'register') {
+      document.getElementById('loginFormContainer').style.display = 'none';
+      document.getElementById('registerFormContainer').style.display = 'block';
+    } else {
+      document.getElementById('loginFormContainer').style.display = 'block';
+      document.getElementById('registerFormContainer').style.display = 'none';
+    }
+  }
+
+  // --- دالة رفع الصور ضغطاً ---
+  async function uploadCompressedImage(file, folder = 'admin_docs') {
+    if (!file) return '';
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let w = img.width, h = img.height;
+          if (w > h && w > maxDim) { h *= maxDim / w; w = maxDim; }
+          else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(async (blob) => {
+            if (!blob) return resolve('');
+            const fileName = `${folder}/${Date.now()}_${Math.random().toString(36).substr(2, 6)}.jpg`;
+            const { error } = await db.storage.from('octa-docs').upload(fileName, blob, { contentType: 'image/jpeg' });
+            if (error) resolve('');
+            else {
+              const { data } = db.storage.from('octa-docs').getPublicUrl(fileName);
+              resolve(data ? data.publicUrl : '');
+            }
+          }, 'image/jpeg', 0.72);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // --- طلب الانضمام لفريق الإدارة ---
+  async function submitAdminRequest() {
+    const email = document.getElementById('regAdminEmail').value.trim();
+    const password = document.getElementById('regAdminPassword').value;
+    const role = document.getElementById('regAdminRole').value;
+    const btn = document.getElementById('registerSubmitBtn');
+
+    if (!email || !password) return alert('يرجى إدخال البريد وكلمة المرور المقترحة');
+    
+    btn.innerText = 'جارٍ رفع الأوراق... ⏳'; btn.disabled = true;
+
+    const idFrontFile = document.getElementById('regAdminIdFront').files[0];
+    const idBackFile = document.getElementById('regAdminIdBack').files[0];
+    
+    const idFront = await uploadCompressedImage(idFrontFile, 'admin_ids');
+    const idBack = await uploadCompressedImage(idBackFile, 'admin_ids');
+
+    // تسجيل الحساب في Auth
+    const { data: authData, error: authError } = await db.auth.signUp({ email, password });
+    if (authError) {
+      alert('خطأ في التسجيل: ' + authError.message);
+      btn.innerText = 'إرسال الطلب للاعتماد 🚀'; btn.disabled = false;
+      return;
+    }
+
+    // إدراج الطلب في جدول الاعتمادات
+    const { error: dbError } = await db.from('admin_profiles').insert([{
+      email: email,
+      role: role,
+      id_front_img: idFront,
+      id_back_img: idBack,
+      status: 'pending'
+    }]);
+
+    btn.innerText = 'إرسال الطلب للاعتماد 🚀'; btn.disabled = false;
+
+    if (dbError) {
+      alert('خطأ في رفع البيانات: ' + dbError.message);
+    } else {
+      alert('تم إرسال طلبك للإدارة العليا بنجاح! يرجى الانتظار حتى يتم اعتماد حسابك لتتمكن من الدخول.');
+      toggleAuthForms('login');
     }
   }
 
@@ -449,111 +640,51 @@
     const btn = document.getElementById('loginSubmitBtn');
     const errBox = document.getElementById('loginErrorMsg');
 
-    if (!email || !password) {
-      errBox.innerText = 'يرجى إدخال البريد الإلكتروني وكلمة المرور';
-      errBox.style.display = 'block';
-      return;
-    }
+    if (!email || !password) { errBox.innerText = 'يرجى إدخال البريد وكلمة المرور'; errBox.style.display = 'block'; return; }
 
-    btn.innerText = 'جارٍ التحقق المشفر... ⏳';
-    btn.disabled = true;
-    errBox.style.display = 'none';
+    btn.innerText = 'جارٍ التحقق... ⏳'; btn.disabled = true; errBox.style.display = 'none';
 
     const { data, error } = await db.auth.signInWithPassword({ email, password });
 
-    btn.innerText = 'دخول لوحة التحكم ⚡';
-    btn.disabled = false;
+    btn.innerText = 'دخول لوحة التحكم ⚡'; btn.disabled = false;
 
     if (error) {
-      errBox.innerText = 'فشل الدخول: ' + (error.message === 'Invalid login credentials' ? 'البريد أو كلمة المرور غير صحيحة' : error.message);
-      errBox.style.display = 'block';
+      errBox.innerText = 'فشل الدخول: بيانات غير صحيحة'; errBox.style.display = 'block';
     } else {
-      currentAdminSession = data.session;
-      document.getElementById('lockScreen').style.display = 'none';
-      document.getElementById('adminSessionBadge').innerText = data.session.user.email;
-      loadAllData();
-      loadGlobalCommissionSetting();
-      if (!refreshTimer) refreshTimer = setInterval(loadAllData, 20000);
+      checkAdminAuth();
     }
   }
 
   async function adminSignOut() {
-    if (!confirm('هل تريد تسجيل الخروج من لوحة التحكم؟')) return;
+    if (!confirm('هل تريد تسجيل الخروج؟')) return;
     await db.auth.signOut();
     location.reload();
   }
 
   function showTab(id, btn) {
-    document.querySelectorAll('.section-card').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).style.display = 'block';
+    document.getElementById(id).classList.add('active');
     btn.classList.add('active');
   }
 
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-  function openSelectiveResetModal() { document.getElementById('selectiveResetModal').classList.add('show'); }
 
-  // ==========================================
-  // إرسال إشعار Web Push عبر OneSignal REST API
-  // ==========================================
-  async function sendOneSignalPushNotification(messageText, targetRole = 'all') {
-    const ONE_SIGNAL_APP_ID = "80701e68-609a-4ef8-9bbe-d8ea938cf597";
-    const ONE_SIGNAL_API_KEY = "os_v2_app_qbyb42datjhprg563dvjhdhvs6f47vzguc1unrv5nkccsc6p2xo5z5m42klvs3dkq2mzlubfaqdpj2cwdcoul5ekl3tlydmja3ghsoq";
-
-    let filters = [];
-    if (targetRole !== 'all') {
-      filters = [
-        { field: "tag", key: "user_role", relation: "=", value: targetRole }
-      ];
-    }
-
-    const payload = {
-      app_id: ONE_SIGNAL_APP_ID,
-      contents: { en: messageText, ar: messageText },
-      headings: { en: "OCTA HUB | إشعار عاجل 📢", ar: "OCTA HUB | إشعار عاجل 📢" },
-      url: "https://amtwaly993-lang.github.io/x-app/index.html"
-    };
-
-    if (filters.length > 0) {
-      payload.filters = filters;
-    } else {
-      payload.included_segments = ["Subscribed Users"];
-    }
-
-    try {
-      const res = await fetch("https://onesignal.com/api/v1/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "Authorization": `Basic ${ONE_SIGNAL_API_KEY}`
-        },
-        body: JSON.stringify(payload)
-      });
-      return await res.json();
-    } catch (err) {
-      console.error("فشل إرسال الإشعار السحابي:", err);
-    }
+  function loadPricingSettings() {
+    document.getElementById('setClientFee').value = localStorage.getItem('octa_admin_client_fee') || 1;
+    document.getElementById('setCourierFee').value = localStorage.getItem('octa_admin_courier_fee') || 5;
   }
 
-  async function loadGlobalCommissionSetting() {
-    const { data: set } = await db.from('platform_settings').select('commission_fee').eq('id', 1).single();
-    if (set && set.commission_fee !== undefined) {
-      document.getElementById('globalCommissionInput').value = Number(set.commission_fee).toFixed(2);
-    }
-  }
-
-  async function saveGlobalCommission() {
-    const fee = parseFloat(document.getElementById('globalCommissionInput').value);
-    if (isNaN(fee) || fee < 0) return alert('يرجى إدخال قيمة عمولة صحيحة');
-
-    const { error } = await db.from('platform_settings').upsert({ id: 1, commission_fee: fee });
-    if (error) alert('خطأ في حفظ العمولة: ' + error.message);
-    else alert(`✓ تم حفظ العمولة العامة بنجاح: ${fee.toFixed(2)} ج لكل طلب!`);
+  function savePricingSettings() {
+    localStorage.setItem('octa_admin_client_fee', document.getElementById('setClientFee').value);
+    localStorage.setItem('octa_admin_courier_fee', document.getElementById('setCourierFee').value);
+    alert('✓ تم حفظ وتحديث التسعيرة في النظام!');
   }
 
   async function loadAllData() {
     const twoMinsAgo = new Date(Date.now() - 90 * 1000).toISOString();
 
+    // 1. المناديب (مع زر الحذف الشامل للتجارب)
     const { data: provs } = await db.from('service_providers').select('*').order('id', { ascending: false });
     if (provs) {
       cachedProviders = provs;
@@ -569,63 +700,156 @@
         html += `
           <tr>
             <td>
-              <b style="cursor:pointer; color:var(--navy);" onclick="openProviderDocs(${p.id})">${p.name}</b><br>
-              <small style="color:#64748b;">${p.vehicle_type}</small>
+              <b style="cursor:pointer; color:var(--text-white);" onclick="openProviderDocs(${p.id})">${p.name}</b><br>
+              <small style="color:var(--text-muted);">${p.vehicle_type}</small>
             </td>
             <td>${p.phone}</td>
-            <td><span class="badge ${isLive ? 'badge-done' : ''}">${isLive ? 'متصل فعلياً 🟢' : 'غير متصل ⚪'}</span></td>
-            <td><b style="color:var(--gold); font-size:13px;">${p.wallet_balance || 0} ج</b></td>
+            <td><span class="badge ${isLive ? 'badge-done' : ''}">${isLive ? 'متصل 🟢' : 'غير متصل ⚪'}</span></td>
+            <td><b style="color:${p.wallet_balance < 0 ? 'var(--danger)' : 'var(--green)'}; font-size:13px;" dir="ltr">${p.wallet_balance || 0} ج</b></td>
             <td>
-              <span class="badge ${isPending ? 'badge-pending' : isBanned ? 'badge-banned' : 'badge-done'}">
-                ${p.status || 'معتمد'}
-              </span>
+              <div style="display:flex; gap:4px; align-items:center;">
+                <input type="number" id="limit_${p.id}" value="${p.credit_limit || 0}" class="input-box" style="width:70px; margin:0; text-align:center; padding:6px;" dir="ltr">
+                <button class="action-btn btn-gold" onclick="updateCreditLimit(${p.id})">حفظ</button>
+              </div>
             </td>
             <td>
-              <button class="action-btn btn-gold" style="padding:4px 8px; font-size:10.5px;" onclick="openProviderDocs(${p.id})">
-                فحص الأوراق والمحفظة 📄
-              </button>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <span class="badge ${isPending ? 'badge-pending' : isBanned ? 'badge-banned' : 'badge-done'}">${p.status || 'معتمد'}</span>
+                <button class="action-btn" style="background:rgba(197,160,89,0.1); color:var(--gold); border:1px solid var(--gold);" onclick="openProviderDocs(${p.id})">فحص الورق 📄</button>
+              </div>
             </td>
             <td>
-              ${isBanned ? `<button class="action-btn btn-green" onclick="unbanProvider(${p.id})">فك الحظر 🟢</button>` : `<button class="action-btn btn-danger" onclick="banProvider(${p.id})">حظر 🔴</button>`}
+              <div style="display:flex; gap:6px;">
+                ${isBanned ? `<button class="action-btn btn-green" onclick="unbanProvider(${p.id})">فك الحظر</button>` : `<button class="action-btn btn-danger" onclick="banProvider(${p.id})">حظر</button>`}
+                <button class="action-btn" style="background:rgba(239,68,68,0.3); color:#fff; border:1px solid var(--danger);" onclick="deleteProviderPermanently(${p.id}, '${p.name}')" title="حذف نهائي للتجارب">حذف 🗑️</button>
+              </div>
             </td>
           </tr>
         `;
       });
-      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7">لا يوجد مناديب مسجلين.</td></tr>';
+      document.getElementById('providersBody').innerHTML = html || '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">لا يوجد مناديب مسجلين.</td></tr>';
     }
 
+    // 2. العملاء المتصفحين
     const { data: clients } = await db.from('active_sessions').select('*').eq('role', 'client').gte('last_seen', twoMinsAgo);
     if (clients) {
       cachedActiveClients = clients;
       document.getElementById('activeClientsCount').innerText = clients.length;
     }
 
+    // 3. طلبات الشحن
     const { data: recharges } = await db.from('wallet_recharge_requests').select('*').eq('status', 'معلق').order('id', { ascending: false });
     if (recharges) {
       document.getElementById('pendingRechargesCount').innerText = recharges.length;
       let html = '';
       recharges.forEach(r => {
+        const prov = cachedProviders.find(p => p.phone === r.provider_phone);
+        const curBal = prov ? (prov.wallet_balance || 0) : 0;
+        
         html += `
           <tr>
-            <td>${r.provider_phone}</td>
-            <td><b style="color:var(--green);">${r.amount} ج</b></td>
+            <td>
+              <b>${r.provider_phone}</b><br>
+              <span style="color:${curBal < 0 ? 'var(--danger)' : 'var(--green)'}; font-size:11px; font-weight:bold;" dir="ltr">رصيده الآن: ${curBal} ج</span>
+            </td>
+            <td><b style="color:var(--gold); font-size:13px;">${r.amount} ج</b></td>
             <td>${r.method}</td>
             <td><img src="${r.receipt_img}" class="doc-preview-img" onclick="window.open('${r.receipt_img}')"></td>
-            <td>${new Date(r.created_at).toLocaleTimeString('ar-EG')}</td>
+            <td><span style="font-size:10px; color:var(--text-muted);">${new Date(r.created_at).toLocaleTimeString('ar-EG')}</span></td>
             <td>
-              <button class="action-btn btn-green" onclick="approveRecharge(${r.id}, '${r.provider_phone}', ${r.amount})">اعتماد ✓</button>
-              <button class="action-btn btn-danger" onclick="rejectRecharge(${r.id}, '${r.provider_phone}')">رفض ✕</button>
+              <div style="display:flex; gap:6px;">
+                <button class="action-btn btn-wa" onclick="window.open('https://wa.me/2${r.provider_phone}', '_blank')" title="واتساب">💬</button>
+                <button class="action-btn btn-green" onclick="approveRecharge(${r.id}, '${r.provider_phone}', ${r.amount})">اعتماد ✓</button>
+                <button class="action-btn btn-danger" onclick="openRejectModal(${r.id}, '${r.provider_phone}')">رفض ✕</button>
+              </div>
             </td>
           </tr>
         `;
       });
-      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6">لا توجد طلبات شحن معلقة.</td></tr>';
+      document.getElementById('rechargesBody').innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا توجد طلبات شحن معلقة.</td></tr>';
     }
 
     loadAccountingData();
     loadLiveOrdersTable();
     loadAnnouncementsTable();
+    loadPartners();
     loadVouchersTable();
+    loadAdminRequests();
+  }
+
+  // --- دالة حذف المندوب نهائياً (مفيدة أثناء فترة التجارب) ---
+  async function deleteProviderPermanently(id, name) {
+    if (!confirm(`⚠️ تحذير شديد:\nهل أنت متأكد من حذف الحساب التجريبي للمندوب (${name}) نهائياً من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.`)) return;
+    
+    const { error } = await db.from('service_providers').delete().eq('id', id);
+    if (!error) {
+      alert(`✓ تم حذف حساب المندوب (${name}) نهائياً بنجاح.`);
+      loadAllData();
+    } else {
+      alert('خطأ أثناء الحذف: ' + error.message);
+    }
+  }
+
+  async function updateCreditLimit(id) {
+    const limit = document.getElementById(`limit_${id}`).value;
+    const { error } = await db.from('service_providers').update({ credit_limit: Number(limit) }).eq('id', id);
+    if (!error) alert('✓ تم تحديث الحد الائتماني بنجاح');
+    else alert('خطأ: ' + error.message);
+  }
+
+  function openRejectModal(id, phone) {
+    currentRejectId = id; currentRejectPhone = phone;
+    document.getElementById('rejectReasonModal').classList.add('show');
+  }
+
+  async function confirmRejectRecharge() {
+    const reason = document.getElementById('rejectReasonSelect').value;
+    await db.from('wallet_recharge_requests').update({ status: 'مرفوض', admin_notes: reason }).eq('id', currentRejectId);
+    closeModal('rejectReasonModal');
+    alert('تم رفض الإيصال وتسجيل السبب ✓');
+    loadAllData();
+  }
+
+  async function loadPartners() {
+    const { data: parts } = await db.from('medical_partners').select('*').order('id', {ascending: false});
+    const tbody = document.getElementById('partnersBody');
+    if (!parts || parts.length === 0) return tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">لا يوجد شركاء مسجلين.</td></tr>';
+    
+    let html = '';
+    parts.forEach(p => {
+      let activeBadge = p.is_active ? '<span class="badge badge-done">مفعل 🟢</span>' : '<span class="badge badge-banned">موقوف 🔴</span>';
+      html += `<tr>
+        <td><b>${p.name}</b></td>
+        <td style="letter-spacing:3px; font-weight:900; font-size:14px; color:var(--text-gold);">${p.pin_code}</td>
+        <td>${activeBadge}</td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <button class="action-btn" style="background:${p.is_active ? '#64748b' : 'var(--green)'};" onclick="togglePartner(${p.id}, ${!p.is_active})">${p.is_active ? 'إيقاف' : 'تفعيل'}</button>
+            <button class="action-btn btn-wa" onclick="copyPartnerData('${p.name}', '${p.pin_code}')">نسخ للإرسال 📋</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  async function saveNewPartner() {
+    const name = document.getElementById('newPartnerName').value.trim();
+    const pin = document.getElementById('newPartnerPin').value;
+    if(!name || !pin) return alert('يرجى إكمال البيانات وتوليد الرمز');
+    await db.from('medical_partners').insert([{ name: name, pin_code: pin, is_active: true }]);
+    closeModal('addPartnerModal'); alert('تم إضافة الشريك بنجاح 🏥'); loadPartners();
+  }
+
+  async function togglePartner(id, status) {
+    await db.from('medical_partners').update({ is_active: status }).eq('id', id);
+    loadPartners();
+  }
+
+  function copyPartnerData(name, pin) {
+    const text = `مرحباً، تم اعتماد جهتك (${name}) كشريك في منصة OCTA HUB.\nرابط الدخول للبوابة: partners.html\nالرقم السري (PIN) الخاص بكم هو: ${pin}`;
+    navigator.clipboard.writeText(text);
+    alert('تم نسخ الرسالة بنجاح.');
   }
 
   function openProviderDocs(provId) {
@@ -639,196 +863,66 @@
     document.getElementById('quickRechargeAmt').value = '';
 
     const isPending = (prov.status === 'قيد المراجعة');
-    document.getElementById('modalApprovalStatus').innerHTML = `
-      <span class="badge ${isPending ? 'badge-pending' : prov.status === 'محظور' ? 'badge-banned' : 'badge-done'}" style="font-size:12px; padding:6px 12px;">
-        الحالة الحالية: ${prov.status || 'معتمد'}
-      </span>
-    `;
+    document.getElementById('modalApprovalStatus').innerHTML = `<span class="badge ${isPending ? 'badge-pending' : prov.status === 'محظور' ? 'badge-banned' : 'badge-done'}" style="font-size:12px; padding:6px 12px;">الحالة الحالية: ${prov.status || 'معتمد'}</span>`;
 
     let docsHtml = '';
     const docs = [
-      { label: 'بطاقة الرقم القومي (وجه)', img: prov.id_front_img },
-      { label: 'بطاقة الرقم القومي (ظهر)', img: prov.id_back_img },
-      { label: 'وسيلة التنقل / المركبة', img: prov.vehicle_img },
-      { label: 'رخصة القيادة (وجه)', img: prov.license_front_img },
-      { label: 'رخصة القيادة (ظهر)', img: prov.license_back_img },
-      { label: 'رخصة المركبة (وجه)', img: prov.vehicle_license_front_img },
+      { label: 'وجه البطاقة', img: prov.id_front_img }, { label: 'ظهر البطاقة', img: prov.id_back_img },
+      { label: 'وسيلة التنقل', img: prov.vehicle_img }, { label: 'رخصة القيادة (وجه)', img: prov.license_front_img },
+      { label: 'رخصة القيادة (ظهر)', img: prov.license_back_img }, { label: 'رخصة المركبة (وجه)', img: prov.vehicle_license_front_img },
       { label: 'رخصة المركبة (ظهر)', img: prov.vehicle_license_back_img }
     ];
 
-    docs.forEach(d => {
-      if (d.img) {
-        docsHtml += `
-          <div class="doc-card">
-            <span>${d.label}</span>
-            <img src="${d.img}" onclick="window.open('${d.img}')" title="اضغط للتكبير في صفحة مستقلة">
-          </div>
-        `;
-      }
-    });
-
-    if (!docsHtml) {
-      docsHtml = '<div style="grid-column:1/-1; text-align:center; padding:18px; color:#64748b;">لم يقم الشريك برفع مستندات مصورة بعد.</div>';
-    }
-
-    document.getElementById('modalDocsGrid').innerHTML = docsHtml;
+    docs.forEach(d => { if (d.img) docsHtml += `<div class="doc-card"><span>${d.label}</span><img src="${d.img}" onclick="window.open('${d.img}')"></div>`; });
+    document.getElementById('modalDocsGrid').innerHTML = docsHtml || '<div style="grid-column:1/-1; text-align:center; padding:18px; color:var(--text-muted);">لا توجد مستندات مرفوعة.</div>';
     document.getElementById('providerDocsModal').classList.add('show');
   }
 
   async function updateProviderStatus(newStatus) {
     if (!currentInspectedProvider) return;
-    const { error } = await db.from('service_providers').update({ status: newStatus }).eq('id', currentInspectedProvider.id);
-    if (!error) {
-      alert(`✓ تم تحديث حالة الحساب إلى: [${newStatus}] بنجاح!`);
-      closeModal('providerDocsModal');
-      loadAllData();
-    } else {
-      alert('خطأ: ' + error.message);
-    }
+    await db.from('service_providers').update({ status: newStatus }).eq('id', currentInspectedProvider.id);
+    alert(`تم التحديث إلى: [${newStatus}]`); closeModal('providerDocsModal'); loadAllData();
   }
 
   async function executeQuickRecharge() {
     if (!currentInspectedProvider) return;
     const amt = parseFloat(document.getElementById('quickRechargeAmt').value);
-    if (isNaN(amt) || amt <= 0) return alert('أدخل مبلغ شحن صحيح');
-
+    if (isNaN(amt) || amt <= 0) return alert('أدخل مبلغ صحيح');
     const newBal = (Number(currentInspectedProvider.wallet_balance) || 0) + amt;
-    const { error } = await db.from('service_providers').update({ wallet_balance: newBal }).eq('id', currentInspectedProvider.id);
-    if (!error) {
-      alert(`✓ تم إيداع ${amt} ج في محفظة ${currentInspectedProvider.name} بنجاح! الرصيد الجديد: ${newBal} ج`);
-      document.getElementById('modalProvBalance').innerText = `${newBal.toFixed(2)} ج`;
-      document.getElementById('quickRechargeAmt').value = '';
-      loadAllData();
-    } else {
-      alert('خطأ: ' + error.message);
-    }
+    await db.from('service_providers').update({ wallet_balance: newBal }).eq('id', currentInspectedProvider.id);
+    alert(`تم إيداع ${amt} ج بنجاح!`); document.getElementById('modalProvBalance').innerText = `${newBal.toFixed(2)} ج`; loadAllData();
   }
 
-  function toggleResetDateInputs(mode) {
-    document.getElementById('resetMonthBox').style.display = (mode === 'month') ? 'block' : 'none';
-    document.getElementById('resetDayBox').style.display = (mode === 'day') ? 'block' : 'none';
-    document.getElementById('resetRangeBox').style.display = (mode === 'range') ? 'block' : 'none';
-  }
-
-  async function executeSelectiveReset() {
-    const pass = document.getElementById('resetAdminPassConfirm').value;
-    if (!pass) return alert('يرجى إدخال كلمة مرور الحساب للتأكيد!');
-
-    const { data: { session } } = await db.auth.getSession();
-    if (!session || !session.user) return alert('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً');
-
-    // التحقق المشفر من كلمة المرور عبر Supabase Auth
-    const { error: authErr } = await db.auth.signInWithPassword({
-      email: session.user.email,
-      password: pass
-    });
-
-    if (authErr) return alert('كلمة مرور الآدمن غير صحيحة لتأكيد الحذف!');
-
-    const table = document.getElementById('resetTargetSection').value;
-    const dateType = document.getElementById('resetDateType').value;
-    let query = db.from(table).delete();
-
-    let startDate = null;
-    let endDate = null;
-
-    if (dateType === 'month') {
-      const ym = document.getElementById('resetMonthInput').value;
-      if (!ym) return alert('يرجى تحديد الشهر والسنة للحذف');
-      const parts = ym.split('-');
-      const y = parseInt(parts[0]);
-      const m = parseInt(parts[1]);
-      startDate = new Date(y, m - 1, 1).toISOString();
-      endDate = new Date(y, m, 0, 23, 59, 59).toISOString();
-    } else if (dateType === 'day') {
-      const d = document.getElementById('resetDayInput').value;
-      if (!d) return alert('يرجى تحديد اليوم');
-      startDate = new Date(d + 'T00:00:00').toISOString();
-      endDate = new Date(d + 'T23:59:59').toISOString();
-    } else if (dateType === 'range') {
-      const from = document.getElementById('resetRangeFrom').value;
-      const to = document.getElementById('resetRangeTo').value;
-      if (!from || !to) return alert('يرجى تحديد تاريخ البداية والنهاية');
-      startDate = new Date(from + 'T00:00:00').toISOString();
-      endDate = new Date(to + 'T23:59:59').toISOString();
-    }
-
-    if (dateType !== 'all') {
-      query = query.gte('created_at', startDate).lte('created_at', endDate);
-    } else {
-      query = query.neq('id', 0);
-    }
-
-    if (!confirm('هل أنت متأكد تماماً من تنفيذ هذا الحذف في النطاق المحدد؟')) return;
-
-    const { error } = await query;
-    if (error) {
-      alert('خطأ أثناء التصفير: ' + error.message);
-    } else {
-      alert('✓ تم تصفير وحذف البيانات المحددة بنجاح!');
-      closeModal('selectiveResetModal');
-      document.getElementById('resetAdminPassConfirm').value = '';
-      loadAllData();
-    }
-  }
-
-  function setAccDateFilter(filter) {
-    activeAccFilter = filter;
-    loadAccountingData();
-  }
+  function setAccDateFilter(filter) { activeAccFilter = filter; loadAccountingData(); }
 
   async function loadAccountingData() {
     let query = db.from('orders').select('*').eq('status', 'مكتمل');
-
     const now = new Date();
-    if (activeAccFilter === 'today') {
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-      query = query.gte('completed_at', todayStart);
-    } else if (activeAccFilter === '7days') {
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      query = query.gte('completed_at', sevenDaysAgo);
-    } else if (activeAccFilter === 'month') {
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      query = query.gte('completed_at', monthStart);
-    }
+    if (activeAccFilter === 'today') query = query.gte('completed_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString());
+    else if (activeAccFilter === '7days') query = query.gte('completed_at', new Date(Date.now() - 7*86400000).toISOString());
+    else if (activeAccFilter === 'month') query = query.gte('completed_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
 
-    const { data: completedOrders } = await query;
-    let totalGmv = 0;
-    let totalComm = 0;
-    let courierNet = 0;
-
-    let tableHtml = '';
-    if (completedOrders && completedOrders.length > 0) {
-      completedOrders.forEach(o => {
+    const { data: ords } = await query;
+    let totalGmv = 0, totalComm = 0, courierNet = 0, tableHtml = '';
+    
+    if (ords && ords.length > 0) {
+      ords.forEach(o => {
         const orderVal = Number(o.total_price) || (Number(o.delivery_fee) + 1);
         const comm = Number(o.commission_deducted) || 2.00;
         const net = Math.max(0, (Number(o.delivery_fee) || 25) - comm);
+        totalGmv += orderVal; totalComm += comm; courierNet += net;
 
-        totalGmv += orderVal;
-        totalComm += comm;
-        courierNet += net;
-
-        tableHtml += `
-          <tr>
-            <td><b style="color:var(--gold);">#${o.id}</b></td>
-            <td>${o.order_type}</td>
-            <td>${o.courier_phone || 'غير مسجل'}</td>
-            <td><b>${orderVal.toFixed(2)} ج</b></td>
-            <td style="color:var(--gold); font-weight:bold;">${comm.toFixed(2)} ج</td>
-            <td style="color:var(--green); font-weight:bold;">${net.toFixed(2)} ج</td>
-            <td>${o.completed_at ? new Date(o.completed_at).toLocaleDateString('ar-EG') : 'اليوم'}</td>
-          </tr>
-        `;
+        tableHtml += `<tr><td><b style="color:var(--gold);">#${o.id}</b></td><td>${o.order_type}</td><td>${o.courier_phone || 'غير مسجل'}</td><td><b>${orderVal.toFixed(2)} ج</b></td><td style="color:var(--gold); font-weight:bold;">${comm.toFixed(2)} ج</td><td style="color:var(--green); font-weight:bold;">${net.toFixed(2)} ج</td><td>${o.completed_at ? new Date(o.completed_at).toLocaleDateString('ar-EG') : 'اليوم'}</td></tr>`;
       });
     } else {
-      tableHtml = '<tr><td colspan="7" style="text-align:center; padding:14px; color:#64748b;">لا توجد عمليات مكتملة مسجلة في هذا النطاق الزمني.</td></tr>';
+      tableHtml = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">لا توجد عمليات مكتملة.</td></tr>';
     }
 
     document.getElementById('accTotalGmv').innerText = totalGmv.toFixed(2) + ' ج';
     document.getElementById('accTotalComm').innerText = totalComm.toFixed(2) + ' ج';
     document.getElementById('accCourierNet').innerText = courierNet.toFixed(2) + ' ج';
-    document.getElementById('kpiGmvVal').innerHTML = `${totalGmv.toFixed(0)} <small style="font-size:12px;">ج</small>`;
-    document.getElementById('kpiCommissionsVal').innerHTML = `${totalComm.toFixed(0)} <small style="font-size:12px;">ج</small>`;
+    document.getElementById('kpiGmvVal').innerHTML = `${totalGmv.toFixed(0)} <small>ج</small>`;
+    document.getElementById('kpiCommissionsVal').innerHTML = `${totalComm.toFixed(0)} <small>ج</small>`;
     document.getElementById('accountingTableBody').innerHTML = tableHtml;
 
     const { data: approvedRec } = await db.from('wallet_recharge_requests').select('amount').eq('status', 'مقبول');
@@ -838,181 +932,146 @@
 
   function exportAccountingCSV() {
     const rows = [["رقم الطلب", "نوع الخدمة", "المندوب", "قيمة الطلب", "عمولة المنصة", "صافي المندوب", "التاريخ"]];
-    const trs = document.querySelectorAll('#accountingTableBody tr');
-    trs.forEach(tr => {
+    document.querySelectorAll('#accountingTableBody tr').forEach(tr => {
       const tds = tr.querySelectorAll('td');
-      if (tds.length === 7) {
-        rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText, tds[5].innerText, tds[6].innerText]);
-      }
+      if (tds.length === 7) rows.push([tds[0].innerText, tds[1].innerText, tds[2].innerText, tds[3].innerText, tds[4].innerText, tds[5].innerText, tds[6].innerText]);
     });
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + rows.map(e => e.join(",")).join("\n");
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Octa_Hub_Financial_Report_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8,\uFEFF" + rows.map(e => e.join(",")).join("\n")));
+    link.setAttribute("download", `Octa_Hub_Financial_Report.csv`);
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
   }
 
   async function loadLiveOrdersTable() {
     const { data: list } = await db.from('orders').select('*').order('id', { ascending: false }).limit(20);
-    const tbody = document.getElementById('liveOrdersBody');
-    if (!tbody) return;
-    if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:12px; color:#64748b;">لا توجد طلبات مسجلة حالياً.</td></tr>';
-      return;
-    }
     let html = '';
-    list.forEach(o => {
-      html += `
-        <tr>
-          <td><b style="color:var(--gold);">#${o.id}</b></td>
-          <td>${o.order_type}</td>
-          <td>${o.client_name} (${o.client_phone})</td>
-          <td>${o.courier_phone || 'في الانتظار'}</td>
-          <td><b>${o.total_price || o.delivery_fee} ج</b></td>
-          <td><span class="badge ${o.status==='مكتمل'?'badge-done':o.status==='جديد'?'badge-pending':'badge-banned'}">${o.status}</span></td>
-          <td>
-            <button class="action-btn btn-danger" style="padding:3px 7px; font-size:10px;" onclick="cancelOrderFromAdmin(${o.id})">إلغاء ✕</button>
-          </td>
-        </tr>
-      `;
-    });
-    tbody.innerHTML = html;
+    if (list && list.length > 0) {
+      list.forEach(o => {
+        html += `<tr><td><b style="color:var(--gold);">#${o.id}</b></td><td>${o.order_type}</td><td>${o.client_name} (${o.client_phone})</td><td>${o.courier_phone || 'في الانتظار'}</td><td><b>${o.total_price || o.delivery_fee} ج</b></td><td><span class="badge ${o.status==='مكتمل'?'badge-done':o.status==='جديد'?'badge-pending':'badge-banned'}">${o.status}</span></td><td><button class="action-btn btn-danger" onclick="cancelOrderFromAdmin(${o.id})">إلغاء ✕</button></td></tr>`;
+      });
+    } else {
+      html = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">لا توجد طلبات حية.</td></tr>';
+    }
+    document.getElementById('liveOrdersBody').innerHTML = html;
   }
 
-  async function cancelOrderFromAdmin(id) {
-    if (!confirm('هل تريد إلغاء هذا الطلب؟')) return;
-    await db.from('orders').update({ status: 'ملغي' }).eq('id', id);
-    loadLiveOrdersTable();
-  }
+  async function cancelOrderFromAdmin(id) { if (confirm('إلغاء الطلب؟')) { await db.from('orders').update({ status: 'ملغي' }).eq('id', id); loadLiveOrdersTable(); } }
 
   async function approveRecharge(reqId, phone, amt) {
     const { data: p } = await db.from('service_providers').select('wallet_balance').eq('phone', phone).single();
     if (p) {
-      const newBal = (Number(p.wallet_balance) || 0) + amt;
-      await db.from('service_providers').update({ wallet_balance: newBal, recharge_rejection_count: 0 }).eq('phone', phone);
+      await db.from('service_providers').update({ wallet_balance: (Number(p.wallet_balance) || 0) + amt }).eq('phone', phone);
       await db.from('wallet_recharge_requests').update({ status: 'مقبول' }).eq('id', reqId);
-      alert('تم اعتماد التحويل وشحن الرصيد بنجاح!');
-      loadAllData();
+      alert('تم الشحن ✓'); loadAllData();
     }
   }
 
-  async function rejectRecharge(reqId, phone) {
-    await db.from('wallet_recharge_requests').update({ status: 'مرفوض' }).eq('id', reqId);
-    alert('تم رفض الإيصال.');
-    loadAllData();
-  }
-
-  async function unbanProvider(id) {
-    await db.from('service_providers').update({ status: 'معتمد' }).eq('id', id);
-    alert('تم فك الحظر وتفعيل الحساب بنجاح!');
-    loadAllData();
-  }
-
-  async function banProvider(id) {
-    await db.from('service_providers').update({ status: 'محظور' }).eq('id', id);
-    alert('تم حظر الحساب.');
-    loadAllData();
-  }
+  async function unbanProvider(id) { await db.from('service_providers').update({ status: 'معتمد' }).eq('id', id); loadAllData(); }
+  async function banProvider(id) { await db.from('service_providers').update({ status: 'محظور' }).eq('id', id); loadAllData(); }
 
   function openOnlineDriversModal() {
     let html = '';
-    if (cachedOnlineDrivers.length === 0) {
-      html = '<tr><td colspan="5" style="text-align:center; padding:18px; color:#64748b;">لا يوجد كباتن متصلين فعلياً في الوقت الحالي.</td></tr>';
-    } else {
-      cachedOnlineDrivers.forEach(d => {
-        const cleanPhone = d.phone.startsWith('0') ? '2' + d.phone : d.phone;
-        html += `
-          <tr>
-            <td><b>${d.name}</b> ${d.is_verified ? '🛡️' : ''}</td>
-            <td>${d.vehicle_type}</td>
-            <td>${d.phone}</td>
-            <td><b style="color:var(--green);">${d.wallet_balance} ج</b></td>
-            <td>
-              <a href="tel:${d.phone}" class="action-btn">📞 اتصال</a>
-              <a href="https://wa.me/${cleanPhone}" target="_blank" class="action-btn btn-green">💬 واتساب</a>
-            </td>
-          </tr>
-        `;
-      });
-    }
-    document.getElementById('onlineDriversBody').innerHTML = html;
+    cachedOnlineDrivers.forEach(d => {
+      html += `<tr><td><b>${d.name}</b></td><td>${d.vehicle_type}</td><td>${d.phone}</td><td><b style="color:var(--green);">${d.wallet_balance} ج</b></td><td><a href="https://wa.me/2${d.phone}" target="_blank" class="action-btn btn-green">واتساب</a></td></tr>`;
+    });
+    document.getElementById('onlineDriversBody').innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا يوجد كباتن أونلاين</td></tr>';
     document.getElementById('onlineDriversModal').classList.add('show');
   }
 
   function openActiveClientsModal() {
     let html = '';
-    if (cachedActiveClients.length === 0) {
-      html = '<tr><td colspan="4" style="text-align:center; padding:18px; color:#64748b;">لا يوجد عملاء متصفحين للتطبيق حالياً.</td></tr>';
-    } else {
-      cachedActiveClients.forEach(c => {
-        const hasPhone = c.phone && c.phone !== 'غير مسجل' && c.phone.length > 9;
-        const cleanPhone = hasPhone ? (c.phone.startsWith('0') ? '2' + c.phone : c.phone) : '';
-        html += `
-          <tr>
-            <td><b>${c.name || 'عميل يتصفح'}</b></td>
-            <td>${c.phone || 'غير مسجل بعد'}</td>
-            <td>${c.compound || 'حدائق أكتوبر'}</td>
-            <td>
-              ${hasPhone ? `
-                <a href="tel:${c.phone}" class="action-btn">📞 اتصال</a>
-                <a href="https://wa.me/${cleanPhone}" target="_blank" class="action-btn btn-green">💬 واتساب</a>
-              ` : '<span style="color:#94a3b8; font-size:10px;">زائر</span>'}
-            </td>
-          </tr>
-        `;
-      });
-    }
-    document.getElementById('activeClientsBody').innerHTML = html;
+    cachedActiveClients.forEach(c => {
+      html += `<tr><td><b>${c.name}</b></td><td>${c.phone}</td><td>${c.compound}</td><td>${c.phone && c.phone.length>9 ? `<a href="https://wa.me/2${c.phone}" target="_blank" class="action-btn btn-green">واتساب</a>` : '<span style="color:var(--text-muted);">زائر</span>'}</td></tr>`;
+    });
+    document.getElementById('activeClientsBody').innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">لا يوجد عملاء أونلاين</td></tr>';
     document.getElementById('activeClientsModal').classList.add('show');
   }
 
   async function loadVouchersTable() {
     const { data: vList } = await db.from('medical_vouchers').select('*').order('id', { ascending: false });
-    const tbody = document.getElementById('vouchersBody');
-    if (!tbody) return;
-    if (!vList || vList.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6">لا توجد كوبونات مسجلة.</td></tr>';
-      return;
-    }
     let html = '';
-    vList.forEach(v => {
-      html += `
-        <tr>
-          <td><b style="color:var(--green);">${v.voucher_code}</b></td>
-          <td><b>${v.partner_name}</b></td>
-          <td>${v.beneficiary_name}</td>
-          <td>${v.beneficiary_phone}</td>
-          <td>${v.discount_desc}</td>
-          <td>${new Date(v.created_at).toLocaleDateString('ar-EG')}</td>
-        </tr>
-      `;
-    });
-    tbody.innerHTML = html;
+    if (vList && vList.length > 0) {
+      vList.forEach(v => {
+        let stBadge = v.status === 'مستخدم' ? '<span class="badge badge-pending">تم الاستخدام</span>' : v.status === 'ملغي' ? '<span class="badge badge-banned">ملغي ✕</span>' : '<span class="badge badge-done">نشط</span>';
+        html += `<tr><td><b style="color:var(--green);">${v.voucher_code}</b></td><td><b>${v.partner_name}</b></td><td>${v.beneficiary_name}</td><td>${v.beneficiary_phone}</td><td>${stBadge}</td><td>${new Date(v.created_at).toLocaleDateString('ar-EG')}</td></tr>`;
+      });
+    } else {
+      html = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا توجد كوبونات.</td></tr>';
+    }
+    document.getElementById('vouchersBody').innerHTML = html;
   }
 
   async function loadAnnouncementsTable() {
     const { data: list } = await db.from('platform_announcements').select('*').order('id', { ascending: false });
-    const tbody = document.getElementById('announcementsTableBody');
-    if (!tbody) return;
-    if (!list || list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:12px;">لا توجد إشعارات مسجلة.</td></tr>';
+    let html = '';
+    if (list && list.length > 0) {
+      list.forEach(i => {
+        html += `<tr><td style="font-weight:bold;">${i.message}</td><td><span class="badge">${i.target_role}</span></td><td>${i.channel}</td><td>${new Date(i.created_at).toLocaleDateString()}</td><td><span class="badge ${i.is_active ? 'badge-done':'badge-banned'}">${i.is_active?'فعال':'موقوف'}</span></td><td><button class="action-btn ${i.is_active?'btn-danger':'btn-green'}" onclick="toggleAnnouncementStatus(${i.id}, ${!i.is_active})">${i.is_active?'إيقاف':'تفعيل'}</button></td></tr>`;
+      });
+    } else {
+      html = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا توجد إشعارات.</td></tr>';
+    }
+    document.getElementById('announcementsTableBody').innerHTML = html;
+  }
+
+  async function sendOneSignalPushNotification(msg, role) {
+    const payload = {
+      app_id: "80701e68-609a-4ef8-9bbe-d8ea938cf597",
+      contents: { en: msg, ar: msg }, headings: { en: "OCTA HUB", ar: "OCTA HUB" },
+      included_segments: role === 'all' ? ["Subscribed Users"] : undefined,
+      filters: role !== 'all' ? [{ field: "tag", key: "user_role", relation: "=", value: role }] : undefined
+    };
+    try { await fetch("https://onesignal.com/api/v1/notifications", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Basic os_v2_app_qbyb42datjhprg563dvjhdhvs6f47vzguc1unrv5nkccsc6p2xo5z5m42klvs3dkq2mzlubfaqdpj2cwdcoul5ekl3tlydmja3ghsoq" }, body: JSON.stringify(payload) }); } catch (err) { console.error(err); }
+  }
+
+  async function publishBroadcast() {
+    const msg = document.getElementById('broadcastMsgInput').value;
+    const role = document.getElementById('broadcastTargetRole').value;
+    const ch = document.getElementById('broadcastChannel').value;
+    if (!msg) return alert('اكتب النص');
+    await db.from('platform_announcements').insert([{ message: msg, target_role: role, channel: ch, is_active: true }]);
+    if (ch === 'both' || ch === 'push') await sendOneSignalPushNotification(msg, role);
+    alert('تم بث الإشعار 📢'); loadAnnouncementsTable();
+  }
+
+  async function toggleAnnouncementStatus(id, st) { await db.from('platform_announcements').update({ is_active: st }).eq('id', id); loadAnnouncementsTable(); }
+
+  // رفع وحفظ البانر الإعلاني (للتطبيق) والبانر العائم
+  async function saveBanner(isActive) {
+    const link = document.getElementById('bannerLinkInput').value;
+    const file = document.getElementById('bannerImgFile').files[0];
+    let obj = { is_active: isActive, target_link: link };
+    if (file) {
+      const reader = new FileReader(); reader.readAsDataURL(file);
+      await new Promise(r => reader.onload = e => { obj.image_url = e.target.result; r(); });
+    }
+    await db.from('platform_banners').update(obj).eq('id', 1);
+    alert(isActive ? '✓ تم تفعيل البانر وعرضه للعملاء' : '✓ تم إخفاء البانر');
+  }
+
+  // --- إدارة طلبات الانضمام للإدارة (الجديد) ---
+  async function loadAdminRequests() {
+    const { data: reqs } = await db.from('admin_profiles').select('*').eq('status', 'pending').order('id', { ascending: false });
+    const tbody = document.getElementById('adminRequestsBody');
+    if (!reqs || reqs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">لا توجد طلبات انضمام معلقة للإدارة.</td></tr>';
       return;
     }
+
     let html = '';
-    list.forEach(item => {
-      const isLive = item.is_active;
+    reqs.forEach(r => {
       html += `
         <tr>
-          <td style="max-width:240px; font-weight:bold;">${item.message}</td>
-          <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${item.target_role}</span></td>
-          <td><span style="font-size:10px; color:#475569;">${item.channel}</span></td>
-          <td style="font-size:10px; color:#64748b;">${new Date(item.created_at).toLocaleDateString('ar-EG')}</td>
-          <td><span class="badge ${isLive ? 'badge-done' : 'badge-banned'}">${isLive ? 'معروض 🟢' : 'متوقف ⚪'}</span></td>
+          <td><b style="color:var(--text-white);">${r.email}</b></td>
+          <td><span class="badge" style="background:var(--gold-light); color:var(--gold);">${r.role}</span></td>
+          <td>${r.id_front_img ? `<img src="${r.id_front_img}" class="doc-preview-img" onclick="window.open('${r.id_front_img}')">` : '-'}</td>
+          <td>${r.id_back_img ? `<img src="${r.id_back_img}" class="doc-preview-img" onclick="window.open('${r.id_back_img}')">` : '-'}</td>
+          <td style="font-size:10px; color:var(--text-muted);">${new Date(r.created_at).toLocaleString('ar-EG')}</td>
           <td>
-            <button class="action-btn ${isLive ? 'btn-danger' : 'btn-green'}" onclick="toggleAnnouncementStatus(${item.id}, ${!isLive})">${isLive ? 'إيقاف' : 'تفعيل'}</button>
+            <div style="display:flex; gap:6px;">
+              <button class="action-btn btn-green" onclick="approveAdminRequest(${r.id}, '${r.email}')">اعتماد ✓</button>
+              <button class="action-btn btn-danger" onclick="rejectAdminRequest(${r.id})">رفض ✕</button>
+            </div>
           </td>
         </tr>
       `;
@@ -1020,47 +1079,59 @@
     tbody.innerHTML = html;
   }
 
-  async function publishBroadcast() {
-    const msg = document.getElementById('broadcastMsgInput').value.trim();
-    const role = document.getElementById('broadcastTargetRole').value;
-    const channel = document.getElementById('broadcastChannel').value;
-    if (!msg) return alert('اكتب نص الإشعار أولاً');
-
-    await db.from('platform_announcements').insert([{
-      message: msg, target_role: role, channel: channel, is_active: true, created_at: new Date().toISOString()
-    }]);
-
-    if (channel === 'both' || channel === 'push') {
-      await sendOneSignalPushNotification(msg, role);
+  async function approveAdminRequest(id, email) {
+    if(!confirm(`هل أنت متأكد من اعتماد المستخدم: ${email}؟`)) return;
+    const { error } = await db.from('admin_profiles').update({ status: 'approved' }).eq('id', id);
+    if (!error) {
+      alert('✓ تم اعتماد حساب الموظف، يمكنه الآن تسجيل الدخول.');
+      loadAdminRequests();
+    } else {
+      alert('خطأ: ' + error.message);
     }
-
-    alert('✓ تم بث الإشعار بنجاح وإرساله للهواتف في الخلفية!');
-    document.getElementById('broadcastMsgInput').value = '';
-    loadAnnouncementsTable();
   }
 
-  async function toggleAnnouncementStatus(id, newStatus) {
-    await db.from('platform_announcements').update({ is_active: newStatus }).eq('id', id);
-    loadAnnouncementsTable();
+  async function rejectAdminRequest(id) {
+    if(!confirm(`هل تريد رفض وحذف هذا الطلب؟`)) return;
+    await db.from('admin_profiles').delete().eq('id', id);
+    alert('✕ تم رفض وحذف الطلب.');
+    loadAdminRequests();
   }
 
-  function fileToBase64(file) {
-    return new Promise((resolve) => {
-      if (!file) return resolve('');
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (e) => resolve(e.target.result);
-    });
+  // --- تصفير البيانات الذكي ---
+  function openSelectiveResetModal() { document.getElementById('selectiveResetModal').classList.add('show'); }
+  function toggleResetDateInputs(mode) {
+    document.getElementById('resetMonthBox').style.display = (mode === 'month') ? 'block' : 'none';
+    document.getElementById('resetDayBox').style.display = (mode === 'day') ? 'block' : 'none';
+    document.getElementById('resetRangeBox').style.display = (mode === 'range') ? 'block' : 'none';
   }
 
-  async function saveBanner(isActive) {
-    const link = document.getElementById('bannerLinkInput').value.trim();
-    const file = document.getElementById('bannerImgFile').files[0];
-    let updateObj = { is_active: isActive, target_link: link };
-    if (file) updateObj.image_url = await fileToBase64(file);
-    await db.from('platform_banners').update(updateObj).eq('id', 1);
-    alert(isActive ? 'تم تفعيل البانر بنجاح!' : 'تم إخفاء البانر.');
+  async function executeSelectiveReset() {
+    const pass = document.getElementById('resetAdminPassConfirm').value;
+    if (!pass) return alert('أدخل كلمة المرور!');
+    const { error: authErr } = await db.auth.signInWithPassword({ email: currentAdminSession.user.email, password: pass });
+    if (authErr) return alert('كلمة المرور غير صحيحة!');
+
+    const table = document.getElementById('resetTargetSection').value;
+    const mode = document.getElementById('resetDateType').value;
+    let q = db.from(table).delete();
+    
+    if (mode === 'month') {
+      const ym = document.getElementById('resetMonthInput').value; if (!ym) return;
+      const [y, m] = ym.split('-'); q = q.gte('created_at', new Date(y, m-1, 1).toISOString()).lte('created_at', new Date(y, m, 0, 23, 59, 59).toISOString());
+    } else if (mode === 'day') {
+      const d = document.getElementById('resetDayInput').value; if (!d) return;
+      q = q.gte('created_at', d+'T00:00:00.000Z').lte('created_at', d+'T23:59:59.999Z');
+    } else if (mode === 'range') {
+      const f = document.getElementById('resetRangeFrom').value, t = document.getElementById('resetRangeTo').value; if (!f||!t) return;
+      q = q.gte('created_at', f+'T00:00:00.000Z').lte('created_at', t+'T23:59:59.999Z');
+    } else { q = q.neq('id', 0); }
+
+    if (confirm('تأكيد الحذف النهائي؟')) {
+      const { error } = await q;
+      if (error) alert('خطأ: ' + error.message); else { alert('تم الحذف بنجاح ✓'); closeModal('selectiveResetModal'); loadAllData(); }
+    }
   }
+
 </script>
 </body>
 </html>
