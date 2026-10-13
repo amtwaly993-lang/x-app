@@ -2236,20 +2236,25 @@ function showFloatingAd() {
     if (biddingTimerInterval) clearInterval(biddingTimerInterval);
     closeModal('biddingModal');
 
-    // --- التحديث المحاسبي: الخصم التلقائي من الكابتن (6 ج) ---
-    const commissionToDeduct = 6.00;
-    const { data: prov } = await dbClient.from('service_providers').select('wallet_balance').eq('phone', cPhone).single();
-    if(prov) {
-       const newBal = (Number(prov.wallet_balance) || 0) - commissionToDeduct;
-       await dbClient.from('service_providers').update({ wallet_balance: newBal }).eq('phone', cPhone);
-    }
-
+    // تحديث حالة الطلب فقط (تم إلغاء خصم الفلوس من هنا ونقله للسيرفر في النهاية)
     await dbClient.from('orders').update({
-      status: 'قيد التنفيذ', courier_phone: cPhone, trip_stage: 'تم اختيار الكابتن وجارٍ التحرك', commission_deducted: commissionToDeduct
+      status: 'قيد التنفيذ', courier_phone: cPhone, trip_stage: 'تم اختيار الكابتن وجارٍ التحرك'
     }).eq('id', orderId);
 
     triggerChime('stage');
     showToast('✓ تم اختيار الكابتن وبدأ التحرك إليك فوراً');
+    loadClientActiveOrder();
+  }
+
+  // --- زر الإلغاء الذكي ---
+  async function cancelClientOrder(orderId) {
+    if (!confirm('هل أنت متأكد من إلغاء هذا الطلب؟')) return;
+    
+    // تحديث حالة الطلب فقط (تم إزالة كود رد الفلوس لأن الخصم لم يعد يحدث في البداية أصلاً)
+    await dbClient.from('orders').update({ status: 'ملغي', trip_stage: 'ألغاه العميل' }).eq('id', orderId);
+    
+    triggerChime('soft'); 
+    showToast('✓ تم إلغاء الطلب بنجاح'); 
     loadClientActiveOrder();
   }
 
