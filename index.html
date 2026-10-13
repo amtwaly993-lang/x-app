@@ -2670,7 +2670,7 @@ function showFloatingAd() {
 
       if (rpcError || (rpcData && !rpcData.success)) {
         console.error("RPC Error:", rpcError || rpcData.error);
-        return showToast('⚠️ عذراً، لم نتمكن من إنهاء المشوار. تأكد من رصيد المحفظة.');
+        return showToast('⚠️ ' + (rpcData ? rpcData.error : 'خطأ غير معروف في السيرفر'));
       }
 
       // إذا نجح السيرفر، نقوم الآن بإرسال تقييم الكابتن للعميل فقط
