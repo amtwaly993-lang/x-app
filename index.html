@@ -1120,43 +1120,19 @@ if(nameEl) nameEl.innerText = clientAddress.name || 'عميل مميز';
   }
 
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-let floatingAdShownThisLoad = false;
-
-  async function showFloatingAd() {
-    if (floatingAdShownThisLoad) return;
-    try {
-      const { data: ad } = await dbClient.from('floating_ads').select('*').eq('id', 1).maybeSingle();
-      if (!ad || !ad.is_active || !ad.image_url) return;
-
-      const version = String(ad.updated_at || '0');
-      const freq = ad.frequency || 'session';
-      const key = 'octa_floating_ad_' + freq;
-      const today = new Date().toDateString();
-
-      if (freq === 'once' && localStorage.getItem(key) === version) return;
-      if (freq === 'daily' && localStorage.getItem(key) === version + '|' + today) return;
-      if (freq === 'session' && sessionStorage.getItem(key) === version) return;
-
-      const img = document.getElementById('floatingAdImage');
-      const link = document.getElementById('floatingAdLink');
-      img.onerror = () => closeModal('floatingAdModal');
-      img.src = ad.image_url;
-
-      if (ad.target_link && /^https?:\/\//i.test(ad.target_link)) {
-        link.href = ad.target_link;
-        link.style.pointerEvents = 'auto';
-      } else {
-        link.removeAttribute('href');
-        link.style.pointerEvents = 'none';
+function showFloatingAd() {
+    // التحقق من أن الإعلان لم يظهر مسبقاً في هذه الجلسة (لكي لا يزعج العميل عند كل تنقل)
+    if (!sessionStorage.getItem('octa_ad_shown')) {
+      const adModal = document.getElementById('floatingAdModal');
+      if (adModal) {
+        // يمكنك مستقبلاً تغيير مسار الصورة والرابط من هنا أو ربطها بقاعدة البيانات
+        // document.getElementById('floatingAdImage').src = "ضع_رابط_صورتك_الإعلانية_هنا.jpg";
+        // document.getElementById('floatingAdLink').href = "ضع_رابط_التوجيه_هنا";
+        
+        adModal.classList.add('show');
+        sessionStorage.setItem('octa_ad_shown', 'true');
       }
-
-      floatingAdShownThisLoad = true;
-      if (freq === 'once') localStorage.setItem(key, version);
-      else if (freq === 'daily') localStorage.setItem(key, version + '|' + today);
-      else if (freq === 'session') sessionStorage.setItem(key, version);
-
-      document.getElementById('floatingAdModal').classList.add('show');
-    } catch (e) {}
+    }
   }
   async function sendHeartbeat() {
     let sId = localStorage.getItem('octa_session_id');
@@ -2540,23 +2516,27 @@ let floatingAdShownThisLoad = false;
   }
 
   async function submitCourierETA(orderId, etaMins) {
+    // 1. جلب بيانات الكابتن الحالي
     const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
     if (!prov) return showToast('⚠️ أنت غير مسجل كشريك بعد');
 
-    const { data: ord } = await dbClient.from('orders').select('offers').eq('id', orderId).single();
-    const currOffers = ord.offers || [];
-
-    currOffers.push({
-      courier_phone: courierPhone,
-      name: prov.name,
-      rating: (prov.rating_avg || 5.0).toFixed(1),
-      vehicle: prov.vehicle_type,
-      is_verified: prov.is_verified,
-      eta: etaMins,
-      time: Date.now()
+    // 2. إرسال العرض عبر الدالة السيرفرية الآمنة (بدلاً من التعديل المباشر الممنوع بسبب RLS)
+    const { data: rpcData, error: rpcError } = await dbClient.rpc('submit_courier_offer', {
+      p_order_id: orderId,
+      p_courier_phone: courierPhone,
+      p_name: prov.name,
+      p_rating: (prov.rating_avg || 5.0).toFixed(1),
+      p_vehicle: prov.vehicle_type,
+      p_eta: etaMins,
+      p_is_verified: prov.is_verified || false
     });
 
-    await dbClient.from('orders').update({ offers: currOffers }).eq('id', orderId);
+    if (rpcError || (rpcData && !rpcData.success)) {
+      console.error("RPC Error:", rpcError || rpcData.error);
+      return showToast('⚠️ ' + (rpcData ? rpcData.error : 'عذراً، لم نتمكن من إرسال العرض. قد يكون الطلب تم قبوله بالفعل.'));
+    }
+
+    // 3. تحديث الشاشة بعد النجاح
     triggerChime('soft');
     showToast(`✓ تم إرسال عرضك (${etaMins} دقيقة) للعميل`);
     loadProviderOrders();
@@ -2669,22 +2649,34 @@ let floatingAdShownThisLoad = false;
     container.innerHTML = html;
   }
 
-  // --- دالة إنهاء المشوار وإضافة النقاط (Octa Points) ---
+  // --- دالة إنهاء المشوار وإضافة النقاط (معدلة لتعمل عبر السيرفر بأمان) ---
   async function submitRating() {
     closeModal('ratingModal');
     triggerChime('soft');
     const finalRate = currentSelectedRating || 5;
 
     if (ratingUserType === 'courier') {
-      await dbClient.from('orders').update({
-        status: 'مكتمل', trip_stage: 'تم التسليم بنجاح', completed_at: new Date().toISOString(), courier_rating: finalRate
-      }).eq('id', activeOrderIdToRate);
+      const btn = document.querySelector('#ratingModal .btn-submit');
+      if(btn) { btn.innerText = 'جارٍ الإنهاء...'; btn.disabled = true; }
 
-      const { data: prov } = await dbClient.from('service_providers').select('*').eq('phone', courierPhone).single();
-      if (prov) {
-        const newCount = (prov.completed_orders || 0) + 1;
-        await dbClient.from('service_providers').update({ completed_orders: newCount }).eq('phone', courierPhone);
+      // استدعاء دالة السيرفر الآمنة لإنهاء الطلب، خصم العمولة، وزيادة المشاوير
+      const { data: rpcData, error: rpcError } = await dbClient.rpc('process_order_completion', {
+        p_order_id: activeOrderIdToRate,
+        p_provider_phone: courierPhone,
+        p_commission_amount: 6.00 // تم تثبيت العمولة هنا بناءً على طلبك
+      });
+
+      if(btn) { btn.innerText = 'تأكيد التقييم'; btn.disabled = false; }
+
+      if (rpcError || (rpcData && !rpcData.success)) {
+        console.error("RPC Error:", rpcError || rpcData.error);
+        return showToast('⚠️ عذراً، لم نتمكن من إنهاء المشوار. تأكد من رصيد المحفظة.');
       }
+
+      // إذا نجح السيرفر، نقوم الآن بإرسال تقييم الكابتن للعميل فقط
+      await dbClient.from('orders').update({
+        courier_rating: finalRate
+      }).eq('id', activeOrderIdToRate);
 
       // إضافة نقاط الولاء للعميل (Octa Points)
       const { data: ord } = await dbClient.from('orders').select('client_phone, client_name').eq('id', activeOrderIdToRate).single();
@@ -2694,9 +2686,11 @@ let floatingAdShownThisLoad = false;
          await dbClient.from('customers').upsert({ phone: ord.client_phone, name: ord.client_name, octa_points: currentPts + 5 });
       }
 
-      showToast('✓ تم إنهاء المشوار بنجاح، وإضافة نقاط للعميل');
-      render();
+      showToast('✓ تم إنهاء المشوار بنجاح، وخصم العمولة من المحفظة');
+      render(); // تحديث الشاشة لتظهر الرصيد الجديد
+
    } else {
+      // هذا الجزء خاص بتقييم العميل للكابتن
       await dbClient.from('orders').update({ client_rating: finalRate, client_rated: true }).eq('id', activeOrderIdToRate);
       showToast('⭐ شكراً لتقييمك! نسعد دائماً بخدمتك');
       updateClientOrdersBadge();
