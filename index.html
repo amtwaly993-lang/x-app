@@ -1120,19 +1120,43 @@ if(nameEl) nameEl.innerText = clientAddress.name || 'عميل مميز';
   }
 
   function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function showFloatingAd() {
-    // التحقق من أن الإعلان لم يظهر مسبقاً في هذه الجلسة (لكي لا يزعج العميل عند كل تنقل)
-    if (!sessionStorage.getItem('octa_ad_shown')) {
-      const adModal = document.getElementById('floatingAdModal');
-      if (adModal) {
-        // يمكنك مستقبلاً تغيير مسار الصورة والرابط من هنا أو ربطها بقاعدة البيانات
-        // document.getElementById('floatingAdImage').src = "ضع_رابط_صورتك_الإعلانية_هنا.jpg";
-        // document.getElementById('floatingAdLink').href = "ضع_رابط_التوجيه_هنا";
-        
-        adModal.classList.add('show');
-        sessionStorage.setItem('octa_ad_shown', 'true');
+let floatingAdShownThisLoad = false;
+
+  async function showFloatingAd() {
+    if (floatingAdShownThisLoad) return;
+    try {
+      const { data: ad } = await dbClient.from('floating_ads').select('*').eq('id', 1).maybeSingle();
+      if (!ad || !ad.is_active || !ad.image_url) return;
+
+      const version = String(ad.updated_at || '0');
+      const freq = ad.frequency || 'session';
+      const key = 'octa_floating_ad_' + freq;
+      const today = new Date().toDateString();
+
+      if (freq === 'once' && localStorage.getItem(key) === version) return;
+      if (freq === 'daily' && localStorage.getItem(key) === version + '|' + today) return;
+      if (freq === 'session' && sessionStorage.getItem(key) === version) return;
+
+      const img = document.getElementById('floatingAdImage');
+      const link = document.getElementById('floatingAdLink');
+      img.onerror = () => closeModal('floatingAdModal');
+      img.src = ad.image_url;
+
+      if (ad.target_link && /^https?:\/\//i.test(ad.target_link)) {
+        link.href = ad.target_link;
+        link.style.pointerEvents = 'auto';
+      } else {
+        link.removeAttribute('href');
+        link.style.pointerEvents = 'none';
       }
-    }
+
+      floatingAdShownThisLoad = true;
+      if (freq === 'once') localStorage.setItem(key, version);
+      else if (freq === 'daily') localStorage.setItem(key, version + '|' + today);
+      else if (freq === 'session') sessionStorage.setItem(key, version);
+
+      document.getElementById('floatingAdModal').classList.add('show');
+    } catch (e) {}
   }
   async function sendHeartbeat() {
     let sId = localStorage.getItem('octa_session_id');

@@ -190,6 +190,7 @@
     <button class="tab-btn" onclick="showTab('tabVouchers', this)">أكواد الخصومات 🧾</button>
     <button class="tab-btn" onclick="showTab('tabBroadcast', this)">إذاعة الإشعارات والبانر 📢</button>
     <button class="tab-btn" onclick="showTab('tabSettings', this)">إعدادات التسعير ⚙️</button>
+    <button class="tab-btn" onclick="showTab('tabFloatingAd', this); loadFloatingAd();">الإعلان المنبثق 🎯</button>
     <button class="tab-btn" onclick="showTab('tabAdminRequests', this)" style="border-color:var(--danger); color:var(--danger);">طلبات الإدارة 🛡️</button>
   </div>
 
@@ -356,6 +357,43 @@
       </div>
       <button class="action-btn btn-gold" style="width:100%; padding:11px; font-size:13.5px; justify-content:center;" onclick="savePricingSettings()">حفظ وتطبيق على الطلبات الجديدة 💾</button>
       <p style="font-size:11px; color:var(--danger); margin-top:10px; text-align:center;">التعديل هنا يُطبق فوراً على أي طلب جديد في النظام.</p>
+    </div>
+  </div>
+
+  <!-- الإعلان المنبثق (العائم) عند فتح التطبيق -->
+  <div id="tabFloatingAd" class="section-card">
+    <h4 style="font-size:14px; font-weight:900; color:var(--text-white); margin-bottom:6px;">🎯 الإعلان المنبثق (يظهر للعميل أول ما يفتح التطبيق)</h4>
+    <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:14px;">مستقل تماماً عن البانر الثابت وعن الإشعارات. ارفع الصورة وحدد الرابط ومعدل الظهور.</p>
+
+    <div id="floatingAdStatus" style="display:none; font-size:11.5px; font-weight:bold; margin-bottom:12px; padding:10px; border-radius:10px;"></div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); padding:16px; border-radius:var(--radius-md);">
+        <label style="font-size:11.5px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">صورة الإعلان (يفضل مربعة أو 4:5):</label>
+        <input type="file" id="floatingAdFile" accept="image/*" class="input-box" style="padding:6px; font-size:11px;" onchange="previewFloatingAdFile(this)">
+
+        <label style="font-size:11.5px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">رابط عند الضغط (واتساب أو موقع - اختياري):</label>
+        <input type="text" id="floatingAdLinkInput" class="input-box" placeholder="https://wa.me/20..." dir="ltr" style="text-align:left;">
+
+        <label style="font-size:11.5px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">معدل الظهور للعميل:</label>
+        <select id="floatingAdFrequency" class="input-box">
+          <option value="session">مرة كل جلسة (عند فتح التطبيق من جديد)</option>
+          <option value="daily">مرة واحدة في اليوم</option>
+          <option value="once">مرة واحدة فقط لكل عميل (لحد ما تغيّر الإعلان)</option>
+          <option value="always">كل مرة يفتح فيها التطبيق</option>
+        </select>
+
+        <div style="display:flex; gap:6px; margin-top:6px;">
+          <button class="action-btn btn-green" style="flex:1;" id="floatingAdActivateBtn" onclick="saveFloatingAd(true)">حفظ وتفعيل 🟢</button>
+          <button class="action-btn btn-danger" style="flex:1;" onclick="saveFloatingAd(false)">إيقاف الإعلان ⚪</button>
+        </div>
+      </div>
+
+      <div style="background:rgba(11,25,44,0.6); border:1px solid var(--border-light); padding:16px; border-radius:var(--radius-md); text-align:center;">
+        <div style="font-size:11.5px; color:var(--text-muted); font-weight:800; margin-bottom:10px;">معاينة الإعلان الحالي:</div>
+        <img id="floatingAdPreview" src="" alt="" style="display:none; width:100%; max-width:260px; border-radius:16px; border:2px solid var(--gold); box-shadow:0 10px 25px rgba(0,0,0,0.6);">
+        <div id="floatingAdNoImage" style="padding:40px 10px; color:var(--text-muted); font-size:12px;">لا توجد صورة إعلان مرفوعة بعد.</div>
+      </div>
     </div>
   </div>
 
@@ -1047,6 +1085,78 @@
     }
     await db.from('platform_banners').update(obj).eq('id', 1);
     alert(isActive ? '✓ تم تفعيل البانر وعرضه للعملاء' : '✓ تم إخفاء البانر');
+  }
+
+  // --- الإعلان المنبثق (العائم) ---
+  let currentFloatingAd = null;
+
+  function showFloatingAdStatus(text, isError) {
+    const box = document.getElementById('floatingAdStatus');
+    box.style.display = 'block';
+    box.style.background = isError ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)';
+    box.style.color = isError ? 'var(--danger)' : 'var(--green)';
+    box.style.border = '1px solid ' + (isError ? 'var(--danger)' : 'var(--green)');
+    box.innerText = text;
+  }
+
+  function setFloatingAdPreview(url) {
+    const img = document.getElementById('floatingAdPreview');
+    const empty = document.getElementById('floatingAdNoImage');
+    if (url) { img.src = url; img.style.display = 'block'; empty.style.display = 'none'; }
+    else { img.style.display = 'none'; empty.style.display = 'block'; }
+  }
+
+  function previewFloatingAdFile(input) {
+    const f = input.files[0];
+    if (f) setFloatingAdPreview(URL.createObjectURL(f));
+  }
+
+  async function loadFloatingAd() {
+    const { data: ad, error } = await db.from('floating_ads').select('*').eq('id', 1).maybeSingle();
+    if (error) {
+      showFloatingAdStatus('تعذر تحميل الإعلان: ' + error.message + ' (تأكد من إنشاء جدول floating_ads في Supabase)', true);
+      return;
+    }
+    currentFloatingAd = ad;
+    if (ad) {
+      document.getElementById('floatingAdLinkInput').value = ad.target_link || '';
+      document.getElementById('floatingAdFrequency').value = ad.frequency || 'session';
+      setFloatingAdPreview(ad.image_url);
+      showFloatingAdStatus(ad.is_active ? 'الإعلان المنبثق مفعّل حالياً للعملاء 🟢' : 'الإعلان المنبثق متوقف حالياً ⚪', !ad.is_active);
+    } else {
+      setFloatingAdPreview('');
+      document.getElementById('floatingAdStatus').style.display = 'none';
+    }
+  }
+
+  async function saveFloatingAd(isActive) {
+    const file = document.getElementById('floatingAdFile').files[0];
+    let link = document.getElementById('floatingAdLinkInput').value.trim();
+    const frequency = document.getElementById('floatingAdFrequency').value;
+    if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
+
+    let imageUrl = currentFloatingAd ? currentFloatingAd.image_url : '';
+    if (file) {
+      showFloatingAdStatus('جارٍ رفع الصورة... ⏳', false);
+      const uploaded = await uploadCompressedImage(file, 'floating_ads');
+      if (!uploaded) return showFloatingAdStatus('فشل رفع الصورة، حاول مرة أخرى', true);
+      imageUrl = uploaded;
+    }
+    if (isActive && !imageUrl) return showFloatingAdStatus('ارفع صورة الإعلان أولاً قبل التفعيل', true);
+
+    const { error } = await db.from('floating_ads').upsert({
+      id: 1,
+      image_url: imageUrl,
+      target_link: link,
+      frequency: frequency,
+      is_active: isActive,
+      updated_at: new Date().toISOString()
+    });
+
+    if (error) return showFloatingAdStatus('خطأ في الحفظ: ' + error.message, true);
+    document.getElementById('floatingAdFile').value = '';
+    await loadFloatingAd();
+    alert(isActive ? '✓ تم تفعيل الإعلان المنبثق' : '✓ تم إيقاف الإعلان المنبثق');
   }
 
   // --- إدارة طلبات الانضمام للإدارة (الجديد) ---
