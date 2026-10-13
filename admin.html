@@ -1053,13 +1053,9 @@
   }
 
   async function sendOneSignalPushNotification(msg, role) {
-    const payload = {
-      app_id: "80701e68-609a-4ef8-9bbe-d8ea938cf597",
-      contents: { en: msg, ar: msg }, headings: { en: "OCTA HUB", ar: "OCTA HUB" },
-      included_segments: role === 'all' ? ["Subscribed Users"] : undefined,
-      filters: role !== 'all' ? [{ field: "tag", key: "user_role", relation: "=", value: role }] : undefined
-    };
-    try { await fetch("https://onesignal.com/api/v1/notifications", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Basic os_v2_app_qbyb42datjhprg563dvjhdhvs6f47vzguc1unrv5nkccsc6p2xo5z5m42klvs3dkq2mzlubfaqdpj2cwdcoul5ekl3tlydmja3ghsoq" }, body: JSON.stringify(payload) }); } catch (err) { console.error(err); }
+    // الإرسال بيتم عبر Supabase Edge Function (المفتاح السري محفوظ هناك مش في الكود)
+    const { error } = await db.functions.invoke('send-push', { body: { msg, role } });
+    if (error) alert('تعذر إرسال إشعار الهاتف: ' + error.message);
   }
 
   async function publishBroadcast() {
