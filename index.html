@@ -2667,8 +2667,7 @@ function showFloatingAd() {
       // استدعاء دالة السيرفر الآمنة لإنهاء الطلب، خصم العمولة، وزيادة المشاوير
       const { data: rpcData, error: rpcError } = await dbClient.rpc('process_order_completion', {
         p_order_id: activeOrderIdToRate,
-        p_provider_phone: courierPhone,
-        p_commission_amount: 6.00 // تم تثبيت العمولة هنا بناءً على طلبك
+        p_provider_phone: courierPhone
       });
 
       if(btn) { btn.innerText = 'تأكيد التقييم'; btn.disabled = false; }
